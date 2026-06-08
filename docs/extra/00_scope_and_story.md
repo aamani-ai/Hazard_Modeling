@@ -151,7 +151,7 @@ OASIS fmcalc — "the substrate is runtime, not content.")
 | [`docs/google_drive_docs/`](../google_drive_docs/README.md) | Local `.docx` of the team's shared Drive **InfraSure Hazard** reference set. | The reference docs: terminology, hazard data, risk metrics, loss-distribution methodology. |
 | [`docs/extra/`](.) | This file + reference materials to come. | The "start here" knowledge anchor. |
 | [`model-gpr/`](../../model-gpr) | Sibling **Performance Modeling** repo (Tier 1 of the platform). | Out of scope for now — relevance to be explained later by the owner. |
-| _discussion folder_ | The owner's saved discussions on relevant topics. | **Location TBD** — see §6. |
+| [`docs/extra/discussion/`](discussion/) | The owner's saved **GPT design discussions** — adapters, coupling types, damage representation. | A design-thinking record that mirrors the A-series seams (see §4e). |
 
 ### 4a. `hazard_analysis/` — the old repo (autopsy + rethink)
 - **`docs/suggested_architecture/issues/`** — the math critiques (§1).
@@ -198,6 +198,15 @@ The shared Drive set: **terminology** (input vocabulary), **risk metrics** (outp
 index + per-file summaries + Drive links: [`docs/google_drive_docs/README.md`](../google_drive_docs/README.md).
 > Note: the methodology + risk-metrics `.docx` are intentionally **duplicated** into `hazard_math/` (§4c) — same files, two homes.
 
+### 4e. `docs/extra/discussion/` — the owner's design discussions
+Saved **GPT discussions** (under `gpt/`) so the thinking isn't lost. They track the same seams as the A-series:
+- [`01_adapters_first_principles.md`](discussion/gpt/01_adapters_first_principles.md) — the adapter/interface concept from first principles (the typed boundary between per-peril pipelines and the shared engine).
+- [`02_adapter_dataflow_event_catalog_to_loss.md`](discussion/gpt/02_adapter_dataflow_event_catalog_to_loss.md) — the data flow from event catalog through to loss.
+- [`03_coupling_types_hit_or_miss_field_intensity_site_conditioned.md`](discussion/gpt/03_coupling_types_hit_or_miss_field_intensity_site_conditioned.md) — the three coupling types (≈ A21 / M1→M2).
+- [`04_damage_representation_scalar_vector_distribution.md`](discussion/gpt/04_damage_representation_scalar_vector_distribution.md) — damage representation: scalar vs vector vs distribution (≈ A22 / M2→M3).
+
+> _Not yet deep-read/summarized into this map_ — titles + seam-mapping above are from the filenames; a richer pass is flagged in §6.
+
 ---
 
 ## 5. Reading order (cold start)
@@ -215,8 +224,7 @@ index + per-file summaries + Drive links: [`docs/google_drive_docs/README.md`](.
 
 ## 6. Open threads / not-yet-here
 
-- **Discussion folder — location unknown.** The owner keeps important discussion docs somewhere; the only local
-  match found was `Learning/project finance/analytics/discussions`, which isn't obviously hazard. **TODO: point to it / symlink it.**
+- **Discussion folder — found** at `docs/extra/discussion/gpt/` (see §4e), now in-repo. _Open: a deeper read/summary of the four GPT discussion docs folded into the map above._
 - **`model-gpr` relevance** — deferred; the owner will explain how the Performance Modeling sibling connects.
 - **The implementation / repo-architecture doc** — the methodology explicitly defers code structure to a
   forthcoming "Repo Architecture Document." Not written yet; this repo is where it lands.
