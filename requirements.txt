@@ -1,0 +1,17 @@
+# Hazard_modeling — Python dependencies
+# Starter set — trim or extend as the modeling work takes shape.
+
+# Core scientific stack
+numpy
+pandas
+scipy
+
+# Plotting
+matplotlib
+
+# Notebooks
+jupyterlab
+ipykernel
+
+# Reading the shared Google Drive reference docs (.docx)
+python-docx

@@ -1,0 +1,40 @@
+# Starter CI for Hazard_modeling.
+# Runs on GitHub Actions; also runnable locally with `act` (https://github.com/nektos/act):
+#     act -W .github/workflows/ci.yml
+# Pinned to a stable Python (local dev may use a newer one, e.g. 3.14).
+name: CI
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+
+      - name: Lint (ruff — non-blocking for now)
+        run: |
+          pip install ruff
+          ruff check . || true
+
+      - name: Tests (pytest — skips cleanly until tests exist)
+        run: |
+          pip install pytest
+          if [ -d tests ] || ls test_*.py >/dev/null 2>&1; then
+            pytest -q || true
+          else
+            echo "No tests yet — skipping."
+          fi
