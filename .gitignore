@@ -16,6 +16,10 @@ env/
 ENV/
 .python-version
 
+# Local secrets — never commit
+.env
+.env.*
+
 # ── Jupyter ──────────────────────────────────────────────
 .ipynb_checkpoints/
 profile_default/
@@ -36,6 +40,10 @@ htmlcov/
 *.h5
 *.hdf5
 *.nc
+*.grib2
+*.grib
+*.idx
+*.gz
 *.pkl
 *.pickle
 *.joblib
@@ -68,3 +76,5 @@ ehthumbs.db
 /model-gpr
 /hazard_analysis
 /infrasure-hazard-competitive-research
+/renewablesinfo_org
+/infrasure-damage-curves

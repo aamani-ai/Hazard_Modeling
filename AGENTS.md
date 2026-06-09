@@ -31,6 +31,7 @@ Performance tier (`model-gpr`).
 | `docs/extra/` | Staging area for reference materials being brought into the project _(contents TBD — owner-curated)_. |
 | `docs/google_drive_docs/` | Local `.docx` copies of the team's shared Google Drive **"InfraSure Hazard"** reference set (Drive is the source of truth). Index + folder links: [`docs/google_drive_docs/README.md`](docs/google_drive_docs/README.md). |
 | `docs/plans/` | Planning docs / plan-of-record (mirrors `model-gpr`'s `docs/plans/`). |
+| `docs/principles/` | **The foundational beliefs** — why we build this way ([index](docs/principles/README.md)). |
 | `Notebooks/` | Exploratory & analysis notebooks. |
 | `.venv/` | Local Python environment (gitignored). |
 | `.github/workflows/` | CI (GitHub Actions) — starter `ci.yml`, also runnable locally with `act`. |
@@ -45,6 +46,7 @@ These point at machine-specific absolute paths and **must not be committed**:
 | [`hazard_analysis`](hazard_analysis) | sibling repo | hazard-domain reference _(role TBD — owner to detail)_ |
 | [`infrasure-hazard-competitive-research`](infrasure-hazard-competitive-research) | sibling repo | competitive / market research on hazard modeling _(role TBD)_ |
 | [`Learning`](Learning) | `~/Desktop/Learning` knowledge base | domain notes (risk, insurance, modeling, electricity markets) |
+| [`infrasure-damage-curves`](infrasure-damage-curves) | sibling repo (`Divi-patel/infrasure-damage-curves`) | the **damage-curve library** — peril × asset/subsystem/component fragility curves; the source for **M3 severity** (replaces the literature-curated curve) |
 
 ---
 
@@ -77,6 +79,7 @@ Notebooks live in `Notebooks/`; register the kernel from `.venv` if needed.
 - Single source of truth for agent guidance is **this file** (`AGENTS.md`); `CLAUDE.md` just imports it.
 - Mirror the house style of the sibling `model-gpr` repo where it makes sense: `docs/` layout,
   gitignored local-only symlinks, plain `venv` + `requirements.txt`.
+- **The three principles** ([`docs/principles/`](docs/principles/README.md)) govern design decisions: *standard interface, not standard physics* · *modular from day one* · *basics spot-on*.
 - _(Data layout, naming, output formats — to be defined once the modeling work starts.)_
 
 ---

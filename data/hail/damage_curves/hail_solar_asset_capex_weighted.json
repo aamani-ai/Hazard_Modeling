@@ -1,0 +1,33 @@
+{
+  "curve_id": "hail/solar__asset__capex_weighted",
+  "display_name": "Solar Asset — Hail (capex-weighted subsystem aggregation)",
+  "hazard_type": "HAIL",
+  "asset_type": "solar",
+  "curve_level": "asset",
+  "intensity_metric": "hail_diameter_mm",
+  "intensity_unit": "mm",
+  "function_type": "logistic",
+  "logistic_form": "DR(x) = L / (1 + exp(-k*(x - x0)))",
+  "aggregation": "Asset_DR(x) = sum_i ( capex_weight_i * DR_i(x) ); subsystems with no hail curve contribute 0 (denominator NOT adjusted)",
+  "subsystems": [
+    {"subsystem": "PV_ARRAY", "capex_weight": 0.32, "curve_id": "hail/pv_module_generic",
+     "L": 0.95, "k": 0.1064, "x0": 59.2,
+     "note": "mono-Si 3.2mm tempered glass module; only junction boxes/wiring survive at extreme hail (L=0.95)"},
+    {"subsystem": "MOUNTING", "capex_weight": 0.10, "curve_id": "hail/tracker_generic",
+     "L": 0.40, "k": 0.100, "x0": 88.0,
+     "note": "single-axis tracker (Hayhurst is single_axis_tracking); steel/Al is hail-resilient"}
+  ],
+  "uncovered_subsystems_zero_damage": {
+    "INVERTER_SYSTEM": 0.08, "SUBSTATION": 0.07, "ELECTRICAL": 0.10, "CIVIL_INFRA": 0.08, "SCADA": 0.03,
+    "note": "no hail curve → 0 DR; ~36% of asset value is hail-immune (inverters, transformers, buried cable, civil, SCADA)"
+  },
+  "asset_max_dr_cap": 0.344,
+  "metadata": {
+    "source_repo": "infrasure-damage-curves (Divi-patel/infrasure-damage-curves)",
+    "component_curves": "research/HAIL_x_SOLAR.md §3.6/§4.6 — IBHS solar hail testing 2019-2023, IEC 61215-2:2021 / UL 61730, GCube insurance (hail = 54% of solar incurred cost), real events: 2019 Midway (>50mm → 58% modules), 2024 Fighting Jays (65-75mm → ~100% panels)",
+    "capex_weights": "docs/aggregation-model.md Default Weights — Solar (NREL ATB 2024 + LBNL + NREL SAM)",
+    "confidence": "medium — module curve medium-high (empirical+standard); NREL-sourced weights; tracker curve low (expert-judgment)",
+    "vendored_for_reproducibility": "copied from the gitignored infrasure-damage-curves symlink; swap subsystems/weights here to refine",
+    "supersedes": "the methodology §12 literature curve (which extrapolated to ~100%) and the model-gpr asset_fallback (L=0.50)"
+  }
+}

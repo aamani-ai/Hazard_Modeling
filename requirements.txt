@@ -6,6 +6,24 @@ numpy
 pandas
 scipy
 
+# Data access (read the asset reference table + parquet dimension data)
+pyarrow
+duckdb
+
+# Hazard grids (MRMS MESH GRIB2 from AWS Open Data)
+xarray
+cfgrib
+eccodes
+
+# Event footprint geometry (vectorize MESH swaths → polygons; GeoParquet/GeoJSON)
+geopandas
+shapely
+# (pyproj is pulled in by geopandas — used for equal-area km² via EPSG:5070)
+
+# HTTP + config
+requests
+python-dotenv
+
 # Plotting
 matplotlib
 

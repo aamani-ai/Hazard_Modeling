@@ -1,0 +1,38 @@
+{
+  "layer": "M4_loss_metrics",
+  "peril": "HAIL",
+  "asset": "Hayhurst Texas Solar",
+  "asset_value_usd": 36778400,
+  "engine": "compound-Poisson Monte Carlo, event-level thinning, Negative-Binomial counts (Gamma-Poisson)",
+  "n_sim_years": 300000,
+  "lambda_collection_per_yr": 29.6,
+  "lambda_collection_status": "FITTED on the ~5.65-yr MRMS record (DD-3 Stage 1) \u2014 real, record-limited (not illustrative)",
+  "count_model": "negative_binomial",
+  "fano_factor": 3.37,
+  "lambda_asset_per_yr": 0.2612,
+  "loss_basis": "gross physical only (no financial terms / BI \u2014 \u00a79 deferred)",
+  "metrics_usd": {
+    "EAL": 2086100.91,
+    "VaR95 (AEP-PML20)": 12159203.0,
+    "VaR99 (AEP-PML100)": 19971118.0,
+    "VaR99.6 (AEP-PML250)": 22728264.0,
+    "TVaR99": 23203614.56,
+    "OEP-PML100": 12524882.0
+  },
+  "metrics_pct_of_tiv": {
+    "EAL": 5.7,
+    "VaR95 (AEP-PML20)": 33.1,
+    "VaR99 (AEP-PML100)": 54.3,
+    "VaR99.6 (AEP-PML250)": 61.8,
+    "TVaR99": 63.1,
+    "OEP-PML100": 34.1
+  },
+  "tiv_usd": 36778400,
+  "zero_loss_fraction": 0.7724,
+  "metrics_status": "real but RECORD-LIMITED (~5.65 yr; deep tail needs longer record + EVT \u2014 DD-3 Stage 2)",
+  "known_answer_checks": "pass (EAL\u2248analytic both; Poisson zero\u2248exp(\u2212\u03bb_asset); NegBin zero>Poisson; AEP\u2265OEP)",
+  "provenance": {
+    "plan": "docs/plans/hail/phase-5-loss-metrics.md",
+    "from": "hayhurst_hail_m3_damage.parquet"
+  }
+}

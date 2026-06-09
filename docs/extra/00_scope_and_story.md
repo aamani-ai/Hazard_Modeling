@@ -151,6 +151,7 @@ OASIS fmcalc — "the substrate is runtime, not content.")
 | [`docs/google_drive_docs/`](../google_drive_docs/README.md) | Local `.docx` of the team's shared Drive **InfraSure Hazard** reference set. | The reference docs: terminology, hazard data, risk metrics, loss-distribution methodology. |
 | [`docs/extra/`](.) | This file + reference materials to come. | The "start here" knowledge anchor. |
 | [`model-gpr/`](../../model-gpr) | Sibling **Performance Modeling** repo (Tier 1 of the platform). | Out of scope for now — relevance to be explained later by the owner. |
+| [`renewablesinfo_org/`](../../renewablesinfo_org) | The owner's renewables **data platform** repo. | Two roles: the *how-we-work* **methodology spine** (workflows · design · principles) **and** the **asset reference DB** we pick modeling assets from. See §4f. |
 | [`docs/extra/discussion/`](discussion/) | The owner's saved **GPT design discussions** — adapters, coupling types, damage representation. | A design-thinking record that mirrors the A-series seams (see §4e). |
 
 ### 4a. `hazard_analysis/` — the old repo (autopsy + rethink)
@@ -206,6 +207,37 @@ Saved **GPT discussions** (under `gpt/`) so the thinking isn't lost. They track 
 - [`04_damage_representation_scalar_vector_distribution.md`](discussion/gpt/04_damage_representation_scalar_vector_distribution.md) — damage representation: scalar vs vector vs distribution (≈ A22 / M2→M3).
 
 > _Not yet deep-read/summarized into this map_ — titles + seam-mapping above are from the filenames; a richer pass is flagged in §6.
+
+### 4f. `renewablesinfo_org/` — methodology spine **and** the asset-data source
+The owner's renewables data platform, wearing two hats here:
+
+**(1) How-we-work spine.** Most process artifacts in this repo were adapted from it: `docs/workflows/`
+(the Major-Feature process + per-phase loop → our [`docs/workflows/`](../../docs/workflows/README.md)),
+`docs/design/` (the plan-folder shape → our [`docs/plans/hail/`](../plans/hail/README.md)),
+`docs/principles/` (the documentation *style* → our [`docs/principles/`](../principles/README.md)), plus
+`docs/conventions.md`. `docs/principles/scaling.md` is hard-won solo-with-agents discipline that maps onto
+our *basics-spot-on* principle.
+
+**(2) The asset-data source — the big one for the build.** The asset registry we pick modeling assets from
+lives here. Docs: [`docs/reference/workspace/`](../../renewablesinfo_org/docs/reference/workspace)
+(`architecture.md` · `schema.md` · `governance.md` · a 6.5k-line `decisions.md` · `engineering/`).
+- **DB:** the DEV/demo workspace (Neon, `tenant_workspace_v2`) — single-table multi-tenant + Postgres RLS +
+  sparse EAV override layer. Assets are the **`plants`** (+ **`generators`**) reference tables; public rows
+  have `workspace_id IS NULL` (~15.5k plants / ~30k generators). `modeling_metadata_plant.tech` is the clean
+  classifier (`solar_pv` ≈ 48%).
+- **Pick an asset locally:** [`data/base/asset_master.parquet`](../../renewablesinfo_org/data/base/asset_master.parquet)
+  (30,225 generator rows, **typed** `Latitude`/`Longitude`, `Nameplate Capacity (MW)`,
+  `Technology`/`Energy Source Code`=`SUN`/`Prime Mover`=`PV`, owner) — the easiest source. Web flat index:
+  `web/public/data/plant_index.json`.
+- **Subcomponent moat (later):** the **engineering substrate** (`engineering_subsystem → engineering_component`)
+  decomposes a solar asset into `PV_ARRAY → PV_MODULE` and `MOUNTING → TRACKER`. The hail-fragility drivers
+  are typed, hazard-flagged fields: `glass_thickness_mm`, `tempered_glass` (module); `stow_strategy`,
+  `hail_stow_capable` (tracker).
+
+**Caveats (load-bearing):**
+- It's **DEV-only** and intentionally diverges from prod — don't assume workspace/modeling tables exist on the public site.
+- **HAIL is not in the current `hazard_type` enum** (`wildfire/flood/heat/hurricane/freeze/drought`) — our hail work *extends* it.
+- The hail subcomponent fields above are **typed but unsourced skeletons** today (EIA/USPVDB don't provide glass thickness, tempered-glass, or tracker stow) — they must be assumed, externally sourced, or supplied as workspace input. A v1 hail model leans on what *is* available: mounting type, cell type, bifacial, tilt/azimuth, AC/DC capacity, lat/lon, capacity, owner.
 
 ---
 

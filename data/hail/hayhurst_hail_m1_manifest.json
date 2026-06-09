@@ -1,0 +1,101 @@
+{
+  "catalog_id": "hail_hayhurst_50mi_v1",
+  "peril": "HAIL",
+  "asset": {
+    "name": "Hayhurst Texas Solar",
+    "eia_plant_id": 66880,
+    "lat": 31.815992,
+    "lon": -104.0853
+  },
+  "event_ontology": "SWATH",
+  "historical_backbone": "HYBRID_VALIDATED",
+  "stochastic_method": "NONE",
+  "forward_looking": "NONE",
+  "interface_object": "RASTER_BUNDLE",
+  "magnitude_metric": {
+    "name": "peak_stone_diameter",
+    "units": "in",
+    "from": "MESH_mm / 25.4"
+  },
+  "footprint_geometry": {
+    "present": true,
+    "type": "(Multi)Polygon swath",
+    "crs": "EPSG:4326",
+    "area_crs": "EPSG:5070",
+    "derived_from": "above-threshold MESH cells, unioned",
+    "formats": [
+      "GeoParquet (geometry column)",
+      "GeoJSON export"
+    ]
+  },
+  "spatial_resolution_m": 1000,
+  "temporal_resolution": "daily_24h_max (MESH_Max_1440min)",
+  "climate_baseline": "current (historical, no adjustment)",
+  "coverage_geometry": {
+    "type": "circle",
+    "center_lat": 31.815992,
+    "center_lon": -104.0853,
+    "radius_mi": 50
+  },
+  "coverage_temporal": {
+    "start": "2020-10-15",
+    "end": "2026-06-08",
+    "note": "full MRMS-on-AWS record (~5.6 yr; Stage-1 widening, DD-3)"
+  },
+  "threshold_mm": 25.4,
+  "frequency_process": "negative_binomial",
+  "frequency_process_params": {
+    "status": "fitted (Stage 1 \u2014 full ~5.6-yr MRMS record; DD-3)",
+    "lambda_collection_per_yr": 29.6,
+    "annual_counts": {
+      "2020": 1,
+      "2021": 32,
+      "2022": 23,
+      "2023": 29,
+      "2024": 19,
+      "2025": 45,
+      "2026": 9
+    },
+    "full_years_used": [
+      2021,
+      2022,
+      2023,
+      2024,
+      2025
+    ],
+    "fano_factor": 3.37,
+    "dispersion": "over-dispersed (\u03c6>1) \u2192 Negative Binomial confirmed over Poisson",
+    "negbin_gamma_shape_k": 12.5,
+    "caveat": "n=5 full years \u2014 A24 flags the dispersion test underpowered <10-15yr; decent, not ideal",
+    "prior": {
+      "on": "annual-count Fano \u03c6",
+      "phi_median": 2.0,
+      "phi_90ci": [
+        1.0,
+        3.5
+      ],
+      "basis": "SCS VMR \u2248 1.5\u20133 (A24); still informative at small n"
+    },
+    "next": "NOAA-calibrated extension for a longer record (DD-3 Stage 2)",
+    "ref": "DD-2, DD-3, learning_logs/02"
+  },
+  "sources": {
+    "spine": {
+      "name": "MRMS MESH",
+      "product": "CONUS/MESH_Max_1440min_00.50",
+      "bucket": "s3://noaa-mrms-pds",
+      "role": "event footprints + intensity"
+    },
+    "cross_check": {
+      "name": "NOAA Storm Events",
+      "via": "Hydronos API",
+      "role": "calibration/validation only \u2014 adds no events"
+    }
+  },
+  "provenance": {
+    "decision": "docs/plans/hail/decisions.md (DD-1 spine, DD-3 frequency)",
+    "methodology": "docs/learning_logs/01_extending_a_short_hazard_record.md",
+    "built_utc": "2026-06-09T19:00:36.809137+00:00"
+  },
+  "n_events": 158
+}

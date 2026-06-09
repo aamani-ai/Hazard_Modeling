@@ -1,0 +1,22 @@
+{
+  "layer": "M3_damage",
+  "peril": "HAIL",
+  "asset": "Hayhurst Texas Solar",
+  "asset_value_usd": 36778400,
+  "severity_source": "capex-weighted subsystem blend (infrasure-damage-curves; NOT fitted from loss history)",
+  "curve_id": "hail/solar__asset__capex_weighted",
+  "curve_provenance": "infrasure-damage-curves: PV_MODULE+TRACKER logistic (IBHS/IEC/empirical) \u00d7 NREL capex weights; Asset_DR=\u03a3w\u1d62\u00b7DR\u1d62",
+  "asset_max_dr_cap": 0.344,
+  "subsystem_weights": {
+    "PV_ARRAY": 0.32,
+    "MOUNTING": 0.1
+  },
+  "damage_representation": "scalar mean damage ratio (v1); distribution/vector + duration/BI deferred (A22)",
+  "conditional_loss_rule": "conditional_loss = damage_ratio \u00d7 asset_value (FULL loss on hit; p_i NOT multiplied in \u2014 Phase 5 Bernoulli)",
+  "events": 158,
+  "max_conditional_loss_usd": 12564949.0,
+  "provenance": {
+    "plan": "docs/plans/hail/phase-4-damage.md",
+    "from": "hayhurst_hail_m2_coupled.parquet"
+  }
+}
