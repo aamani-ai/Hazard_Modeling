@@ -3,7 +3,7 @@
 *Turn the raw evidence into one clean, reusable catalog of hail **events** — the object the old repo never
 built. "What are the distinct hail events near the asset, each as a single tidy record?"*
 
-**Where this sits:** [M0 evidence](../m0_input_data/) → **M1 (catalog)** → [M2 coupling](../m2_coupling/) →
+**Where this sits:** [M0 evidence](../m0_input_data/) → **M1 (catalog)** → [M2 coupling](../solar/m2_coupling/) →
 M3 damage → loss & metrics.
 
 ## What this layer does
@@ -55,4 +55,4 @@ A6 one event = one hail-day · A7 MRMS spine + NOAA cross-check (no events added
 Binomial *(fit deferred)* · A9 dispersion prior (Fano φ ≈ 2) · A10 footprint = union of above-threshold cells
 (no smoothing). Full detail + status: [assumptions register A6–A10](../../../docs/plans/hail/assumptions.md#m1--event-catalog).
 
-**Next → [M2 (coupling)](../m2_coupling/):** for each catalog event, does it hit the asset?
+**Next → [M2 (coupling)](../solar/m2_coupling/):** for each catalog event, does it hit the asset?

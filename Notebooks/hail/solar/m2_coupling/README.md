@@ -3,7 +3,7 @@
 *Does each event actually reach **our** asset — and with what probability? The layer that turns a regional
 event catalog into the **asset's own** hazard.*
 
-**Where this sits:** [M0 evidence](../m0_input_data/) → [M1 catalog](../m1_catalog/) → **M2 (coupling)** →
+**Where this sits:** [M0 evidence](../../m0_input_data/) → [M1 catalog](../../m1_catalog/) → **M2 (coupling)** →
 M3 damage → loss & metrics.
 
 ## The plain-English question
@@ -15,9 +15,10 @@ site or misses it. So the whole job of M2 is to compute, per event, a **hit prob
 ## What we did
 
 For every event we computed **`pᵢ` — the probability that event's footprint covers the asset.** Bigger
-footprint → more likely to hit (the region's biggest event: ~5% chance; the smallest: ~0.04%). That is *all*
-M2 produces: a probability per event, plus carrying each event's hail size forward for the damage step.
-Summed over the catalog, the **expected asset-hits ≈ 0.135**.
+footprint → more likely to hit (the region's biggest event: **~9.7%** chance; the smallest: **~0.01%**;
+mean ≈ 0.9%). That is *all* M2 produces: a probability per event, plus carrying each event's hail size
+forward for the damage step. Summed over the 158-event catalog, the **expected asset-hits `Σpᵢ ≈ 1.39`**,
+and the **fitted annual rate `λ_asset = λ_collection · E[p] = 0.26/yr`** (~1 hit every 3.8 yr).
 
 ## Why this way — and not the naive way (two things that matter)
 
@@ -48,8 +49,9 @@ M1 catalog (each event's footprint `F`) → `data/hail/hayhurst_hail_m2_coupled.
 
 ## Deferred (stated, not hidden)
 
-- **Annual rate `λ_asset`** — `Σpᵢ` is over one peak season; the stable yearly rate needs the widened record
-  + the NegBin fit ([DD-2](../../../docs/plans/hail/decisions.md)).
+- **A longer, NOAA-calibrated rate** — `λ_collection` is now **fitted** on the ~5.65-yr MRMS record (so
+  `λ_asset = 0.26/yr` is real but record-limited); the longer, bias-corrected record is the next lever
+  ([DD-3 Stage 2](../../../../docs/plans/hail/decisions.md)).
 - **Exposed fraction** — we assume *full* exposure on a hit, sound here because the farm (~0.5 km²) is tiny
   vs a hail swath (hundreds of km²); it matters for larger assets / line geometry.
 
@@ -61,14 +63,14 @@ M1 catalog (each event's footprint `F`) → `data/hail/hayhurst_hail_m2_coupled.
 
 ## Key
 
-Plan: [phase-3-coupling](../../../docs/plans/hail/phase-3-coupling.md). Matches the methodology doctrine
+Plan: [phase-3-coupling](../../../../docs/plans/hail/phase-3-coupling.md). Matches the methodology doctrine
 (§4 Coupling + §5 Frequency — it prescribes the exact Minkowski form and the Bernoulli-not-multiplier rule).
 
 ## Assumptions (this layer)
 
 A11 areal hit-or-miss, Minkowski `(√F+√s)²/A` · A12 asset footprint `s` ≈ 0.50 km² *(capacity estimate; `s ≪ F`
-so insensitive)* · A13 full exposure on hit · A14 regional rate `λ_collection` *(deferred — record too short)*.
-Full detail + status: [assumptions register A11–A14](../../../docs/plans/hail/assumptions.md#m2--coupling).
+so insensitive)* · A13 full exposure on hit · A14 regional rate `λ_collection` *(**fitted** ≈ 29.6/yr on the ~5.65-yr record → `λ_asset` ≈ 0.26/yr; DD-3 Stage 1)*.
+Full detail + status: [assumptions register A11–A14](../../../../docs/plans/hail/assumptions.md#m2--coupling).
 
 **Next → M3 (damage):** for the events that hit, *how much damage?* — map each event's hail size through a
 PV hail-fragility curve.

@@ -50,7 +50,7 @@ numbers** — those follow the widened record + the NegBin fit. → register A20
 
 ## Inputs → outputs
 
-[M3 damage](../../Notebooks/hail/m3_damage/) (`pᵢ`, `conditional_loss_usd` per event) + `asset_value` +
+[M3 damage](../../Notebooks/hail/solar/m3_damage/) (`pᵢ`, `conditional_loss_usd` per event) + `asset_value` +
 the **fitted** `λ` (A20) → `data/hail/hayhurst_hail_m4_annual_vectors.parquet` (AEP/OEP per simulated year) +
 `…_m4_metrics.json` (EAL, VaR₉₅/₉₉/₉₉.₆, TVaR₉₉, AEP-PML₁₀₀/₂₅₀, OEP-PML₁₀₀, zero-loss fraction, Poisson-vs-NegBin contrast).
 

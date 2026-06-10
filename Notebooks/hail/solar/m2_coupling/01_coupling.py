@@ -33,7 +33,7 @@
 #
 # **A11** areal hit-or-miss, Minkowski `(√F+√s)²/A` · **A12** asset footprint `s` ≈ 0.50 km² *(estimate;
 # `s ≪ F` so insensitive)* · **A13** full exposure on hit · **A14** regional rate `λ_collection` *(**fitted**
-# ~29.6/yr on the ~5.65-yr record — DD-3)*. Full register: [assumptions A11–A14](../../../docs/plans/hail/assumptions.md#m2--coupling).
+# ~29.6/yr on the ~5.65-yr record — DD-3)*. Full register: [assumptions A11–A14](../../../../docs/plans/hail/assumptions.md#m2--coupling).
 
 # %%
 from __future__ import annotations

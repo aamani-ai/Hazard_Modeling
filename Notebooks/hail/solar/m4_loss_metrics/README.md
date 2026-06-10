@@ -3,7 +3,7 @@
 *The finale: turn per-event (probability, cost) into **annual loss vectors**, then read the risk metrics —
 EAL, VaR, PML, TVaR. **The part the old repo actually broke.***
 
-**Where this sits:** [M0 evidence](../m0_input_data/) → [M1 catalog](../m1_catalog/) →
+**Where this sits:** [M0 evidence](../../m0_input_data/) → [M1 catalog](../../m1_catalog/) →
 [M2 coupling](../m2_coupling/) → [M3 damage](../m3_damage/) → **M4 (loss & metrics)**.
 
 ## The plain-English question
@@ -125,7 +125,7 @@ A20 fitted `λ_collection` = 29.6/yr with NegBin Fano φ = 3.37 (a noisy small-n
 *physical* loss only (no deductibles/limits/BI) · A22 MC = 300k years, cap-per-year (on AEP), empirical
 percentiles · A23 deep-tail bootstrap truncation. (The asset value / TIV = $36.78M is **A19**, imported from
 M3 — it scales every $ metric.) Full register:
-[assumptions A20–A23](../../../docs/plans/hail/assumptions.md#m4--loss--metrics).
+[assumptions A20–A23](../../../../docs/plans/hail/assumptions.md#m4--loss--metrics).
 
 ## Notebooks
 
@@ -135,7 +135,7 @@ M3 — it scales every $ metric.) Full register:
 
 ## Key
 
-Plan: [phase-5-loss-metrics](../../../docs/plans/hail/phase-5-loss-metrics.md). Matches methodology §8
+Plan: [phase-5-loss-metrics](../../../../docs/plans/hail/phase-5-loss-metrics.md). Matches methodology §8
 (MC engine) / §10 (tail). **This closes the M0→M4 hail skeleton.**
 
 **Production path from here:** NOAA-calibrated `λ` extension · calibrate the damage curve to PV claims · add

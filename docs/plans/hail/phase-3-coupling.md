@@ -39,7 +39,7 @@ known answers (s→0 recovers F/A; F,s→ touching cases).
   Note `s ≪ F` for hail, so the result is insensitive to `s` here (it matters more for larger assets / smaller
   footprints / other perils).
 
-## Build steps (the notebook → `m2_coupling/01_coupling.ipynb`)
+## Build steps (the notebook → `solar/m2_coupling/01_coupling.ipynb`)
 
 1. Load the M1 catalog; set `A` (region) and `s` (asset, stated assumption).
 2. Compute **`pᵢ` (Minkowski)** per event; tabulate.

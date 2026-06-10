@@ -38,7 +38,7 @@
 # gross **physical** loss only (no deductibles / limits / BI yet — methodology §9) · **A22** MC = 300k
 # simulated years, current-climate, historical-only; cap per simulated year. Metrics are also shown as
 # **% of TIV** — Total Insured Value = the asset value (**A19**, $36.78M from the asset registry; valuation
-# *basis* unconfirmed). Full register: [assumptions A19–A22](../../../docs/plans/hail/assumptions.md#m4--loss--metrics).
+# *basis* unconfirmed). Full register: [assumptions A19–A22](../../../../docs/plans/hail/assumptions.md#m4--loss--metrics).
 
 # %%
 from __future__ import annotations

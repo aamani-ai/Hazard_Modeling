@@ -37,7 +37,7 @@
 # TRACKER L=0.40 × NREL capex weights → asset caps ~34%) · **A16** logistic **saturates** (no extrapolation —
 # retired) · **A17** scalar mean damage *(no conditional distribution — deferred)* · **A18** duration/BI
 # folded in · **A19** asset value = $36.78M. Full register:
-# [assumptions A15–A19](../../../docs/plans/hail/assumptions.md#m3--severity--damage).
+# [assumptions A15–A19](../../../../docs/plans/hail/assumptions.md#m3--severity--damage).
 
 # %%
 from __future__ import annotations

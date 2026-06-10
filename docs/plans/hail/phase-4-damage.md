@@ -32,7 +32,7 @@ damage ratio and leaves revenue loss aside, exactly as the methodology worked ex
 
 ## Inputs → outputs
 
-[M2 coupled events](../../Notebooks/hail/m2_coupling/) (each event's `peak_intensity_mm/in` + `pᵢ`) +
+[M2 coupled events](../../Notebooks/hail/solar/m2_coupling/) (each event's `peak_intensity_mm/in` + `pᵢ`) +
 `asset_value_usd` ($36,778,400) → `data/hail/hayhurst_hail_m3_damage.parquet` (each event +
 `damage_ratio` + `conditional_loss_usd` (= ratio × value, the *full* loss on a hit) + carried `pᵢ`) +
 `…_m3_summary.json`.

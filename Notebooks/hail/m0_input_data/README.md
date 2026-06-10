@@ -3,7 +3,7 @@
 *The first layer: meet the raw hail data and **understand** it, before any modeling. "What hail actually
 happened near the asset, and what do we really know about it?"*
 
-**Where this sits:** **M0 (evidence)** → [M1 catalog](../m1_catalog/) → [M2 coupling](../m2_coupling/) → M3
+**Where this sits:** **M0 (evidence)** → [M1 catalog](../m1_catalog/) → [M2 coupling](../solar/m2_coupling/) → M3
 damage → loss & metrics. M0 has **no losses and no events-as-objects yet** — it is just the *evidence*, each
 source explored on its own terms. Method-neutral (understanding, not the model).
 
