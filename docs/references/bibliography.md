@@ -10,20 +10,23 @@ Short-keys (e.g. `[Klugman et al. 2012]`) are used in the provenance map ([`READ
 Entries are grouped by theme; **(deferred)** marks sources that ground the *roadmap*, not what's built today.
 
 > **Citation integrity:** every entry below was transcribed from the research-repo reference packs, not
-> generated. Where we couldn't confirm a precise identifier we name the dataset/standard and its issuing
-> body rather than invent a DOI.
+> generated. **DOI hygiene:** for *books* the stable id is the ISBN/publisher; where a DOI points to a
+> *review or catalog record* (not the work itself) it is labelled as such — a DOI is cited as *the source*
+> only when it identifies that exact work. Where we couldn't confirm a precise identifier we name the
+> dataset/standard and its issuing body rather than invent one.
 
 ---
 
 ## 1 · Frequency & count distributions
 
 - **[Klugman et al. 2012]** — Klugman, S. A., Panjer, H. H., & Willmot, G. E. (2012).
-  *Loss Models: From Data to Decisions* (4th ed.). Wiley. ISBN 978-1-118-31532-3 · DOI
-  [10.2307/2669713](https://doi.org/10.2307/2669713).
+  *Loss Models: From Data to Decisions* (4th ed.). Wiley. **ISBN 978-1-118-31532-3** (the book's stable id).
+  *(The [10.2307/2669713](https://doi.org/10.2307/2669713) DOI is a JSTOR citation record, not the book itself.)*
   *Grounds:* the compound-Poisson frequency–severity backbone; when `Var(N) > E[N]` (over-dispersion) the
   Negative Binomial (Poisson–Gamma mixture) is the standard alternative — our M1/M4 frequency choice.
-- **[Embrechts et al. 1997]** — *Modelling Extremal Events for Insurance and Finance*.
-  Springer (Applications of Mathematics 33). DOI [10.2143/AST.28.2.519071](https://doi.org/10.2143/AST.28.2.519071).
+- **[Embrechts et al. 1997]** — Embrechts, P., Klüppelberg, C., & Mikosch, T. (1997). *Modelling Extremal
+  Events for Insurance and Finance*. Springer (Applications of Mathematics 33).
+  *([10.2143/AST.28.2.519071](https://doi.org/10.2143/AST.28.2.519071) is an ASTIN Bulletin **review** record — it identifies a review, not the Springer book.)*
   *Grounds:* compound-Poisson uniqueness + the NegBin-as-Poisson-mixture bridge (and EVT, §5 below).
 - **[Allen & Tippett 2015]** — Allen, J. T., & Tippett, M. K. (2015). The characteristics of United States
   hail reports: 1955–2014. *Electronic J. of Severe Storms Meteorology*, 10(3). DOI
@@ -33,8 +36,9 @@ Entries are grouped by theme; **(deferred)** marks sources that ground the *road
 - **[Hussain et al. 2025]** — Hussain, T., Villamor, E., Shakil, M., Ahsanullah, M., & Kibria, B. M. G.
   (2025). On a Beta-Gamma Discrete Distribution for Thunderstorm Count Modeling with Risk Analysis.
   *Mathematics*, 13(24), 3913. DOI [10.3390/math13243913](https://doi.org/10.3390/math13243913).
-  *Grounds:* direct empirical rejection of Poisson for thunderstorm counts in favour of over-dispersed
-  models — the published evidence behind NegBin for SCS frequency (our A8/DD-2).
+  *Grounds:* empirical over-dispersion in **thunderstorm** counts (Poisson rejected) — supporting evidence
+  that convective-storm counts are over-dispersed, hence the NegBin choice (our A8/DD-2). *(Thunderstorm-count
+  evidence, not a hail-specific NegBin proof.)*
 - **[Miralles et al. 2023]** — Bayesian modeling of insurance claims for hail damage.
   arXiv:2308.04926. DOI [10.48550/arXiv.2308.04926](https://doi.org/10.48550/arXiv.2308.04926).
   *Grounds:* over-dispersion in hail *claim* counts; also the swath-geometry link (§3) and the
@@ -54,8 +58,9 @@ Entries are grouped by theme; **(deferred)** marks sources that ground the *road
 
 ## 2 · Coupling & exposure geometry
 
-- **[Stoyan et al. 1995]** — *Stochastic Geometry and Its Applications* (2nd ed.). Wiley.
-  ISBN 978-0-471-95099-0 · DOI [10.2307/2531521](https://doi.org/10.2307/2531521).
+- **[Stoyan et al. 1995]** — Stoyan, D., Kendall, W. S., & Mecke, J. (1995). *Stochastic Geometry and Its
+  Applications* (2nd ed.). Wiley. **ISBN 978-0-471-95099-0** (the book's stable id).
+  *(The [10.2307/2531521](https://doi.org/10.2307/2531521) DOI is a JSTOR **review** record.)*
   *Grounds:* the Minkowski-sum / Boolean-model framework for the probability a random footprint intersects a
   fixed target — the stochastic-geometry basis for our M2 hit probability `p = (√F + √s)²/A` (A21 derives the
   specific convex-shape form). 3rd ed.: Chiu et al. (2013).
@@ -143,8 +148,8 @@ Entries are grouped by theme; **(deferred)** marks sources that ground the *road
   stop-loss `E[(X−d)₊]`, i.e. why financial terms don't commute with expectation (§6).
 
 *EVT tail — **(deferred)**, grounds the A23 deep-tail upgrade:*
-- **[Coles 2001]** — *An Introduction to Statistical Modeling of Extreme Values*. Springer. DOI
-  [10.1198/jasa.2002.s232](https://doi.org/10.1198/jasa.2002.s232). POT/GPD end-to-end; MRL & parameter-
+- **[Coles 2001]** — Coles, S. (2001). *An Introduction to Statistical Modeling of Extreme Values*.
+  Springer. *([10.1198/jasa.2002.s232](https://doi.org/10.1198/jasa.2002.s232) is a JASA **review** record.)* POT/GPD end-to-end; MRL & parameter-
   stability threshold selection; small-n MLE bias (relevant to our n=5 φ caveat, A24).
 - **[Davison & Smith 1990]** — Models for Exceedances over High Thresholds. *JRSS-B*, 52(3), 393–442.
   [JSTOR](https://www.jstor.org/stable/2345667). The parameter-stability plot for GPD threshold selection.

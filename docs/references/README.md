@@ -40,7 +40,7 @@ docs are the **A-series** (architecture) — indexed at the bottom.
 | MRMS MESH (gridded radar hail) as the footprint source | `[Wendt & Jirak 2021]`; MRMS/NSSL | [A20](https://github.com/D-ivyy/infrasure-hazard-competitive-research/blob/main/learnings/architecture/A20_m0_m1_hazard_catalog.md) · A4/A5 · [learning_logs/03](../learning_logs/03_meet_complex_raw_data_from_scratch.md) | built |
 | NOAA SPC/NCEI point reports as cross-check | SPC/NCEI Storm Events; `[Allen & Tippett 2015]` | A20 · DD-1 | built |
 | Severe-hail threshold 25.4 mm (1″) | NWS definition; `[Allen & Tippett 2015]` (2010 redefinition) | A2 | built |
-| MESH over-forecast caveat (~FAR) | `[Wendt & Jirak 2021]` (MESH vs SPC undercount) | A5 · [learning_logs/01](../learning_logs/01_extending_a_short_hazard_record.md) | documented |
+| MESH-vs-report differences / radar-proxy caveat | `[Wendt & Jirak 2021]` (MESH–SPC differences; low-population value) — the over-forecast / FAR specifically traces to **Witt 1998** (our A5) | A5 · [learning_logs/01](../learning_logs/01_extending_a_short_hazard_record.md) | documented |
 
 ### M1 — event catalog + frequency
 
@@ -56,7 +56,7 @@ docs are the **A-series** (architecture) — indexed at the bottom.
 
 | What we do | Grounded in (external) | Derived in (research repo + ours) | Status |
 |---|---|---|---|
-| Areal hit-or-miss; Minkowski `p = (√F + √s)²/A` | `[Stoyan et al. 1995]` (stochastic geometry / Minkowski sum) | [A21 §2](https://github.com/D-ivyy/infrasure-hazard-competitive-research/blob/main/learnings/architecture/A21_m1_m2_coupling_types.md) · A11 | built |
+| Areal hit-or-miss; Minkowski `p = (√F + √s)²/A` | `[Stoyan et al. 1995]` — stochastic-geometry / Minkowski-sum *basis*; the specific `(√F+√s)²/A` convex-shape form is **derived in A21**, not quoted from Stoyan | [A21 §2](https://github.com/D-ivyy/infrasure-hazard-competitive-research/blob/main/learnings/architecture/A21_m1_m2_coupling_types.md) · A11 | built |
 | Fixing the old repo's single-centroid `F/A` under-count | **the single-centroid triplet**: `[Thompson 2024 / kWh]` (+300%), `[Sabbatelli & Goodyer 2025 / Moody's]` (+230%), `[Rudaviciute 2022 / Moody's]` (−41/+83%) | [learning #19](https://github.com/D-ivyy/infrasure-hazard-competitive-research/blob/main/learnings/19_canonical-citation-triplet-for-single-centroid-error.md) · A21 | built |
 | Coupling type is set by (peril × exposure geometry) — areal / field / site-conditioned | `[OASIS LMF Keys 2024]`; `[Neuberger Berman 2025]` (geometry as first-order) | A21 · [`hazard_asset_specificity.md`](../principles/hazard_asset_specificity.md) | built (areal); defined (field/site) |
 | λ_asset = λ_collection · E[p] (A cancels) | `[Stoyan et al. 1995]` | A14 · A21 | built |
