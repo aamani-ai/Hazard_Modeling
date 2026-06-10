@@ -40,7 +40,7 @@ docs are the **A-series** (architecture) — indexed at the bottom.
 | MRMS MESH (gridded radar hail) as the footprint source | `[Wendt & Jirak 2021]`; MRMS/NSSL | [A20](https://github.com/D-ivyy/infrasure-hazard-competitive-research/blob/main/learnings/architecture/A20_m0_m1_hazard_catalog.md) · A4/A5 · [learning_logs/03](../learning_logs/03_meet_complex_raw_data_from_scratch.md) | built |
 | NOAA SPC/NCEI point reports as cross-check | SPC/NCEI Storm Events; `[Allen & Tippett 2015]` | A20 · DD-1 | built |
 | Severe-hail threshold 25.4 mm (1″) | NWS definition; `[Allen & Tippett 2015]` (2010 redefinition) | A2 | built |
-| MESH-vs-report differences / radar-proxy caveat | `[Wendt & Jirak 2021]` (MESH–SPC differences; low-population value) — the over-forecast / FAR specifically traces to **Witt 1998** (our A5) | A5 · [learning_logs/01](../learning_logs/01_extending_a_short_hazard_record.md) | documented |
+| MESH-vs-report caveat (radar proxy differs from human reports, esp. low-population regions) | `[Wendt & Jirak 2021]` (MESH–Storm Data report differences) — any MESH over-forecast / FAR framing traces to **Witt 1998** (our A5), not W&J | A5 · [learning_logs/01](../learning_logs/01_extending_a_short_hazard_record.md) | documented |
 
 ### M1 — event catalog + frequency
 
@@ -50,7 +50,7 @@ docs are the **A-series** (architecture) — indexed at the bottom.
 | MRMS spine + NOAA cross-check (homogeneity > length; no naive splice) | — (our synthesis) | DD-1/DD-3 · [learning_logs/01](../learning_logs/01_extending_a_short_hazard_record.md), [/04](../learning_logs/04_two_datasets_one_peril_decompose.md) | built |
 | **Frequency = Negative Binomial** (over-dispersed; Gamma-Poisson) | `[Klugman et al. 2012]`; `[Hussain et al. 2025]`; `[Allen & Tippett 2015]`; `[Miralles et al. 2023]` | [A24 §1](https://github.com/D-ivyy/infrasure-hazard-competitive-research/blob/main/learnings/architecture/A24_distribution_choices.md) · A8/A9/A20 · [learning_logs/02](../learning_logs/02_count_distribution_and_dispersion_prior.md) | built |
 | Dispersion test underpowered at small n (φ on 5 yr; prior at n<10–15) | `[Coles 2001]` §2.6; `[Das & Ghosh 2013]`; `[Hosking 1990]` | A24 · A9/A24 (register) | documented |
-| Climate-conditioned / regime-switching λ(t) | `[Lepore et al. 2021]`; `[Brooks/Taszarek et al. 2020]`; `[Goldenberg et al. 2001]` | A24 §1.3–1.4 | (deferred) |
+| Climate-conditioned / regime-switching λ(t) | `[Lepore et al. 2021]`; `[Taszarek et al. 2020]`; `[Goldenberg et al. 2001]` | A24 §1.3–1.4 | (deferred) |
 
 ### M2 — coupling (does the event reach the asset?)
 

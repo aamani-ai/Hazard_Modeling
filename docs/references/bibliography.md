@@ -36,9 +36,9 @@ Entries are grouped by theme; **(deferred)** marks sources that ground the *road
 - **[Hussain et al. 2025]** — Hussain, T., Villamor, E., Shakil, M., Ahsanullah, M., & Kibria, B. M. G.
   (2025). On a Beta-Gamma Discrete Distribution for Thunderstorm Count Modeling with Risk Analysis.
   *Mathematics*, 13(24), 3913. DOI [10.3390/math13243913](https://doi.org/10.3390/math13243913).
-  *Grounds:* empirical over-dispersion in **thunderstorm** counts (Poisson rejected) — supporting evidence
-  that convective-storm counts are over-dispersed, hence the NegBin choice (our A8/DD-2). *(Thunderstorm-count
-  evidence, not a hail-specific NegBin proof.)*
+  *Grounds:* supports **over-dispersed convective-storm count modeling** (Poisson rejected for thunderstorm
+  counts). Negative Binomial is then a *standard practical choice* for over-dispersed counts ([Klugman et al.
+  2012]) — Hussain motivates the over-dispersion, it is not a hail-specific NegBin proof (our A8/DD-2).
 - **[Miralles et al. 2023]** — Bayesian modeling of insurance claims for hail damage.
   arXiv:2308.04926. DOI [10.48550/arXiv.2308.04926](https://doi.org/10.48550/arXiv.2308.04926).
   *Grounds:* over-dispersion in hail *claim* counts; also the swath-geometry link (§3) and the
@@ -47,8 +47,9 @@ Entries are grouped by theme; **(deferred)** marks sources that ground the *road
 *Climate-conditioned / regime-switching λ — **(deferred)**, grounds the non-stationary-frequency roadmap:*
 - **[Lepore et al. 2021]** — Future Global Convective Environments in CMIP6 Models.
   *Earth's Future*, 9(11). DOI [10.1029/2021EF002277](https://doi.org/10.1029/2021EF002277).
-- **[Brooks/Taszarek et al. 2020]** — Severe Convective Storms across Europe and the United States. Part I:
-  Climatology. *J. Climate*, 33(23). DOI [10.1175/JCLI-D-20-0345.1](https://doi.org/10.1175/JCLI-D-20-0345.1).
+- **[Taszarek et al. 2020]** — Taszarek, M., Allen, J. T., Groenemeijer, P., Edwards, R., Brooks, H. E., et al.
+  (2020). Severe Convective Storms across Europe and the United States. Part I: Climatology of Lightning, Large
+  Hail, Severe Wind, and Tornadoes. *J. Climate*, 33(23), 10239–10261. DOI [10.1175/JCLI-D-20-0345.1](https://doi.org/10.1175/JCLI-D-20-0345.1).
 - **[Goldenberg et al. 2001]** — The Recent Increase in Atlantic Hurricane Activity. *Science*, 293(5529),
   474–479. DOI [10.1126/science.1060040](https://doi.org/10.1126/science.1060040). *(AMO regime-switching λ.)*
 - **[Lepore & Tippett 2021]** — ENSO-Based Predictability of a Regional Severe Thunderstorm Index.
@@ -64,8 +65,9 @@ Entries are grouped by theme; **(deferred)** marks sources that ground the *road
   *Grounds:* the Minkowski-sum / Boolean-model framework for the probability a random footprint intersects a
   fixed target — the stochastic-geometry basis for our M2 hit probability `p = (√F + √s)²/A` (A21 derives the
   specific convex-shape form). 3rd ed.: Chiu et al. (2013).
-- **The single-centroid under-count triplet** *(the empirical case that point-exposure `F/A` is wrong for
-  utility-scale renewables — the bug our M2 fixes):*
+- **The single-centroid under-count triplet** — **industry / vendor-published figures** (cited as industry
+  evidence, not peer-reviewed results) *that point-exposure `F/A` is wrong for utility-scale renewables — the
+  bug our M2 fixes:*
   - **[Thompson 2024 / kWh]** — Thompson, *Modeling Solar Hail Risk: From Industry Catalog to
     Catastrophe-Level Accuracy*, 2024 Solar Risk Assessment.
     [PDF](https://kwhanalytics.com/wp-content/uploads/2025/02/Solar-Risk-Assessment-2024-1.pdf). Industry
@@ -81,8 +83,9 @@ Entries are grouped by theme; **(deferred)** marks sources that ground the *road
     A single structure-condition modifier swings wind-farm AAL **−41% to +83%** — engineering features
     dominate modeled loss.
 - **[OASIS LMF Keys 2024]** — Oasis LMF Documentation.
-  [link](https://oasislmf.github.io/sections/keys-service.html). *Grounds:* `area_peril_id` separates
-  hazard-cell-hit from vulnerability; documents the single-centroid approximation for polygon/extended risks.
+  [link](https://oasislmf.github.io/sections/keys-service.html). *Grounds:* `area_peril_id` maps exposures to
+  hazard cells (separating hazard-cell-hit from vulnerability). The geometry/disaggregation limitation of
+  collapsing a polygon to one centroid is treated in OASIS's disaggregation / model-methodology docs — not Keys alone.
 - **[Neuberger Berman 2025]** — *Catastrophe Modeling 101*.
   [PDF](https://www.nb.com/handlers/documents.ashx?id=55b7bbdd-7ae0-4540-8e9d-32f78a34ce99). *Grounds:*
   geocoding resolution alone produces ~3× loss differences — geometry is a first-order uncertainty (also §6).
@@ -94,7 +97,7 @@ Entries are grouped by theme; **(deferred)** marks sources that ground the *road
   *Grounds:* radar reflectivity ≥55 dBZ ≈ the ground damage swath; larger stones ↔ larger/longer footprint —
   the basis for treating the MESH footprint as the damage footprint (our M1/M3).
 - **[Wendt & Jirak 2021]** — An Hourly Climatology of Operational MRMS MESH-Diagnosed Severe and Significant
-  Hail. *Weather and Forecasting*, 36(2), 461–478. DOI
+  Hail **with Comparisons to Storm Data Hail Reports**. *Weather and Forecasting*, 36(2), 645–659. DOI
   [10.1175/WAF-D-20-0158.1](https://doi.org/10.1175/WAF-D-20-0158.1). *Grounds:* the MRMS MESH product we use
   for M0/M1; documents MESH-vs-SPC undercount in low-population areas (our A5 MESH-bias caveat).
 
@@ -108,6 +111,7 @@ Entries are grouped by theme; **(deferred)** marks sources that ground the *road
   [10.1016/S0141-0296(03)00060-9](https://doi.org/10.1016/S0141-0296(03)00060-9). *Grounds:* the
   fragility→vulnerability integration; upper-damage-state data scarcity (why we cap, not extrapolate).
 - **[HAZUS / FEMA 2022]** — *Hazus Earthquake / Flood / Hurricane Technical Manuals* (v5.1). FEMA.
+  [Official manuals](https://www.fema.gov/flood-maps/products-tools/hazus/user-technical-manuals).
   *Grounds:* the de-facto US fragility-parameter reference (lognormal CDF damage states); the benchmark
   vendor curves calibrate against.
 - **[Cornell et al. 2002]** — Probabilistic Basis for 2000 SAC/FEMA Steel Moment Frame Guidelines. *J. Struct.
@@ -155,7 +159,8 @@ Entries are grouped by theme; **(deferred)** marks sources that ground the *road
   [JSTOR](https://www.jstor.org/stable/2345667). The parameter-stability plot for GPD threshold selection.
 - **[McNeil 1997]** — Estimating the Tails of Loss Severity Distributions Using EVT. *ASTIN Bulletin*, 27(1),
   117–137. DOI [10.2143/AST.27.1.563210](https://doi.org/10.2143/AST.27.1.563210). EVT VaR can differ 2–3×
-  from lognormal in the tail; needs ≥50–100 exceedances (why our bootstrap tail is truncated, A23).
+  from lognormal in the tail; stable GPD tail fits want a practitioner rule-of-thumb of ~50–100 exceedances
+  (EVT literature incl. McNeil §3; cf. our A24) — why our bootstrap tail is truncated (A23).
 
 ## 6 · Financial terms — **(deferred, methodology §9)**
 
