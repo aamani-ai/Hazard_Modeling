@@ -33,6 +33,7 @@ Grouped by layer (M0 → M3); newest layer last.
 | A7 | **MRMS = spine, NOAA = cross-check** (adds no events) | footprints must cross the seam; record homogeneity | decided → [DD-1](decisions.md) | calibrated splice for a long record |
 | A8 | **Frequency = Negative Binomial** (Poisson nested) | SCS over-dispersion **CONFIRMED**: φ≈3.4 on the ~5.65-yr record (A24/DD-2) | **fitted** (DD-3 Stage 1) | longer record → fit at higher n (only 5 full years so far) |
 | A9 | **Dispersion prior: Fano φ median ≈ 2, 90% [1, 3.5]** | SCS VMR ≈ 1.5–3; weakly-informative | assumed (prior) | data-overridable as the record grows |
+| A24 | **Dispersion test is underpowered at small n** — φ fitted on **5 full years**; a stable Fano/NegBin fit wants ~10–15 yr | count-dispersion sampling theory: at n=5 the φ point estimate is noisy (90% band ~[1, 3.5], A9) — *decent, not ideal*. Referenced by A8/A20 and the M1 manifest. | assumed (documented) | re-fit φ at higher n; shrink toward the prior φ≈2 meanwhile (DD-2) |
 | A10 | **Footprint = union of above-threshold cells** (speckled MultiPolygon; no smoothing) | faithful to the raw cells | assumed (simplification) | dilation / morphological-close (H10) |
 
 ## M2 — coupling

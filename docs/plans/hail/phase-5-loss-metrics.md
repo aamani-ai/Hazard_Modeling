@@ -31,6 +31,11 @@ for each of N simulated years:
 
 ## Illustrative λ (the one assumption we must state loudly)
 
+> **✅ Superseded (DD-3 Stage 1).** `λ` is now **fitted** on the widened ~5.65-yr MRMS record —
+> `λ_collection = 29.6/yr`, NegBin `φ = 3.37` (→ register A20; small-n caveat A24). The illustrative-λ plan
+> below was the v1 placeholder *before* the record was widened; it's kept here for planning history. The
+> headline metrics are now **real (record-limited)**, not illustrative.
+
 The MC needs a `λ`. We have no fitted one (DD-2 — record too short). So we use an **illustrative**
 `λ_collection ≈ 20/yr` (rough peak-season annualization — *placeholder, not a fit*) and a **sensitivity sweep**
 (`{10, 20, 40}`). **The resulting dollar metrics demonstrate the pipeline; they are NOT Hayhurst's real risk
@@ -46,12 +51,12 @@ numbers** — those follow the widened record + the NegBin fit. → register A20
 ## Inputs → outputs
 
 [M3 damage](../../Notebooks/hail/m3_damage/) (`pᵢ`, `conditional_loss_usd` per event) + `asset_value` +
-illustrative `λ` → `data/hail/hayhurst_hail_m4_annual_vectors.parquet` (AEP/OEP per simulated year) +
-`…_m4_metrics.json` (EAL, VaR₉₅/₉₉/₉₉.₆, TVaR₉₉, AEP-PML₁₀₀/₂₅₀, OEP-PML₁₀₀, zero-loss fraction, the λ sweep).
+the **fitted** `λ` (A20) → `data/hail/hayhurst_hail_m4_annual_vectors.parquet` (AEP/OEP per simulated year) +
+`…_m4_metrics.json` (EAL, VaR₉₅/₉₉/₉₉.₆, TVaR₉₉, AEP-PML₁₀₀/₂₅₀, OEP-PML₁₀₀, zero-loss fraction, Poisson-vs-NegBin contrast).
 
 ## Deferred / out of scope
 
-- **Real `λ`** (the fit) — widen the record (DD-2). The headline metrics stay illustrative until then.
+- ~~**Real `λ`** (the fit) — widen the record (DD-2).~~ **✅ Done (DD-3 Stage 1):** record widened, `λ` fitted (29.6/yr, NegBin φ=3.37, A20) — headline metrics are now real (record-limited).
 - **Financial terms** (deductibles, limits, BI) — v1 reports **gross physical loss** only (methodology §9). → A21.
 - **Conditional severity *distribution*** — we bootstrap the scalar per-event losses (some spread across the
   11 events), not a within-size damage distribution (A17); the richer severity model is the tail upgrade.

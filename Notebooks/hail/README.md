@@ -5,6 +5,203 @@ The executed, step-by-step end-to-end workflow for **hail**. Driven by the plan 
 [`../../docs/workflows/feature_workflow.md`](../../docs/workflows/feature_workflow.md). Datasets are saved
 under [`../../data/hail/`](../../data/hail). Kernel: `.venv` (`hazard_modeling`).
 
+## Pipeline at a glance — ASCII maps
+
+### 1. The big picture (M0 → M4)
+
+```text
+                        RAW WORLD                                   MODEL WORLD
+ ┌──────────────────────────────────────────────┐    ┌─────────────────────────────────────┐
+ │                                              │    │                                     │
+ │   NOAA Storm Events          MRMS MESH       │    │   Asset: Hayhurst Texas Solar       │
+ │   (point reports,            (gridded radar, │    │   EIA 66880 · TIV $36.78M           │
+ │    1996→2024)                 2020→2026)     │    │   footprint s, region A             │
+ │        │                         │           │    │                                     │
+ └────────┼─────────────────────────┼───────────┘    └──────────────────┬──────────────────┘
+          │                         │                                   │
+          ▼                         ▼                                   │
+ ┌─────────────────────────────────────────────┐                        │
+ │  M0  INPUT DATA   "what hit the region?"    │                        │
+ │  one interface, two sources                 │                        │
+ │  · 373 NOAA reports (cross-check)           │                        │
+ │  · 158 MRMS hail-days / 5.65 yr (spine)     │                        │
+ └──────────────────────┬──────────────────────┘                        │
+                        ▼                                               │
+ ┌─────────────────────────────────────────────┐                        │
+ │  M1  EVENT CATALOG   "canonical events"     │                        │
+ │  hail-day → Event w/ footprint polygon F    │                        │
+ │  + frequency fit:  NegBin                   │                        │
+ │    λ_collection = 29.6/yr   φ = 3.37        │                        │
+ └──────────────────────┬──────────────────────┘                        │
+                        ▼                                               ▼
+ ┌─────────────────────────────────────────────────────────────────────────┐
+ │  M2  COUPLING   "does an event hit THIS asset?"                         │
+ │  per-event Minkowski hit probability:  p = (√F + √s)² / A               │
+ │  λ_asset = λ_collection · E[p] = 0.26/yr   (~1 hit every 3.8 yr)        │
+ └──────────────────────┬──────────────────────────────────────────────────┘
+                        ▼
+ ┌─────────────────────────────────────────────┐   ┌────────────────────────┐
+ │  M3  DAMAGE   "if hit, how bad?"            │◄──│ infrasure-damage-curves│
+ │  capex-weighted subsystem blend             │   │ PV_MODULE  L=0.95      │
+ │  hail size → damage ratio (DR)              │   │ TRACKER    L=0.40      │
+ │  asset DR caps at ~34% of TIV               │   │ rest: hail-immune      │
+ └──────────────────────┬──────────────────────┘   └────────────────────────┘
+                        ▼
+ ┌─────────────────────────────────────────────┐
+ │  M4  LOSS & METRICS   "annual loss dist"    │
+ │  compound-Poisson Monte Carlo               │
+ │  (NegBin counts × per-event thinning)       │
+ │  → AEP / OEP per-year vectors               │
+ │  → EAL 5.7% · PML₁₀₀ 54% · PML₂₅₀ 62%       │
+ └─────────────────────────────────────────────┘
+```
+
+### 2. The conceptual chain (one line)
+
+```text
+ evidence ──► events ──► hits ──► damage ──► dollars
+   (M0)        (M1)      (M2)      (M3)       (M4)
+
+ "what       "discrete   "does it  "if hit,   "what does a year
+  happened    things      reach     how much   of this cost, and
+  out there"  with rate   my site"  breaks"    how bad is a bad year"
+              λ and
+              footprint"
+```
+
+### 3. The math spine (how λ and severity combine)
+
+```text
+              FREQUENCY                          SEVERITY
+ ┌────────────────────────────┐      ┌────────────────────────────────┐
+ │ N_regional ~ NegBin        │      │ per event i:                   │
+ │   mean λ_coll = 29.6/yr    │      │   hail size MESH_i             │
+ │   Fano φ = 3.37            │      │        │ damage curve          │
+ │        │ thinning by p_i   │      │        ▼                       │
+ │        ▼                   │      │   DR_i ∈ [0, ~0.34]            │
+ │ N_hits: λ_asset = 0.26/yr  │      │   loss_i = DR_i × TIV          │
+ └─────────────┬──────────────┘      └───────────────┬────────────────┘
+               │                                     │
+               └───────────────┬─────────────────────┘
+                               ▼
+              ┌──────────────────────────────────┐
+              │  Monte Carlo year y:             │
+              │   draw N events, thin by p,      │
+              │   draw losses, cap at TIV        │
+              │                                  │
+              │   AEP_y = Σ losses  (aggregate)  │
+              │   OEP_y = max loss  (occurrence) │
+              └────────────────┬─────────────────┘
+                               ▼
+              ┌──────────────────────────────────┐
+              │  EAL  = mean(AEP)        = 5.7%  │
+              │  PML_T = quantile 1−1/T          │
+              │   PML₁₀₀(AEP) = 54%  ·  VaR/TVaR │
+              │  ~77% of years: zero loss        │
+              └──────────────────────────────────┘
+```
+
+### 4. The data-source decision (DD-1/DD-3 — why two sources don't merge)
+
+```text
+        NOAA (long, biased, points)        MRMS (short, clean, footprints)
+                 │                                   │
+                 │     ✗ naive splice                │
+                 │       (rate jump at seam)         │
+                 │                                   │
+                 ▼                                   ▼
+        ┌─────────────────┐               ┌─────────────────────┐
+        │ cross-check /   │               │ THE SPINE:          │
+        │ calibration     │──validates──► │ events, footprints, │
+        │ (adds 0 events) │               │ λ_collection, p     │
+        └─────────────────┘               └─────────────────────┘
+                 │
+                 └─► later (Stage 2): bias-correct MESH FAR → extend λ record
+```
+
+### 5. Artifact lineage (each layer reads only the previous layer's parquet)
+
+```text
+ Hydronos API          AWS Open Data (MRMS GRIB tiles)
+      │                        │
+      ▼                        ▼ (scripts/scan_mrms_record.py — cache-first, resumable)
+ …_m0_noaa_50mi.parquet   …_m0_mrms_202010_202606.parquet      data/hail/mrms_raw/ (~905 MB, gitignored)
+      │  (cross-check)         │  (spine)
+      └──────────┬─────────────┘
+                 ▼  m1_catalog/01_event_catalog
+ …_m1_catalog.parquet (GeoParquet) + …_catalog.geojson + …_m1_manifest.json
+                 │
+                 ▼  m2_coupling/01_coupling
+ …_m2_coupled.parquet + …_m2_summary.json
+                 │
+                 ▼  m3_damage/01_damage          ◄── data/hail/damage_curves/
+ …_m3_damage.parquet + …_m3_summary.json             hail_solar_asset_capex_weighted.json
+                 │
+                 ▼  m4_loss_metrics/01_loss_metrics
+ …_m4_annual_vectors.parquet + …_m4_metrics.json     ◄── THE HEADLINE NUMBERS
+```
+
+### 6. Anatomy of one simulated year (inside the M4 Monte Carlo)
+
+```text
+ year y ──► draw N ~ NegBin(λ_coll=29.6, φ=3.37)         e.g. N = 31 regional events
+                │
+                ▼  for each event: resample (event, p_i, loss_i) from the catalog
+            ┌───────────────────────────────────────────────┐
+            │ event 1:  Bernoulli(p₁=0.004) → miss → $0     │
+            │ event 2:  Bernoulli(p₂=0.011) → miss → $0     │
+            │   …                                           │
+            │ event k:  Bernoulli(p_k=0.018) → HIT          │
+            │           → loss_k = DR_k × TIV  (full,       │
+            │             conditional — p never multiplied  │
+            │             into the loss: the LOTV fix)      │
+            └───────────────────────┬───────────────────────┘
+                                    ▼
+              AEP_y = Σ hit losses (capped at TIV) · OEP_y = max hit loss
+                                    ▼
+        repeat ~100k years ──► sorted AEP/OEP vectors ──► EAL / VaR / PML / TVaR
+        (~77% of years: zero hits → $0)
+```
+
+### 7. What's fitted vs. what's not (v1 modeling choices, and why)
+
+Only **frequency** got a parametric fit. The two "magnitude" pieces — hail size and damage-given-size —
+deliberately did **not** (sound for the *body* of the loss distribution; the *deep-tail* upgrades are
+logged as `deferred` in the [assumptions register](../../docs/plans/hail/assumptions.md)).
+
+```text
+ component            v1 treatment                      fitted?   tail-honest upgrade (deferred)
+ ─────────────────    ───────────────────────────────   ───────   ──────────────────────────────
+ FREQUENCY            NegBin fit on annual counts        ✅ YES    NOAA-calibrated λ extension
+ (event counts)       λ=29.6/yr, Fano φ=3.37                       (DD-3 Stage 2 — MESH FAR
+                      (cheap to fit; over-dispersion                bias-correction)
+                       is tail-critical → fit it now)
+
+ HAIL SIZE            empirical bootstrap of the         ❌ NO     EVT-GPD size-tail fit (A23)
+ (hazard magnitude)   158 observed event sizes                     — bootstrap can't exceed the
+                      (real sample → good *body*)                   largest seen event (118 mm)
+
+ DAMAGE | SIZE        deterministic curve:               ❌ NO     conditional DR distribution
+ (severity)           size → one scalar DR                         (A17) — same-size events
+                      (capex-weighted blend, cap ~34%)              damage differently; scalar
+                                                                    mean smooths the spread away
+
+                              WHY THE ASYMMETRY?
+            ┌─────────────────────────────────────────────────────┐
+            │  body of the loss distribution (EAL, ~PML₁₀₀):      │
+            │    bootstrap + real curve is enough  → didn't need  │
+            │                                                     │
+            │  deep tail (1-in-250+, OEP):                        │
+            │    truncated by max-observed-size + the 34% cap     │
+            │    → needed, but the damage curve itself is the     │
+            │      dominant (and temporary) uncertainty — fitting │
+            │      a fancy severity distribution on top of an     │
+            │      uncalibrated curve = polishing the wrong thing │
+            └─────────────────────────────────────────────────────┘
+```
+
+---
+
 ## `m0_input_data/` — the M0 (input-data) layer, **one notebook per source**  ·  [📖 folder README](m0_input_data/README.md)
 
 The whole point of the M0→M3 architecture is to test *multiple* input datasets behind one interface, then
@@ -60,7 +257,7 @@ loss (the full loss *if it hits*; `pᵢ` carried, never multiplied in). Plan:
 
 The finale: **compound-Poisson Monte Carlo** — per simulated year, `Bernoulli(pᵢ)` + full conditional loss →
 annual AEP/OEP vectors → **EAL / VaR / PML / TVaR**. *The part the old repo broke* — done right, with a
-Method-0 contrast + known-answer checks. Metrics are **illustrative** (placeholder λ — DD-2). Plan:
+Method-0 contrast + known-answer checks. Metrics are **real but record-limited** (λ **fitted** on the ~5.65-yr MRMS record — DD-3 Stage 1). Plan:
 [`../../docs/plans/hail/phase-5-loss-metrics.md`](../../docs/plans/hail/phase-5-loss-metrics.md).
 
 | Notebook | What | Output | Status |
