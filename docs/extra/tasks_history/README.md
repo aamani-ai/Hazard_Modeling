@@ -21,6 +21,7 @@ substantial session we drop a folder here so the next session starts with full, 
 
 | Date | Area | Slug | One-line |
 |---|---|---|---|
+| 2026-06-10 | notebooks | [`peril-asset-restructure`](2026-06-10__notebooks__peril-asset-restructure/handoff.md) | Restructured notebooks peril→asset (`hail/solar/`), verified+sharpened M4 README, de-staled docs, shared with team + repo public; next = wildfire × solar + hail × wind farm. |
 | 2026-06-09 | hail-pipeline | [`m0-m4-end-to-end`](2026-06-09__hail-pipeline__m0-m4-end-to-end/handoff.md) | Hail × solar M0→M4 built, math-validated, pushed; next = wildfire (hazard 2 of 3). |
 
 ## How to add one
