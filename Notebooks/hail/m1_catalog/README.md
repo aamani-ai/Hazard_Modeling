@@ -47,7 +47,7 @@ area, centroid, peak size, NOAA `confidence_flags`) + `…_m1_catalog.geojson` +
 [DD-1](../../../docs/plans/hail/decisions.md), [DD-2](../../../docs/plans/hail/decisions.md) ·
 [learning_logs/01](../../../docs/learning_logs/01_extending_a_short_hazard_record.md),
 [/02](../../../docs/learning_logs/02_count_distribution_and_dispersion_prior.md) · plan:
-[phase-2-event-catalog](../../../docs/plans/hail/phase-2-event-catalog.md).
+[phase-2-event-catalog](../../../docs/plans/hail/done/phase-2-event-catalog.md).
 
 ## Assumptions (this layer)
 

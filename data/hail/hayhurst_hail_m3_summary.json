@@ -16,7 +16,7 @@
   "events": 158,
   "max_conditional_loss_usd": 12564949.0,
   "provenance": {
-    "plan": "docs/plans/hail/phase-4-damage.md",
+    "plan": "docs/plans/hail/done/phase-4-damage.md",
     "from": "hayhurst_hail_m2_coupled.parquet"
   }
 }

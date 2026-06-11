@@ -22,7 +22,7 @@
 #
 # **This is the step the old repo got wrong** — it used a point spatial factor (≈ `F/A`) that ignores the
 # asset's own size and *under-counts* the hit probability. We use the correct **Minkowski** form and verify
-# it against known answers (basics-spot-on). Plan: `docs/plans/hail/phase-3-coupling.md`.
+# it against known answers (basics-spot-on). Plan: `docs/plans/hail/done/phase-3-coupling.md`.
 #
 # > **The formula.** For an event footprint area `F` and asset footprint area `s` in a region of area `A`:
 # > **`p = (√F + √s)² / A`**. Per-event (footprint & intensity correlate); `A` **cancels** in
@@ -218,7 +218,7 @@ summary = {
     "lambda_asset_per_yr": round(lam_asset, 4),
     "lambda_asset_status": "fitted (DD-3 Stage 1) — λ_collection from the ~5.65-yr MRMS record; record-limited",
     "geometric_point_hits": n_geo,
-    "provenance": {"plan": "docs/plans/hail/phase-3-coupling.md", "from": "hayhurst_hail_m1_catalog.parquet"},
+    "provenance": {"plan": "docs/plans/hail/done/phase-3-coupling.md", "from": "hayhurst_hail_m1_catalog.parquet"},
 }
 (out_dir / "hayhurst_hail_m2_summary.json").write_text(json.dumps(summary, indent=2))
 print(f"M2 coupled events: {len(m2)} → {out_dir/'hayhurst_hail_m2_coupled.parquet'}")

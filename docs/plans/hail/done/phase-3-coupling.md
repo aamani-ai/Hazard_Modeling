@@ -1,6 +1,6 @@
 # Phase 3 — Coupling (M1 → M2)
 
-> **Status:** building (2026-06-09). Plan-of-record for the M1→M2 step. Basis: A21 (coupling types),
+> **Status:** done (2026-06-09). Historical plan-of-record for the M1→M2 solar coupling step. Basis: A21 (coupling types),
 > `hazard_math/01` (Bernoulli hit-miss), and the old repo's `issues/spatial-factor`. This is **the step the
 > old repo got wrong** — so the math gets a known-answer check.
 
@@ -22,7 +22,7 @@ probability the event covers the asset (Minkowski sum / Robbins, disk approximat
   catalog = Σ pᵢ** (computable now, no fitted λ needed).
 - **`A` cancels.** `λ_collection` grows ∝ `A`; `p` shrinks ∝ `1/A` → `λ_asset` is independent of the region
   size. So the 50-mi radius doesn't bias the result — **as long as the rate and `p` use the same region**
-  (the [DD-1](decisions.md) rule). This is *why* the region→asset move converges.
+  (the [DD-1](../decisions.md) rule). This is *why* the region→asset move converges.
 
 **The old-repo error (basics-spot-on + known-answer check).** The old model used a point spatial factor
 (≈ `F/A`), ignoring the asset's own size. The correct Minkowski form adds `2√(F·s) + s`. The ratio
@@ -32,7 +32,7 @@ known answers (s→0 recovers F/A; F,s→ touching cases).
 
 ## Inputs
 
-- **M1 catalog** — `footprint_area_km2` (the `F`) + `peak_intensity_in` per event (the [GeoParquet](../../Notebooks/hail/m1_catalog/01_event_catalog.ipynb)).
+- **M1 catalog** — `footprint_area_km2` (the `F`) + `peak_intensity_in` per event (the [GeoParquet](../../../../Notebooks/hail/m1_catalog/01_event_catalog.ipynb)).
 - **Region area `A`** — the 50-mi circle ≈ **20,342 km²** (same region as the catalog).
 - **Asset footprint `s`** — estimated from capacity: 24.8 MW × ~5 acres/MW (array footprint) ≈ **0.50 km²**
   (a *stated assumption*; the actual plant polygon — via the solar-boundary pipeline — is the refinement).
@@ -56,8 +56,8 @@ known answers (s→0 recovers F/A; F,s→ touching cases).
 ## Deferred / out of scope
 
 - **Stable annual `λ_asset`** — `Σ pᵢ` is the expectation *over the observed window*; turning it into an
-  unbiased annual rate needs the widened MRMS record (the window is one peak season — [DD-1](decisions.md),
-  [DD-2](decisions.md), [`learning_logs/01`](../../learning_logs/01_extending_a_short_hazard_record.md)).
+  unbiased annual rate needs the widened MRMS record (the window is one peak season — [DD-1](../decisions.md),
+  [DD-2](../decisions.md), [`learning_logs/01`](../../../learning_logs/01_extending_a_short_hazard_record.md)).
 - **Exposed fraction** (area-asset partial overlap). The methodology §4 treats a solar farm as an *area*
   asset where "a fraction of the asset is exposed per event." We computed the area-aware **hit probability**
   (Minkowski, which is correct), but approximated exposure as **full-on-hit** — sound here because

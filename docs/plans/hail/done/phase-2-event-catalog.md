@@ -1,7 +1,8 @@
 # Phase 2 — Event Catalog (M0 → M1)
 
-> **Status:** building (2026-06-09). Plan-of-record for the M0→M1 step. Decision basis:
-> [`decisions.md` § DD-1](decisions.md); methodology: [`../../learning_logs/01`](../../learning_logs/01_extending_a_short_hazard_record.md).
+> **Status:** done (2026-06-09). Historical plan-of-record for the M0→M1 step. Decision basis:
+> [`decisions.md` § DD-1](../decisions.md); methodology:
+> [`learning_logs/01`](../../../learning_logs/01_extending_a_short_hazard_record.md).
 
 The M0→M1 seam turns raw evidence into a clean, reusable **hail event catalog** — the object the old repo
 never built. Per A20/A12, this is **normalization to one canonical record per physical event**, *not* a
@@ -47,7 +48,7 @@ centroid), `bbox_*`, `peak_intensity_mm`, `peak_intensity_in`, `annual_rate`, `c
 3. Assemble canonical `Event` rows (a GeoDataFrame).
 4. **NOAA cross-check** — spatiotemporal match (±1 day, in-region) → `confidence_flags`; report the
    undercount (MRMS hail-days vs NOAA-reported days) and a MESH-vs-report size sanity check (MESH
-   over-forecasts by design — [`learning_logs/01`](../../learning_logs/01_extending_a_short_hazard_record.md)).
+   over-forecasts by design — [`learning_logs/01`](../../../learning_logs/01_extending_a_short_hazard_record.md)).
 5. Build the `CatalogManifest`; **persist** as **GeoParquet + GeoJSON** + manifest JSON → `data/hail/`.
 
 ## Stated window & deferred (no silent caps — `notebook_work`)
@@ -63,7 +64,7 @@ centroid), `bbox_*`, `peak_intensity_mm`, `peak_intensity_in`, `annual_rate`, `c
   into coherent swaths (raw footprints are patchy — `n_footprint_parts` runs high, e.g. ~110 on the biggest
   day; the geometry is faithful, just not yet smoothed — H10's dilation step); connected-component
   swath-splitting (one event per consolidated swath); sub-daily declustering; the long-record
-  calibrated-splice / gridded-extension ([`learning_logs/01`](../../learning_logs/01_extending_a_short_hazard_record.md)).
+  calibrated-splice / gridded-extension ([`learning_logs/01`](../../../learning_logs/01_extending_a_short_hazard_record.md)).
 
 **Carried forward to M1→M2 (coupling):** each event carries `footprint_area_km2` (the `F` for Minkowski) and
 `peak_intensity_in` (for conditional severity).

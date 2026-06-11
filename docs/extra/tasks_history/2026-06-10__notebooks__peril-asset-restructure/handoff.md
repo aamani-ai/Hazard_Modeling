@@ -97,3 +97,7 @@ around one cell). Use the owner's `Learning/` project-structure reference then.
 - **Repo is public now** → no secrets in commits (verified); it goes **private + collaborators** at
   production-architecture time.
 - Metrics are **real but record-limited** — don't quote them as final.
+- **`docs/references/` needs a cleanup pass before being treated as source-locked** — see the reference
+  audit addendum in this folder's `notes.md` (Wendt/Jirak pages + MESH wording, Taszarek key, Hussain
+  NegBin overclaim, OASIS Keys geometry overclaim, EVT exceedance-count caveat, and commercial example
+  source-locking).

@@ -28,7 +28,7 @@
 #    here; `pᵢ` stays in frequency for Phase 5's Bernoulli draw. (Multiplying them = the variance-killing
 #    Method-0 shortcut the whole rebuild exists to avoid.)
 #
-# Plan: `docs/plans/hail/phase-4-damage.md` · refs: A22 (damage representation), methodology §6/§12.
+# Plan: `docs/plans/hail/done/phase-4-damage.md` · refs: A22 (damage representation), methodology §6/§12.
 
 # %% [markdown]
 # ## Assumptions (this layer)
@@ -173,7 +173,7 @@ summary = {
     "damage_representation": "scalar mean damage ratio (v1); distribution/vector + duration/BI deferred (A22)",
     "conditional_loss_rule": "conditional_loss = damage_ratio × asset_value (FULL loss on hit; p_i NOT multiplied in — Phase 5 Bernoulli)",
     "events": int(len(m3)), "max_conditional_loss_usd": float(ev.conditional_loss_usd.max()),
-    "provenance": {"plan": "docs/plans/hail/phase-4-damage.md", "from": "hayhurst_hail_m2_coupled.parquet"},
+    "provenance": {"plan": "docs/plans/hail/done/phase-4-damage.md", "from": "hayhurst_hail_m2_coupled.parquet"},
 }
 (out / "hayhurst_hail_m3_summary.json").write_text(json.dumps(summary, indent=2))
 print(f"M3 damage: {len(m3)} events → {out/'hayhurst_hail_m3_damage.parquet'}")

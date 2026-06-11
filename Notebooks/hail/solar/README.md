@@ -188,7 +188,7 @@ logged as `deferred` in the [assumptions register](../../../docs/plans/hail/assu
 Hail = **areal hit-or-miss**: per-event Minkowski hit probability `p = (√F + √s)² / A`, thinning the
 regional rate to the asset — **fixing the old repo's point-factor (`F/A`) error**, with known-answer
 checks. `λ_asset = λ_collection · E[p] = 0.26/yr` (~1 hit every 3.8 yr). Plan:
-[`phase-3-coupling.md`](../../../docs/plans/hail/phase-3-coupling.md).
+[`phase-3-coupling.md`](../../../docs/plans/hail/done/phase-3-coupling.md).
 
 | Notebook | What | Output | Status |
 |----------|------|--------|--------|
@@ -201,7 +201,7 @@ Severity: each event's hail size → a **capex-weighted subsystem blend** (from
 × NREL capex weights → `Asset_DR = Σ wᵢ·DRᵢ`, **caps ~34%** of TIV — ~64% of asset value, the
 inverters/substation/electrical/civil, is hail-immune → 0) → a damage ratio → the **conditional**
 dollar loss (the full loss *if it hits*; `pᵢ` carried, never multiplied in). Plan:
-[`phase-4-damage.md`](../../../docs/plans/hail/phase-4-damage.md).
+[`phase-4-damage.md`](../../../docs/plans/hail/done/phase-4-damage.md).
 
 | Notebook | What | Output | Status |
 |----------|------|--------|--------|
@@ -212,7 +212,7 @@ dollar loss (the full loss *if it hits*; `pᵢ` carried, never multiplied in). P
 The finale: **compound-Poisson Monte Carlo** (300k years) — per simulated year, `Bernoulli(pᵢ)` + full
 conditional loss → annual AEP/OEP vectors → **EAL / VaR / PML / TVaR**. *The part the old repo broke* —
 done right, with a Method-0 contrast + a Poisson-vs-NegBin contrast + known-answer checks. Plan:
-[`phase-5-loss-metrics.md`](../../../docs/plans/hail/phase-5-loss-metrics.md).
+[`phase-5-loss-metrics.md`](../../../docs/plans/hail/done/phase-5-loss-metrics.md).
 
 | Notebook | What | Output | Status |
 |----------|------|--------|--------|

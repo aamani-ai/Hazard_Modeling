@@ -61,7 +61,7 @@ electrical, civil, SCADA) is effectively **hail-immune → 0**, so the asset DR 
 
 ## Key
 
-Plan: [phase-4-damage](../../../../docs/plans/hail/phase-4-damage.md). Matches methodology §6 (curate, don't
+Plan: [phase-4-damage](../../../../docs/plans/hail/done/phase-4-damage.md). Matches methodology §6 (curate, don't
 fit) + §12 (the hail-on-solar curve).
 
 ## Assumptions (this layer)

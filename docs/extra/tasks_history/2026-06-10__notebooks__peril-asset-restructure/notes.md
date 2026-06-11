@@ -59,7 +59,7 @@ the rest minor/nit precision). All fixed in `a65c13e` or flagged.
 grep -rn "hail/m2_coupling\|hail/m3_damage\|hail/m4_loss_metrics" --include=*.md --include=*.py . \
   | grep -vE "/\.venv/|model-gpr|tasks_history|/solar/"
 # moved-file docs links resolve (solar/<layer> → root is 4 hops → ../../../../docs/)
-ls docs/plans/hail/{assumptions,decisions,phase-3-coupling,phase-4-damage,phase-5-loss-metrics}.md
+ls docs/plans/hail/{assumptions,decisions}.md docs/plans/hail/done/{phase-3-coupling,phase-4-damage,phase-5-loss-metrics}.md
 # data resolution after move + chain loads
 .venv/bin/python -c "..._repo_root() from each new dir; read m1/m2/m3/m4 parquets..."   # 158 / 300000 rows OK
 # public-safety: nothing sensitive EVER committed
@@ -78,3 +78,31 @@ git log --all --pretty=format: --name-only --diff-filter=A | sort -u | grep -iE 
   relocation; only markdown relative links need depth fixes.
 - **Communication is a first-class deliverable.** Most of this session was making correct work *legible*
   (matrix README, the NOAA→MRMS tilt story, de-staling) rather than new modeling.
+
+## Reference audit addendum
+
+Follow-up review of [`docs/references/`](../../../references/) found the reference map is useful, but
+not fully source-locked yet. Treat it as a strong working bibliography until these cleanup items are
+resolved:
+
+- **Wendt & Jirak 2021:** fix the page range/title in `bibliography.md` (NOAA lists Weather and
+  Forecasting `36(2), 645-659`, with the full title ending in "with Comparisons to Storm Data Hail
+  Reports"). Also soften the `README.md` claim that this source supports a specific MESH
+  over-forecast/FAR caveat; it more directly supports a MESH-vs-Storm-Data/reporting-caveat point.
+- **Taszarek et al. 2020:** rename the short key from `Brooks/Taszarek et al. 2020` to
+  `Taszarek et al. 2020` unless there is a deliberate house-style reason to keep the current key; the
+  official citation appears first-authored by Taszarek.
+- **Hussain et al. 2025:** keep it, but narrow the claim. It supports overdispersed convective-storm
+  count modeling and negative-binomial-family comparisons; it does not prove that hail frequency must be
+  Negative Binomial.
+- **OASIS Keys:** good support for mapping exposure locations to model keys / area-peril IDs, but weak
+  support by itself for a single-centroid or extended-risk geometry caveat. Pair it with OASIS
+  disaggregation / methodology docs if that geometry-uncertainty claim stays.
+- **EVT exceedance-count caveat:** keep the `~50-100 exceedances` point as a practical rule-of-thumb or
+  internal A24/A23 caveat unless an exact external citation is added.
+- **Commercial examples:** Moody's geocoding example checked out. The kWh `+300%` and Rudaviciute
+  `-41%/+83%` examples are useful, but should be source-locked to the exact PDF/page before being treated
+  as hard evidence.
+- **References that looked supportable:** Allen & Tippett for hail-report bias / threshold changes;
+  Schuster et al. for radar-reflectivity hail swath logic; FEMA Hazus for loss-methodology grounding;
+  OASIS/IF for vulnerability and uncertainty concepts; Moody's for centroid/geocoding sensitivity.

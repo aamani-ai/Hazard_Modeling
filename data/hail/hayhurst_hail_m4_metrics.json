@@ -32,7 +32,7 @@
   "metrics_status": "real but RECORD-LIMITED (~5.65 yr; deep tail needs longer record + EVT \u2014 DD-3 Stage 2)",
   "known_answer_checks": "pass (EAL\u2248analytic both; Poisson zero\u2248exp(\u2212\u03bb_asset); NegBin zero>Poisson; AEP\u2265OEP)",
   "provenance": {
-    "plan": "docs/plans/hail/phase-5-loss-metrics.md",
+    "plan": "docs/plans/hail/done/phase-5-loss-metrics.md",
     "from": "hayhurst_hail_m3_damage.parquet"
   }
 }

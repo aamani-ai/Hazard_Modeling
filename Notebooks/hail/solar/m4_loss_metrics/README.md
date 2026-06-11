@@ -135,7 +135,7 @@ M3 — it scales every $ metric.) Full register:
 
 ## Key
 
-Plan: [phase-5-loss-metrics](../../../../docs/plans/hail/phase-5-loss-metrics.md). Matches methodology §8
+Plan: [phase-5-loss-metrics](../../../../docs/plans/hail/done/phase-5-loss-metrics.md). Matches methodology §8
 (MC engine) / §10 (tail). **This closes the M0→M4 hail skeleton.**
 
 **Production path from here:** NOAA-calibrated `λ` extension · calibrate the damage curve to PV claims · add

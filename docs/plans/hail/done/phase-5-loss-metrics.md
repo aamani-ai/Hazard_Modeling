@@ -1,6 +1,7 @@
 # Phase 5 — Loss & Metrics (M3 → M4)
 
-> **Status:** building (2026-06-09). Basis: A24, methodology §8 (event-loss generation) / §9 (financial) /
+> **Status:** done (2026-06-09). Historical plan-of-record for hail × solar loss and metrics. Basis: A24,
+> methodology §8 (event-loss generation) / §9 (financial) /
 > §10 (EVT), risk-metrics reference. **This is the part the old repo actually broke** — so it gets a Method-0
 > contrast and known-answer checks.
 
@@ -50,7 +51,7 @@ numbers** — those follow the widened record + the NegBin fit. → register A20
 
 ## Inputs → outputs
 
-[M3 damage](../../Notebooks/hail/solar/m3_damage/) (`pᵢ`, `conditional_loss_usd` per event) + `asset_value` +
+[M3 damage](../../../../Notebooks/hail/solar/m3_damage/) (`pᵢ`, `conditional_loss_usd` per event) + `asset_value` +
 the **fitted** `λ` (A20) → `data/hail/hayhurst_hail_m4_annual_vectors.parquet` (AEP/OEP per simulated year) +
 `…_m4_metrics.json` (EAL, VaR₉₅/₉₉/₉₉.₆, TVaR₉₉, AEP-PML₁₀₀/₂₅₀, OEP-PML₁₀₀, zero-loss fraction, Poisson-vs-NegBin contrast).
 

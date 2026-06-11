@@ -15,7 +15,7 @@
   "lambda_asset_status": "fitted (DD-3 Stage 1) \u2014 \u03bb_collection from the ~5.65-yr MRMS record; record-limited",
   "geometric_point_hits": 1,
   "provenance": {
-    "plan": "docs/plans/hail/phase-3-coupling.md",
+    "plan": "docs/plans/hail/done/phase-3-coupling.md",
     "from": "hayhurst_hail_m1_catalog.parquet"
   }
 }

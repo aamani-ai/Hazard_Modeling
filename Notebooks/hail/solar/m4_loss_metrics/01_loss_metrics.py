@@ -23,7 +23,7 @@
 # **This is the step the old repo actually broke.** It used the Method-0 shortcut — `loss = pᵢ × loss` summed
 # as an *expected* contribution — which preserves the average (EAL) but collapses the hit-or-miss variance the
 # tail is made of, so VaR/PML/TVaR came out wrong. We do it the correct way and **verify** it (known-answer
-# checks + a Method-0 contrast). Plan: `docs/plans/hail/phase-5-loss-metrics.md` · refs: A24, methodology §8–§10.
+# checks + a Method-0 contrast). Plan: `docs/plans/hail/done/phase-5-loss-metrics.md` · refs: A24, methodology §8–§10.
 #
 # > **Fitted `λ`, record-limited.** `λ_collection` is now **fitted** on the full ~5.65-yr MRMS record (DD-3
 # > Stage 1), and the annual counts are **over-dispersed → Negative Binomial** (DD-2, confirmed). So these
@@ -241,7 +241,7 @@ summary = {
     "zero_loss_fraction": round(float(M["zero_loss_fraction"]), 4),
     "metrics_status": "real but RECORD-LIMITED (~5.65 yr; deep tail needs longer record + EVT — DD-3 Stage 2)",
     "known_answer_checks": "pass (EAL≈analytic both; Poisson zero≈exp(−λ_asset); NegBin zero>Poisson; AEP≥OEP)",
-    "provenance": {"plan": "docs/plans/hail/phase-5-loss-metrics.md", "from": "hayhurst_hail_m3_damage.parquet"},
+    "provenance": {"plan": "docs/plans/hail/done/phase-5-loss-metrics.md", "from": "hayhurst_hail_m3_damage.parquet"},
 }
 (out / "hayhurst_hail_m4_metrics.json").write_text(json.dumps(summary, indent=2))
 print(f"M4 annual vectors: {N_YEARS:,} years → {out/'hayhurst_hail_m4_annual_vectors.parquet'}")

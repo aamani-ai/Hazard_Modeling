@@ -63,7 +63,7 @@ M1 catalog (each event's footprint `F`) → `data/hail/hayhurst_hail_m2_coupled.
 
 ## Key
 
-Plan: [phase-3-coupling](../../../../docs/plans/hail/phase-3-coupling.md). Matches the methodology doctrine
+Plan: [phase-3-coupling](../../../../docs/plans/hail/done/phase-3-coupling.md). Matches the methodology doctrine
 (§4 Coupling + §5 Frequency — it prescribes the exact Minkowski form and the Bernoulli-not-multiplier rule).
 
 ## Assumptions (this layer)

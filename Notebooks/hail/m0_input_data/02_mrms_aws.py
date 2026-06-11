@@ -452,3 +452,105 @@ M0.head()
 #   **M0→M1** step (the [catalog](../m1_catalog/01_event_catalog.ipynb)), where NOAA cross-checks the spine.
 # - **Open:** daily-grain choice (last-tile vs true daily max over all tiles); dilation + connected-component
 #   event-assembly deferred to the catalog step.
+
+# %% [markdown]
+# ## 12 · Newcomer recap — how one MRMS tile becomes one hail-day event
+#
+# The easy mistake is to hear "30-minute MRMS files" and think each file is a 30-minute hail event. For the
+# product used here, that is **not** what the values mean.
+#
+# ```text
+# Product used here: MESH_Max_1440min
+#
+# Raw file cadence      : many files per day, roughly every 30 minutes
+# Value in each file    : max estimated hail size in each cell over the trailing 24 hours
+# Pipeline use          : take the last tile for the date
+# Event interpretation  : one daily severe-hail footprint, i.e. one hail-day proto-event
+# ```
+#
+# So the time logic is:
+#
+# ```text
+# 2024-06-01
+#
+#   00:30 tile  -> each ~1 km cell = max MESH over previous 24 hours
+#   01:00 tile  -> each ~1 km cell = max MESH over previous 24 hours
+#   01:30 tile  -> each ~1 km cell = max MESH over previous 24 hours
+#      ...
+#   23:30 tile  -> each ~1 km cell = max MESH over previous 24 hours  <- v1 daily tile
+# ```
+#
+# Then the geometry logic is:
+#
+# ```text
+# MRMS .grib2.gz tile
+#         |
+#         v
+# decode into a grid:
+# each ~1 km cell has a MESH value in mm
+#         |
+#         v
+# keep only cells inside the 50-mi Hayhurst region
+#         |
+#         v
+# keep only cells >= 25.4 mm (1 inch severe-hail threshold)
+#         |
+#         v
+# make each kept grid cell into a small square polygon
+#         |
+#         v
+# union / merge touching squares
+#         |
+#         v
+# one hail footprint polygon (or MultiPolygon if patches are separate)
+#         |
+#         v
+# one MRMS hail-day proto-event
+# ```
+#
+# A tiny toy grid makes the `union/vectorize` step concrete. Suppose one day's MRMS values near the asset
+# looked like this:
+#
+# ```text
+# MESH grid, mm
+#
+#   .   .   .   .
+#   .  30  42   .
+#   .  35  18   .
+#   .   .   .  29
+# ```
+#
+# Apply the severe threshold (`>= 25.4 mm`):
+#
+# ```text
+# severe cells
+#
+#   .   .   .   .
+#   .   X   X   .
+#   .   X   .   .
+#   .   .   .   X
+# ```
+#
+# Each `X` is a real ~1 km map square. Vectorizing means turning those selected cells into geometry:
+#
+# ```text
+# selected cells as small polygons
+#
+#       [ ][ ]
+#       [ ]
+#
+#                [ ]
+#
+# after union:
+#
+#       one merged L-shaped polygon
+#
+#                one separate polygon
+#
+# result: MultiPolygon hail footprint
+# ```
+#
+# That is the object M1 preserves for downstream modeling. M2 can use its area (`F`) for the
+# Minkowski hit-probability calculation, and later versions can use the actual polygon for stricter
+# geometric overlap. The caveat stays the same: this is a **radar-estimated severe-hail footprint**, not a
+# perfect ground-truth damage footprint.

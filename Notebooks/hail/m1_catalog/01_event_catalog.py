@@ -33,7 +33,7 @@
 # - **Interface = footprint raster bundle** (`RASTER_BUNDLE`); magnitude = **peak stone diameter (in)**.
 #
 # This is **not** a symmetric merge, **not** per-event dedup, and `event_family_id` is **not** used to join
-# NOAA↔MRMS (that field is for cross-*peril* parent linkage). Plan: `docs/plans/hail/phase-2-event-catalog.md`.
+# NOAA↔MRMS (that field is for cross-*peril* parent linkage). Plan: `docs/plans/hail/done/phase-2-event-catalog.md`.
 
 # %% [markdown]
 # ## Assumptions (this layer)
