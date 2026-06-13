@@ -1,0 +1,68 @@
+{
+  "layer": "M0",
+  "candidate": "01_wrc_geoplatform",
+  "peril": "wildfire",
+  "asset": {
+    "slug": "hayhurst_texas_solar",
+    "name": "Hayhurst Texas Solar",
+    "eia": 66880,
+    "role": "baseline (low-fire)",
+    "state": "TX",
+    "county": "Culberson",
+    "lat": 31.815992,
+    "lon": -104.0853,
+    "ac_mw": 24.8,
+    "dc_mw": 31.31,
+    "footprint_r_m": 386.0,
+    "footprint": "capacity-radius circle (r\u2248386 m \u2014 no boundary in dataset)"
+  },
+  "product": "WRC 2.0 landscape-wide",
+  "edition_doi": "RDS-2020-0016-2 (Scott, Dillon, Callahan et al. 2024)",
+  "access": "USFS ArcGIS ImageServers @ imagery.geoplatform.gov \u00b7 exportImage \u00b7 no auth \u00b7 CC BY 4.0",
+  "vintage": {
+    "BP": "\u2248end-2020, 270 m upsampled to 30 m",
+    "intensity": "\u2248end-2022 (WildEST), native 30 m"
+  },
+  "fetch_box_4326": {
+    "lon_lo": -104.2853,
+    "lon_hi": -103.8853,
+    "lat_lo": 31.616,
+    "lat_hi": 32.016
+  },
+  "grid_res_m": 25.5,
+  "scale_factors": {
+    "BP": "\u00f710000 (AW-5: lab convention, NOT in metadata \u2014 verified by range below)",
+    "CFL": "\u00d71 (feet)",
+    "FLEP4": "\u00f71000",
+    "FLEP8": "\u00f71000"
+  },
+  "footprint": "capacity-radius circle (r\u2248386 m \u2014 no boundary in dataset)",
+  "footprint_radius_m": 386.0,
+  "layers_observed": {
+    "BP": {
+      "mean": 0.000441424266783103,
+      "max": 0.0026000000000000003
+    },
+    "CFL": {
+      "mean": 1.9923496112704566,
+      "max": 47.0
+    },
+    "FLEP4": {
+      "mean": 0.16895000786870676,
+      "max": 1.0
+    },
+    "FLEP8": {
+      "mean": 0.008214401816282668,
+      "max": 0.928
+    }
+  },
+  "checks": {
+    "BP_in_0_0.135": true,
+    "FLEP_in_0_1": true,
+    "FLEP8_le_FLEP4_violation_pct": 0.0,
+    "oozing_at_asset_pixel": true
+  },
+  "open_questions": [
+    "AW-5 BP\u00f710000 verified by range; AW-15 oozing recorded for M2; AW-10 CFL(headfire) vs FLEP(integrated) basis; candidate 02 (FSim FLP1-6) is the severity spine (DD-W4)."
+  ]
+}

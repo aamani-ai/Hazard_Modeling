@@ -1,0 +1,75 @@
+{
+  "catalog_id": "hayhurst_texas_solar_wildfire_m1",
+  "peril": "wildfire",
+  "asset": {
+    "slug": "hayhurst_texas_solar",
+    "name": "Hayhurst Texas Solar",
+    "eia": 66880,
+    "role": "baseline (low-fire)",
+    "lat": 31.815992,
+    "lon": -104.0853,
+    "dc_mw": 31.31,
+    "tiv_usd": 36778400
+  },
+  "coupling_type": "site_conditioned",
+  "ontology": "per-asset hazard profile (BP + FLP1-6 over footprint); FSim pre-integrated (no discrete perimeter events in V1)",
+  "backbone": "FSim FLP1-6 + BP (RDS-2016-0034-3, 270 m); WRC 30 m cross-check",
+  "magnitude_metric": "fire-line intensity (kW/m) via Byram from FLP flame-length classes",
+  "frequency_process": "poisson",
+  "frequency_process_params": {
+    "lambda_per_yr": 0.00037,
+    "fano_factor": 1.0,
+    "derivation": "lambda = -ln(1-BP); BP = FSim annual burn probability"
+  },
+  "severity_kwm_distribution": [
+    {
+      "flame_class_ft": "<2",
+      "intensity_kwm": 19.6,
+      "prob_given_fire": 0.528153
+    },
+    {
+      "flame_class_ft": "2\u20134",
+      "intensity_kwm": 213.8,
+      "prob_given_fire": 0.372037
+    },
+    {
+      "flame_class_ft": "4\u20136",
+      "intensity_kwm": 649.2,
+      "prob_given_fire": 0.09611
+    },
+    {
+      "flame_class_ft": "6\u20138",
+      "intensity_kwm": 1349.0,
+      "prob_given_fire": 0.0025
+    },
+    {
+      "flame_class_ft": "8\u201312",
+      "intensity_kwm": 2929.3,
+      "prob_given_fire": 0.0012
+    },
+    {
+      "flame_class_ft": "12+",
+      "intensity_kwm": 7072.5,
+      "prob_given_fire": 0.0
+    }
+  ],
+  "conditional_mean_intensity_kwm": 159.2,
+  "footprint": "capacity-radius circle (r\u2248386 m)",
+  "edge_rule": "all_touched (AW-21; sensitivity-checked)",
+  "spatial_resolution_m": 270,
+  "tiv_usd": 36778400,
+  "caveats": [
+    "fano=1 structural (FSim pre-integrated dispersion; no annual-count series to test)",
+    "stationary \u2014 lambda(t) deferred (AW-13)",
+    "severity = 6 discrete FLP classes; '12+ ft' open-ended tail coarse (EVT/continuous deferred)",
+    "270 m screening-grade \u2014 small footprints undersampled (AW-21)"
+  ],
+  "sources": {
+    "spine": "FSim Probabilistic Wildfire Risk (geoplatform ImageServers)",
+    "cross_check": "WRC 2.0 (30 m); Hydronos validated (02b)"
+  },
+  "provenance": {
+    "built_by": "Notebooks/wildfire/m1_catalog/01_catalog",
+    "from": "M0 candidate 02 (FSim) footprint profile"
+  }
+}

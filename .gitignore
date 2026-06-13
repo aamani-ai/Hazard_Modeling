@@ -42,6 +42,8 @@ htmlcov/
 *.nc
 *.grib2
 *.grib
+*.tif
+*.tiff
 *.idx
 *.gz
 *.pkl
@@ -49,6 +51,9 @@ htmlcov/
 *.joblib
 local_data/
 local_docs/
+
+# Raw hazard-data cache (re-fetchable rasters + raw API dumps) — keep summaries/manifests, not the raw pulls
+data/*/raw/
 
 # ── IDE ──────────────────────────────────────────────────
 .idea/
@@ -78,3 +83,10 @@ ehthumbs.db
 /infrasure-hazard-competitive-research
 /renewablesinfo_org
 /infrasure-damage-curves
+
+# Temporary mine of the old wildfire "value-farm" model — extract base case + data sources +
+# domain info into Notebooks/wildfire/, then DELETE this symlink. Not a permanent reference.
+/_legacy_wildfire
+
+# Heavy / proprietary local reference (internal solar risk assessment) — public repo, keep local only
+docs/extra/kWh_Solar_Risk_Assessment.2026.pdf

@@ -1,0 +1,79 @@
+{
+  "layer": "M3",
+  "candidate": "01_damage",
+  "peril": "wildfire",
+  "asset": {
+    "slug": "matrix_pleasant_valley",
+    "name": "Matrix Pleasant Valley",
+    "role": "proving (high-fire)",
+    "tiv_usd": 385580000.0,
+    "tiv_estimated": true
+  },
+  "curve": {
+    "source": "infrasure-damage-curves (canonical) \u2014 WILDFIRE \u00d7 solar",
+    "decision": "DD-W8",
+    "form": "logistic DR=L/(1+exp(-k(I-x0))) on Byram kW/m, capex-weighted blend",
+    "channel": "Channel-1 physical only (smoke/PSPS separate, deferred)",
+    "distance_d_m": 10,
+    "anchored": "yes \u2014 each subsystem minus DR(0) so DR(0)=0 (DD-W8/AW-29); canonical raw floor (~5%) removed",
+    "confidence": "Low / Low-Medium; d=10m \u00b140%; zero empirical RE calibration (approximate)"
+  },
+  "subsystems": {
+    "PV_ARRAY": {
+      "L": 0.95,
+      "k": 0.0013,
+      "x0": 2100,
+      "conf": "low-medium",
+      "weight": 0.3
+    },
+    "MOUNTING": {
+      "L": 0.8,
+      "k": 0.0006,
+      "x0": 3600,
+      "conf": "low",
+      "weight": 0.1
+    },
+    "INVERTER_SYSTEM": {
+      "L": 0.95,
+      "k": 0.0021,
+      "x0": 1300,
+      "conf": "low-medium",
+      "weight": 0.08
+    },
+    "SUBSTATION": {
+      "L": 0.95,
+      "k": 0.0014,
+      "x0": 1900,
+      "conf": "low",
+      "weight": 0.07
+    },
+    "ELECTRICAL": {
+      "L": 0.65,
+      "k": 0.0008,
+      "x0": 2500,
+      "conf": "low",
+      "weight": 0.08
+    },
+    "CIVIL_INFRA": {
+      "L": 0.75,
+      "k": 0.0009,
+      "x0": 2100,
+      "conf": "low",
+      "weight": 0.07
+    }
+  },
+  "weights_sum": 0.7,
+  "tiv_unmodeled_pct": 30.0,
+  "asset_dr_cap": 0.5642,
+  "conditional_E_DR_given_fire": 0.06464,
+  "conditional_loss_pct_tiv_given_fire": 6.464,
+  "exposure_fraction": 1.0,
+  "for_M4": "compound Poisson(\u03bb from M1/M2) over this per-class conditional loss distribution; metrics off the SAMPLED dist",
+  "caveats": [
+    "approximate curve (Low/Low-Med conf; d=10m \u00b140%) \u2014 revamp deferred (DD-W8)",
+    "30% TIV unmodeled \u2192 non-damageable in V1 (AW-19); cap ~61% TIV",
+    "weights = canonical-range midpoints (index lacks point weights \u2014 flag for curve repo)",
+    "scalar DR per class \u2014 conditional-DR distribution deferred",
+    "Matrix TIV estimated via $/kWp"
+  ]
+}

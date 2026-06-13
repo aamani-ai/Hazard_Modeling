@@ -1,0 +1,31 @@
+{
+  "layer": "M2",
+  "candidate": "01_coupling",
+  "peril": "wildfire",
+  "coupling_type": "site_conditioned",
+  "asset": {
+    "slug": "matrix_pleasant_valley",
+    "name": "Matrix Pleasant Valley",
+    "role": "proving (high-fire)",
+    "tiv_usd": null
+  },
+  "thin_layer": true,
+  "why_thin": "FSim pre-integrated the events + site-conditioned (no spatial factor) \u2192 M1 produced (\u03bb, kW/m severity) at the asset; no Minkowski overlap.",
+  "contract_for_M3_M4": {
+    "lambda_per_yr": 0.044077,
+    "fano_factor": 1.0,
+    "exposure_fraction": 1.0,
+    "susceptibility_d_m": 10.0,
+    "severity": "conditional kW/m distribution (see m2_coupled.parquet / M1 catalog)",
+    "conditional_mean_intensity_kwm": 710.4
+  },
+  "on_site_source": "burnable footprint (FSim 270 m \u2014 surrounding fuel included; oozing moot)",
+  "oozed_wrc_30m_pixel": false,
+  "no_spatial_factor": true,
+  "deferred": [
+    "fire-front sweep (partial burn, explicit d/t, real PML tail) \u2014 AW-28",
+    "explicit per-site susceptibility d (defensible space/fences, via site data/imagery) \u2014 AW-27",
+    "currency adjustment for stale FSim vintage \u2014 AW-25/26",
+    "heat-flux / temperature curves (need explicit d, t) \u2014 Gen 3"
+  ]
+}

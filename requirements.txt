@@ -15,6 +15,11 @@ xarray
 cfgrib
 eccodes
 
+# Wildfire hazard rasters (WRC 2.0 + FSim FLP1-6 GeoTIFFs — fetch, read, zonal-sample)
+rasterio          # read/write GeoTIFF, ArcGIS exportImage tiles, windowed reads
+rioxarray         # raster <-> xarray (CRS-aware clip/reproject)
+rasterstats       # zonal statistics within the asset-boundary polygon
+
 # Event footprint geometry (vectorize MESH swaths → polygons; GeoParquet/GeoJSON)
 geopandas
 shapely

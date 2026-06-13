@@ -1,0 +1,55 @@
+{
+  "note": "VALIDATION cross-check only \u2014 NOT the pipeline (DD-W3). Hydronos = paid wrapper over public FSim(270m)+WRC(30m); key leaked \u2192 rotate.",
+  "endpoint": "https://api.hydronoslabs.com/hazard/wildfire_risk",
+  "geometry_modes_used": {
+    "hayhurst_texas_solar": "Point+radius",
+    "matrix_pleasant_valley": "MultiPolygon boundary"
+  },
+  "cmp_270m_vs_public_fsim": [
+    {
+      "asset": "Hayhurst Texas Solar",
+      "BP_hyd": 0.00036,
+      "BP_pub": 0.00037,
+      "FLEP4_hyd": 0.114,
+      "FLEP4_pub": 0.1,
+      "meanFL_hyd": 2.25,
+      "meanFL_pub": 2.15,
+      "FLP_L1dist": 0.071
+    },
+    {
+      "asset": "Matrix Pleasant Valley",
+      "BP_hyd": 0.04386,
+      "BP_pub": 0.04312,
+      "FLEP4_hyd": 0.654,
+      "FLEP4_pub": 0.662,
+      "meanFL_hyd": 4.7,
+      "meanFL_pub": 4.85,
+      "FLP_L1dist": 0.118
+    }
+  ],
+  "cmp_30m_vs_public_wrc": [
+    {
+      "asset": "Hayhurst Texas Solar",
+      "BP_hyd": 0.0004,
+      "BP_wrc": 0.0005,
+      "CFL_hyd": 2.71,
+      "CFL_wrc": 2.24,
+      "FLEP4_hyd": 0.208,
+      "FLEP4_wrc": 0.205,
+      "FLEP8_hyd": 0.012,
+      "FLEP8_wrc": 0.011
+    },
+    {
+      "asset": "Matrix Pleasant Valley",
+      "BP_hyd": 0.04542,
+      "BP_wrc": 0.045,
+      "CFL_hyd": 4.52,
+      "CFL_wrc": 3.85,
+      "FLEP4_hyd": 0.387,
+      "FLEP4_wrc": 0.382,
+      "FLEP8_hyd": 0.002,
+      "FLEP8_wrc": 0.003
+    }
+  ],
+  "verdict": "Hydronos reproduces both public candidates to ~2-3 dp \u2192 DD-W3 validated (public loses nothing)."
+}

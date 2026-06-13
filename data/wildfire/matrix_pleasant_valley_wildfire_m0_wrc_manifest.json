@@ -1,0 +1,68 @@
+{
+  "layer": "M0",
+  "candidate": "01_wrc_geoplatform",
+  "peril": "wildfire",
+  "asset": {
+    "slug": "matrix_pleasant_valley",
+    "name": "Matrix Pleasant Valley",
+    "eia": 67211,
+    "role": "proving (high-fire)",
+    "state": "ID",
+    "county": "Ada",
+    "lat": 43.301347,
+    "lon": -115.998727,
+    "ac_mw": 200.0,
+    "dc_mw": 260.0,
+    "footprint_r_m": 1113.0,
+    "footprint": "boundary polygon (MultiPolygon, 5.007 km\u00b2)"
+  },
+  "product": "WRC 2.0 landscape-wide",
+  "edition_doi": "RDS-2020-0016-2 (Scott, Dillon, Callahan et al. 2024)",
+  "access": "USFS ArcGIS ImageServers @ imagery.geoplatform.gov \u00b7 exportImage \u00b7 no auth \u00b7 CC BY 4.0",
+  "vintage": {
+    "BP": "\u2248end-2020, 270 m upsampled to 30 m",
+    "intensity": "\u2248end-2022 (WildEST), native 30 m"
+  },
+  "fetch_box_4326": {
+    "lon_lo": -116.1987,
+    "lon_hi": -115.7987,
+    "lat_lo": 43.1013,
+    "lat_hi": 43.5013
+  },
+  "grid_res_m": 21.8,
+  "scale_factors": {
+    "BP": "\u00f710000 (AW-5: lab convention, NOT in metadata \u2014 verified by range below)",
+    "CFL": "\u00d71 (feet)",
+    "FLEP4": "\u00f71000",
+    "FLEP8": "\u00f71000"
+  },
+  "footprint": "boundary polygon (MultiPolygon, 5.007 km\u00b2)",
+  "footprint_radius_m": 1113.0,
+  "layers_observed": {
+    "BP": {
+      "mean": 0.029769885742032664,
+      "max": 0.053700000000000005
+    },
+    "CFL": {
+      "mean": 4.293156413508799,
+      "max": 56.0
+    },
+    "FLEP4": {
+      "mean": 0.4157621072485598,
+      "max": 1.0
+    },
+    "FLEP8": {
+      "mean": 0.01486841142117224,
+      "max": 0.996
+    }
+  },
+  "checks": {
+    "BP_in_0_0.135": true,
+    "FLEP_in_0_1": true,
+    "FLEP8_le_FLEP4_violation_pct": 0.0,
+    "oozing_at_asset_pixel": false
+  },
+  "open_questions": [
+    "AW-5 BP\u00f710000 verified by range; AW-15 oozing recorded for M2; AW-10 CFL(headfire) vs FLEP(integrated) basis; candidate 02 (FSim FLP1-6) is the severity spine (DD-W4)."
+  ]
+}

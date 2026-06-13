@@ -1,0 +1,47 @@
+{
+  "layer": "M0",
+  "candidate": "02_fsim_rds",
+  "peril": "wildfire",
+  "asset": {
+    "slug": "matrix_pleasant_valley",
+    "name": "Matrix Pleasant Valley",
+    "eia": 67211,
+    "role": "proving (high-fire)",
+    "state": "ID",
+    "county": "Ada",
+    "lat": 43.301347,
+    "lon": -115.998727,
+    "ac_mw": 200.0,
+    "dc_mw": 260.0,
+    "footprint_r_m": 1113.0,
+    "footprint": "boundary polygon (MultiPolygon, 5.007 km\u00b2)"
+  },
+  "product": "USFS Probabilistic Wildfire Risk (FSim) \u2014 native BP + FLP1-6 histogram",
+  "edition_doi": "RDS-2016-0034-3 (FSim 3rd Edition, Dillon et al. 2023, LANDFIRE 2020)",
+  "access": "USFS geoplatform ImageServers (Fire_Aviation/USFS_EDW_RMRS_ProbabilisticWildfireRisk_*) \u00b7 exportImage \u00b7 no auth \u00b7 CC BY 4.0",
+  "resolution_m": 270,
+  "single_vintage": true,
+  "scale_factors": {
+    "FLP": "/100 (int8 percent \u2192 fraction, \u03a3=1)",
+    "BP": "/1e6 (int32 \u2192 annual prob)"
+  },
+  "footprint": "boundary polygon (MultiPolygon, 5.007 km\u00b2)",
+  "footprint_px_270m": 184,
+  "burnable_px": 170,
+  "site_histogram_pct": {
+    "<2": 0.3,
+    "2\u20134": 33.6,
+    "4\u20136": 45.5,
+    "6\u20138": 16.7,
+    "8\u201312": 3.9,
+    "12+": 0.0
+  },
+  "mean_flame_length_ft": 4.85,
+  "bp": 0.04312,
+  "implied_FLEP4": 0.6616,
+  "implied_FLEP8": 0.0397,
+  "checks": {
+    "sum_flp_to_1": true
+  },
+  "notes": "Native FLP1-6 = the M1 severity spine (DD-W4); no lossy reconstruction. 270 m \u2192 tiny assets (Hayhurst) span \u22721 pixel \u2014 a resolution caveat. Do NOT splice with WRC 30 m FLEP."
+}

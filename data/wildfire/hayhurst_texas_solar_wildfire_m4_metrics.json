@@ -1,0 +1,40 @@
+{
+  "layer": "M4_loss_metrics",
+  "peril": "wildfire",
+  "asset": {
+    "slug": "hayhurst_texas_solar",
+    "name": "Hayhurst Texas Solar",
+    "role": "baseline (low-fire)"
+  },
+  "engine": "shared compound-Poisson Monte-Carlo (reused from hail); Poisson(\u03bb) fires, class-sampled severity",
+  "n_sim_years": 300000,
+  "frequency": "poisson",
+  "lambda_per_yr": 0.00037,
+  "fano_factor": 1.0,
+  "tiv_usd": 36778400,
+  "tiv_estimated": false,
+  "loss_basis": "gross physical only (no deductibles/limits/BI \u2014 deferred)",
+  "metrics_pct_of_tiv": {
+    "EAL": 0.0004,
+    "VaR95 (PML20)": 0.0,
+    "VaR99 (PML100)": 0.0,
+    "VaR99.6 (PML250)": 0.0,
+    "TVaR99": 0.0004,
+    "OEP-PML100": 0.0
+  },
+  "metrics_usd": {
+    "EAL": 151.14,
+    "VaR95 (PML20)": 0.0,
+    "VaR99 (PML100)": 0.0,
+    "VaR99.6 (PML250)": 0.0,
+    "TVaR99": 151.14,
+    "OEP-PML100": 0.0
+  },
+  "zero_loss_fraction": 0.99962,
+  "known_answer_checks": "pass (EAL\u2248\u03bb\u00b7E[loss|fire]; zero-loss\u2248exp(\u2212\u03bb); AEP\u2265OEP)",
+  "metrics_status": "REAL but APPROXIMATE \u2014 curve-limited (DD-W8 anchored approximate curve; 6-class discrete severity coarse deep tail AW-24; d=10m; single-site). NOT record-limited (\u03bb FSim-pre-integrated).",
+  "provenance": {
+    "plan": "docs/plans/wildfire/m4_loss_metrics.md",
+    "from": "hayhurst_texas_solar_wildfire_m3_damage.parquet + m1 \u03bb"
+  }
+}

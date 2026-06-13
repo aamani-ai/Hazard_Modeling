@@ -1,0 +1,40 @@
+{
+  "layer": "M4_loss_metrics",
+  "peril": "wildfire",
+  "asset": {
+    "slug": "matrix_pleasant_valley",
+    "name": "Matrix Pleasant Valley",
+    "role": "proving (high-fire)"
+  },
+  "engine": "shared compound-Poisson Monte-Carlo (reused from hail); Poisson(\u03bb) fires, class-sampled severity",
+  "n_sim_years": 300000,
+  "frequency": "poisson",
+  "lambda_per_yr": 0.044077,
+  "fano_factor": 1.0,
+  "tiv_usd": 385580000.0,
+  "tiv_estimated": true,
+  "loss_basis": "gross physical only (no deductibles/limits/BI \u2014 deferred)",
+  "metrics_pct_of_tiv": {
+    "EAL": 0.2896,
+    "VaR95 (PML20)": 0.0,
+    "VaR99 (PML100)": 4.7467,
+    "VaR99.6 (PML250)": 14.0125,
+    "TVaR99": 9.4438,
+    "OEP-PML100": 4.7467
+  },
+  "metrics_usd": {
+    "EAL": 1116583.21,
+    "VaR95 (PML20)": 0.0,
+    "VaR99 (PML100)": 18302402.07,
+    "VaR99.6 (PML250)": 54029226.83,
+    "TVaR99": 36413397.76,
+    "OEP-PML100": 18302402.07
+  },
+  "zero_loss_fraction": 0.95651,
+  "known_answer_checks": "pass (EAL\u2248\u03bb\u00b7E[loss|fire]; zero-loss\u2248exp(\u2212\u03bb); AEP\u2265OEP)",
+  "metrics_status": "REAL but APPROXIMATE \u2014 curve-limited (DD-W8 anchored approximate curve; 6-class discrete severity coarse deep tail AW-24; d=10m; single-site). NOT record-limited (\u03bb FSim-pre-integrated).",
+  "provenance": {
+    "plan": "docs/plans/wildfire/m4_loss_metrics.md",
+    "from": "matrix_pleasant_valley_wildfire_m3_damage.parquet + m1 \u03bb"
+  }
+}
