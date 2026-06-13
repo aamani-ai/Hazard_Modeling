@@ -76,6 +76,10 @@ competitive-research `learnings/architecture/` folder does. **Don't pre-create s
 | [04](04_two_datasets_one_peril_decompose.md) | Two datasets, one peril — decompose by component, don't pick a winner | method · forward-looking | hail × solar / [DD-3](../plans/hail/decisions.md) | any peril with ≥2 datasets of differing nature |
 | [05](05_damage_curve_three_coupled_choices.md) | The asset damage curve is three coupled choices — value-allocation is a financial decision | method · forward-looking | hail × solar · M3 / damage-curve swap | the damage-curve library build; severity for any peril/asset |
 | [06](06_collection_region_size_cancels.md) | The collection region — model over an area, and its size cancels (choose it for homogeneity, not magnitude) | method · substrate | hail × solar · M0/M2 / [A1](../plans/hail/assumptions.md) · [DD-1](../plans/hail/decisions.md) | any areal hit-or-miss peril built as `λ_collection · p` over a region |
+| [07](07_one_simulation_two_products.md) | One simulation, two products — not interchangeable, and validate the paid wrapper before you pay | method · anti-pattern | wildfire × solar · M0 / [DD-W3](../plans/wildfire/decisions.md) · [DD-W4](../plans/wildfire/decisions.md) | any peril with ≥2 products of one model, or a paid API over public data |
+| [08](08_oozing_developed_pixels.md) | The asset pixel can be a hole — rasters ooze frequency onto developed land but suppress intensity | method · forward-looking | wildfire × solar · M0 / [AW-15](../plans/wildfire/assumptions.md) | any site-conditioned peril read at a developed/engineered site |
+| [09](09_pre_integrated_vs_extracted_catalog.md) | When the simulator pre-integrates the event set, M1 is profile-assembly, not event-extraction (and λ comes from a different place) | method · anti-pattern | wildfire × solar · M1 / [DD-W7](../plans/wildfire/decisions.md) | every peril at M1 — classify pre-integrated vs raw-evidence before choosing catalog/frequency machinery |
+| [10](10_monte_carlo_effective_sample_size.md) | A Monte Carlo metric is only as precise as its *effective* sample — and a known-answer tolerance must track that, not a fixed band | method · anti-pattern | wildfire × solar · M4 / [DD-W7](../plans/wildfire/decisions.md) | every peril reading metrics off an MC — acutely rare perils (low λ) and deep-tail PMLs |
 
 *Sub-folders in this tree:* none yet (see the naming rule above).
 
@@ -118,4 +122,4 @@ The decision it generalizes, the principle it serves, the reference it builds on
 
 ---
 
-**Last update:** 2026-06-11 — added entry 06 (the collection region & why its size cancels).
+**Last update:** 2026-06-13 — added entry 10 (Monte Carlo effective sample size & the self-calibrating known-answer tolerance), from wildfire M4. Earlier same-day: 07 (one simulation, two products), 08 (the oozing trap), 09 (pre-integrated vs extracted catalog), from wildfire M0–M1.
