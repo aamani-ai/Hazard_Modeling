@@ -48,6 +48,11 @@ belongs to **frequency** (how *often* we get hit), not severity (how *bad*).
 the 50-mile radius doesn't bias the answer — as long as rate and `p` use the *same* region. (Why the radius
 washes out, in depth: [learning_logs/06](../../../../docs/learning_logs/06_collection_region_size_cancels.md).)
 
+Here "spatially homogeneous" means the 50-mile circle is treated as **one local hail regime**: event rate per
+km², footprint-size mix, and hail-size/severity mix are roughly similar inside the circle. It does not mean
+every grid cell has identical storms. It is the reason the `A` cancellation is a local approximation, not a
+license to use a very large region that mixes different hail climates.
+
 One more subtlety: `pᵢ` is the probability of **any overlap**. It does not decide what fraction of the plant
 is exposed after a hit. That is a separate simplification: v1 assumes **full exposure on hit**
 (`exposed_fraction = 1`) because the Hayhurst array footprint is tiny relative to typical hail swaths.

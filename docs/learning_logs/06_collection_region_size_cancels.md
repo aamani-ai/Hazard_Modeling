@@ -56,6 +56,21 @@ each `pᵢ` ≈ ÷4 — and `λ_asset` stays ≈ **0.26/yr**. The M2 known-answe
 50 mi is picked because it **matches NOAA's own query radius** (so the events we count and the area we
 normalize by are the *same* footprint, and the NOAA↔MRMS cross-check is on one consistent region).
 
+## What "spatially homogeneous" means here
+
+This does **not** mean every square kilometre has identical storms. It means the chosen collection region is
+treated as **one local hail regime**: event density per km², footprint-size mix, and hail-size/severity mix are
+roughly stable across the 50-mi circle. Under that local-stationarity assumption, making `A` larger mostly
+adds proportional event opportunities, which is the condition behind `λ_collection ∝ A`.
+
+This is also different from **record homogeneity** in [DD-1](../plans/hail/decisions.md). DD-1 is about using
+one consistent detection regime through time (MRMS rather than a raw NOAA+MRMS splice). This entry's
+homogeneity constraint is spatial: the region should not cross into a meaningfully different hail climate.
+
+So 50 mi is useful because it is large enough to collect events, but still local enough that Hayhurst is being
+modeled inside one West Texas hail regime. A 500-mi region would not be acceptable just because `A` appears
+in both terms; it would mix different storm climates and break the reason the cancellation is credible.
+
 ## How to recognize it next time (the same-region rule)
 
 On every new areal peril/asset, the invariant to hold is: **estimate `λ_collection` and `p` over the *same*

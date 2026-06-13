@@ -39,6 +39,19 @@ If hit  -> full conditional_loss_i from M3
 So `pᵢ` is the event's **weighted-coin probability of hitting the asset**. It is not multiplied into the
 loss before simulation.
 
+It also does **not** draw a partial exposed fraction. In v1, the split is:
+
+```text
+p_i:
+  probability that the event overlaps the plant at all
+
+conditional_loss_i:
+  full loss if that overlap happens
+
+exposed_fraction:
+  fixed at 1.0 in v1 (A13), not randomly drawn
+```
+
 Example:
 
 ```text

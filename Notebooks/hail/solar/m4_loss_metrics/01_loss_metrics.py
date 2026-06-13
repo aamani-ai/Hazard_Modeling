@@ -92,6 +92,11 @@ print("Real (record-limited, ~5.65 yr) — no longer illustrative. Headline metr
 # value, per year); `OEP_year` = largest single hit. **No `pᵢ × loss` anywhere.** The count is drawn
 # **Negative Binomial** (the fitted over-dispersion, DD-2) — implemented as a Gamma-Poisson mixture: the
 # yearly rate itself wobbles `λ_year ~ Gamma`, then `count ~ Poisson(λ_year)`. `fano=1` recovers plain Poisson.
+#
+# `pᵢ` also does **not** draw a partial exposed fraction. It answers "does this event overlap the plant at
+# all?" The current severity input already assumes full exposure on hit (`exposed_fraction = 1`, A13), so the
+# MC applies either `$0` on miss or the full `conditional_lossᵢ` on hit. Partial overlap, local-intensity
+# sampling, and conditional damage spread are future severity/coupling refinements, not extra draws here.
 
 # %%
 def run_mc(n_years, lam_coll, p_evt, loss_evt, asset_value, rng, fano=1.0):

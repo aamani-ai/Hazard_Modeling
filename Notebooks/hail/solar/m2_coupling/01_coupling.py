@@ -94,6 +94,18 @@ cat[["event_id", "footprint_area_km2", "peak_intensity_in", "centroid_lon", "cen
 # - **Per-event:** we compute `pᵢ` from each event's own `Fᵢ` (not one constant factor).
 # - **Rate:** `λ_asset = λ_collection · E[p]`; over the *observed* catalog the expected asset-hits = **`Σ pᵢ`**.
 # - **`A` cancels:** `λ_collection ∝ A`, `p ∝ 1/A` → `λ_asset` independent of region size (DD-1 same-region rule).
+# - **Spatially homogeneous region:** this cancellation is a local-regime approximation. The 50-mi circle
+#   should have roughly stable event density, footprint-size mix, and hail-size/severity mix. It does not mean
+#   every grid cell is identical; it means we are not mixing meaningfully different hail climates.
+#
+# **What `pᵢ` is not.**
+# - It is **not** a distance-to-Hayhurst score. A large footprint on the edge of the plotted region can have a
+#   higher `pᵢ` than a small footprint visually near the asset, because `pᵢ` is driven by `F`, `s`, and `A`.
+# - It is **not** partial exposure. It is the probability of **any overlap**; conditional on overlap, v1 uses
+#   `exposed_fraction = 1` (A13) because the asset footprint is tiny relative to typical hail swaths.
+#   Under-investigation caveat: small swaths can clip only the plant edge; a future true-overlap version
+#   should estimate `overlap_area / asset_area` and scale exposed value instead of treating any contact as
+#   full exposure.
 
 # %%
 F = cat["footprint_area_km2"].to_numpy()

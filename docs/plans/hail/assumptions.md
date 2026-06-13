@@ -25,6 +25,11 @@ Grouped by layer (M0 → M3); newest layer last.
 | A4 | **Daily grain = last tile of day ≈ 24-h max** | the `MESH_Max_1440min` product | assumed | true daily max over all tiles |
 | A5 | **MESH is a radar *estimate*** (over-forecasts; ~75% of hail below it) — not ground truth | Witt 1998; [learning_logs/01](../../learning_logs/01_extending_a_short_hazard_record.md) | inherent (data caveat) | bias-correct MESH vs reports |
 
+**A1 note — spatially homogeneous.** Here this means the 50-mi circle is treated as **one local hail
+regime**: event density per km², footprint-size mix, and hail-size/severity mix are roughly stable inside the
+circle. It does **not** mean every grid cell is identical. The `A` cancellation is credible only inside that
+local-regime assumption; a much larger region could mix different hail climates and break `λ_collection ∝ A`.
+
 ## M1 — event catalog
 
 | # | Assumption | Basis / why | Status | Revisit when |
