@@ -296,6 +296,25 @@ The first GitHub Actions run should use the already-proven batch window `2024-06
 `execute_after_deploy=false` first. If deploy succeeds, execute the job once and inspect GCS outputs before
 starting any full-denominator fanout.
 
+First GitHub Actions result:
+
+- run: `27647573897`;
+- status: failed during `google-github-actions/auth@v3`;
+- reason: `unauthorized_client`, credential rejected by the Workload Identity Federation attribute condition;
+- interpretation: the deployment guide assumes an `aamani-ai` GitHub organization repository, while the
+  current remote is `D-ivyy/Hazard_Modeling`;
+- this is not a Cloud Run runtime service-account problem. The explicit runtime service account works from
+  local `gcloud`.
+
+Temporary remote-proof fallback:
+
+- deploy the Cloud Run Job directly from local `gcloud`;
+- use the public `python:3.12-slim` image only as a bootstrap image;
+- download the pinned runner script from GCS at runtime;
+- run as `project-service-account@modeling-nonprod-svc-db5x.iam.gserviceaccount.com`;
+- keep this as proof infrastructure only. The durable path should be either moving this repo/workflow under
+  the allowed WIF condition or updating the WIF condition for this repo.
+
 ## Stage 4 - Scaled M0 Daily Evidence
 
 Once the runner is selected, process the full accepted source-date denominator in independent batches.

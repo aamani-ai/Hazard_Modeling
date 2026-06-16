@@ -49,7 +49,7 @@ import xarray as xr
 ROOT = Path(__file__).resolve().parents[1]
 GRID_DIR = ROOT / "data" / "hazard_conus_grid" / "common" / "benchmark_grid"
 HAIL_GRID_DIR = ROOT / "data" / "hazard_conus_grid" / "hail"
-MRMS_CACHE = ROOT / "data" / "hail" / "mrms_raw"
+MRMS_CACHE = Path(os.environ.get("MRMS_CACHE_ROOT", str(ROOT / "data" / "hail" / "mrms_raw")))
 
 THRESHOLD_MM = 25.4
 PRODUCT = "CONUS/MESH_Max_1440min_00.50"
