@@ -9,6 +9,8 @@ This is a notebook-support utility, not production code. It is the script form o
 
 It reads an accepted MRMS source inventory, processes one explicit date window, writes one
 row per served CONUS cell per accepted date, and optionally uploads the batch tree to GCS.
+For Cloud Run fanout it can also choose its date window from the inventory batch-spec CSV
+using CLOUD_RUN_TASK_INDEX.
 
 Examples:
   .venv/bin/python scripts/run_mrms_v1_m0_daily_evidence_batch.py --dry-run \
@@ -56,6 +58,19 @@ PRODUCT = "CONUS/MESH_Max_1440min_00.50"
 DEFAULT_SOURCE_INVENTORY_RUN_ID = "20260616T165806Z"
 DEFAULT_SOURCE_INVENTORY_LABEL = "20140101_20260615"
 DEFAULT_GCS_OUTPUT_ROOT = "gs://infrasure-benchmark/hazard_conus_grid/dev/hail/v1_mrms_only/m0_daily_cell_evidence"
+DEFAULT_BATCH_SPEC_URI = (
+    "gs://infrasure-benchmark/hazard_conus_grid/dev/hail/v1_mrms_only/m0_source_inventory/"
+    "run_id=20260616T165806Z/"
+    "mrms_v1_m0_daily_evidence_batch_spec_20140101_20260615_20260616T165806Z.csv"
+)
+
+
+def env_int(*names: str) -> int | None:
+    for name in names:
+        value = os.environ.get(name)
+        if value not in (None, ""):
+            return int(value)
+    return None
 
 
 def parse_args() -> argparse.Namespace:
@@ -75,6 +90,32 @@ def parse_args() -> argparse.Namespace:
         "--served-mask-uri",
         default=os.environ.get("MRMS_SERVED_MASK_URI"),
         help="Local or gs:// served CONUS cell CSV. Defaults to the local benchmark grid artifact.",
+    )
+    parser.add_argument(
+        "--batch-spec-uri",
+        default=os.environ.get("MRMS_M0_BATCH_SPEC_URI"),
+        help=(
+            "Local or gs:// M0 batch-spec CSV. Required for --task-indexed unless the default local "
+            "inventory batch spec exists."
+        ),
+    )
+    parser.add_argument(
+        "--task-indexed",
+        action="store_true",
+        default=os.environ.get("MRMS_M0_TASK_INDEXED") == "1",
+        help="Resolve batch-start/end from batch-spec row CLOUD_RUN_TASK_INDEX instead of explicit dates.",
+    )
+    parser.add_argument(
+        "--task-index",
+        type=int,
+        default=env_int("MRMS_M0_TASK_INDEX", "CLOUD_RUN_TASK_INDEX"),
+        help="Zero-based batch-spec row index. Defaults to MRMS_M0_TASK_INDEX or CLOUD_RUN_TASK_INDEX.",
+    )
+    parser.add_argument(
+        "--task-count",
+        type=int,
+        default=env_int("MRMS_M0_TASK_COUNT", "CLOUD_RUN_TASK_COUNT"),
+        help="Declared task count for metadata/validation. Defaults to MRMS_M0_TASK_COUNT or CLOUD_RUN_TASK_COUNT.",
     )
     parser.add_argument(
         "--run-id",
@@ -185,6 +226,72 @@ def resolve_served_mask(args: argparse.Namespace) -> Path:
             return download_gcs_uri(uri, local)
         return Path(uri)
     return GRID_DIR / "served_conus_cell_ids_v2026_06.csv"
+
+
+def resolve_batch_spec(args: argparse.Namespace) -> Path:
+    if args.batch_spec_uri:
+        uri = args.batch_spec_uri
+        if is_gcs_uri(uri):
+            local = Path(tempfile.gettempdir()) / uri.rstrip("/").rsplit("/", 1)[-1]
+            return download_gcs_uri(uri, local)
+        return Path(uri)
+
+    local = (
+        HAIL_GRID_DIR
+        / "v1_mrms_only"
+        / "m0_source_inventory"
+        / f"run_id={args.source_inventory_run_id}"
+        / f"mrms_v1_m0_daily_evidence_batch_spec_{DEFAULT_SOURCE_INVENTORY_LABEL}_{args.source_inventory_run_id}.csv"
+    )
+    if local.exists():
+        return local
+
+    return download_gcs_uri(DEFAULT_BATCH_SPEC_URI, Path(tempfile.gettempdir()) / DEFAULT_BATCH_SPEC_URI.rsplit("/", 1)[-1])
+
+
+def resolve_batch_control(args: argparse.Namespace) -> dict[str, Any]:
+    if not args.task_indexed:
+        return {
+            "execution_mode": "single_batch",
+            "batch_start": args.batch_start,
+            "batch_end": args.batch_end,
+            "batch_id": None,
+            "batch_spec_path": None,
+            "batch_spec_uri": None,
+            "task_index": None,
+            "task_count": args.task_count,
+            "cloud_run_task_attempt": os.environ.get("CLOUD_RUN_TASK_ATTEMPT"),
+        }
+
+    if args.task_index is None:
+        raise ValueError("--task-indexed requires --task-index, MRMS_M0_TASK_INDEX, or CLOUD_RUN_TASK_INDEX")
+    if args.task_index < 0:
+        raise ValueError(f"task index must be non-negative, got {args.task_index}")
+
+    batch_spec_path = resolve_batch_spec(args)
+    batch_spec = pd.read_csv(batch_spec_path)
+    required_columns = {"batch_id", "date_start", "date_end", "n_accepted_source_days"}
+    missing = sorted(required_columns - set(batch_spec.columns))
+    if missing:
+        raise ValueError(f"batch spec missing columns: {missing}")
+    if args.task_index >= len(batch_spec):
+        raise IndexError(f"task index {args.task_index} outside batch spec with {len(batch_spec)} rows")
+
+    row = batch_spec.iloc[int(args.task_index)].to_dict()
+    return {
+        "execution_mode": "task_indexed",
+        "batch_start": str(row["date_start"]),
+        "batch_end": str(row["date_end"]),
+        "batch_id": str(row["batch_id"]),
+        "n_accepted_source_days": int(row["n_accepted_source_days"]),
+        "batch_spec_path": str(batch_spec_path),
+        "batch_spec_uri": args.batch_spec_uri or DEFAULT_BATCH_SPEC_URI,
+        "batch_spec_rows": int(len(batch_spec)),
+        "task_index": int(args.task_index),
+        "task_count": None if args.task_count is None else int(args.task_count),
+        "cloud_run_task_attempt": os.environ.get("CLOUD_RUN_TASK_ATTEMPT"),
+        "batch_spec_row": row,
+    }
 
 
 def source_timestamp_from_name(path_or_key: str) -> pd.Timestamp:
@@ -468,6 +575,9 @@ def load_inputs(args: argparse.Namespace) -> tuple[pd.DataFrame, pd.DataFrame, P
 
 def main() -> int:
     args = parse_args()
+    batch_control = resolve_batch_control(args)
+    args.batch_start = batch_control["batch_start"]
+    args.batch_end = batch_control["batch_end"]
     batch_label = f"{pd.Timestamp(args.batch_start).strftime('%Y%m%d')}_{pd.Timestamp(args.batch_end).strftime('%Y%m%d')}"
     local_run_dir = args.local_root / f"run_id={args.run_id}" / f"batch={batch_label}"
     qa_map_dir = local_run_dir / "qa" / "maps"
@@ -483,9 +593,26 @@ def main() -> int:
         raise ValueError(f"batch dates missing from source inventory: {missing_dates}")
     if not not_accepted.empty:
         raise ValueError(f"batch contains dates not accepted for V1:\n{not_accepted.to_string(index=False)}")
+    expected_source_days = batch_control.get("n_accepted_source_days")
+    if expected_source_days is not None and len(batch_inventory) != int(expected_source_days):
+        raise ValueError(
+            "batch-spec accepted source day count does not match inventory rows: "
+            f"batch_id={batch_control.get('batch_id')} "
+            f"spec={expected_source_days} inventory={len(batch_inventory)}"
+        )
 
     expected_rows = len(served) * len(batch_inventory)
     print(f"[mrms-m0] run_id={args.run_id} batch={batch_label}", flush=True)
+    print(
+        "[mrms-m0] "
+        f"execution_mode={batch_control['execution_mode']} "
+        f"batch_id={batch_control.get('batch_id')} "
+        f"task_index={batch_control.get('task_index')} "
+        f"task_count={batch_control.get('task_count')}",
+        flush=True,
+    )
+    if batch_control.get("batch_spec_path"):
+        print(f"[mrms-m0] batch_spec={batch_control['batch_spec_path']}", flush=True)
     print(f"[mrms-m0] source_inventory={inventory_path}", flush=True)
     print(f"[mrms-m0] served_mask={served_path}", flush=True)
     print(f"[mrms-m0] dates={len(batch_inventory)} served_cells={len(served)} expected_rows={expected_rows}", flush=True)
@@ -584,6 +711,15 @@ def main() -> int:
         "source_inventory_run_id": args.source_inventory_run_id,
         "source_inventory_parquet": str(inventory_path),
         "served_mask_csv": str(served_path),
+        "execution_mode": batch_control["execution_mode"],
+        "task_index": batch_control.get("task_index"),
+        "task_count": batch_control.get("task_count"),
+        "cloud_run_task_attempt": batch_control.get("cloud_run_task_attempt"),
+        "batch_id": batch_control.get("batch_id"),
+        "batch_spec_uri": batch_control.get("batch_spec_uri"),
+        "batch_spec_path": batch_control.get("batch_spec_path"),
+        "batch_spec_rows": batch_control.get("batch_spec_rows"),
+        "batch_spec_row": batch_control.get("batch_spec_row"),
         "n_dates": int(len(batch_inventory)),
         "n_served_cells": int(len(served)),
         "expected_rows": int(expected_rows),

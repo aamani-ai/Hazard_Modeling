@@ -11,6 +11,26 @@ on:
         description: Last accepted MRMS date to process.
         required: true
         default: "2024-06-07"
+      execution_mode:
+        description: How the job chooses batch windows.
+        required: true
+        type: choice
+        options:
+          - single_batch
+          - task_indexed
+        default: single_batch
+      task_count:
+        description: Cloud Run task count. Use 1 for single_batch; use the number of batch-spec rows for task_indexed.
+        required: true
+        default: "1"
+      parallelism:
+        description: Maximum Cloud Run tasks to run at once.
+        required: true
+        default: "1"
+      batch_spec_uri:
+        description: Batch-spec CSV for task_indexed mode.
+        required: true
+        default: "gs://infrasure-benchmark/hazard_conus_grid/dev/hail/v1_mrms_only/m0_source_inventory/run_id=20260616T165806Z/mrms_v1_m0_daily_evidence_batch_spec_20140101_20260615_20260616T165806Z.csv"
       run_id:
         description: Optional run id. Leave blank to generate a UTC timestamp.
         required: false
@@ -84,17 +104,27 @@ jobs:
 
       - name: Deploy Cloud Run Job
         run: |
+          EXECUTION_MODE="${{ inputs.execution_mode }}"
+          TASK_INDEXED=0
+          if [ "$EXECUTION_MODE" = "task_indexed" ]; then
+            TASK_INDEXED=1
+          fi
+          if [ "$EXECUTION_MODE" = "single_batch" ] && [ "${{ inputs.task_count }}" != "1" ]; then
+            echo "single_batch mode must use task_count=1" >&2
+            exit 1
+          fi
           gcloud run jobs deploy "${{ env.JOB_NAME }}" \
             --project "${{ env.PROJECT_ID }}" \
             --region "${{ env.REGION }}" \
             --image "$IMAGE_NAME" \
             --service-account "${{ env.RUNTIME_SERVICE_ACCOUNT }}" \
-            --tasks 1 \
+            --tasks "${{ inputs.task_count }}" \
+            --parallelism "${{ inputs.parallelism }}" \
             --max-retries 1 \
             --task-timeout 3600 \
             --cpu 2 \
             --memory 4Gi \
-            --set-env-vars "MRMS_M0_BATCH_START=${{ inputs.batch_start }},MRMS_M0_BATCH_END=${{ inputs.batch_end }},HAZARD_CONUS_GRID_RUN_ID=${{ steps.run_id.outputs.value }},HAZARD_CONUS_GRID_UPLOAD_TO_GCS=1,MRMS_M0_SKIP_MAPS=1,MRMS_SOURCE_INVENTORY_RUN_ID=${{ env.SOURCE_INVENTORY_RUN_ID }},MRMS_SOURCE_INVENTORY_URI=${{ env.SOURCE_INVENTORY_URI }},MRMS_SERVED_MASK_URI=${{ env.SERVED_MASK_URI }},MRMS_M0_GCS_OUTPUT_ROOT=${{ env.GCS_OUTPUT_ROOT }}"
+            --set-env-vars "MRMS_M0_BATCH_START=${{ inputs.batch_start }},MRMS_M0_BATCH_END=${{ inputs.batch_end }},MRMS_M0_TASK_INDEXED=${TASK_INDEXED},MRMS_M0_TASK_COUNT=${{ inputs.task_count }},MRMS_M0_BATCH_SPEC_URI=${{ inputs.batch_spec_uri }},HAZARD_CONUS_GRID_RUN_ID=${{ steps.run_id.outputs.value }},HAZARD_CONUS_GRID_UPLOAD_TO_GCS=1,MRMS_M0_SKIP_MAPS=1,MRMS_SOURCE_INVENTORY_RUN_ID=${{ env.SOURCE_INVENTORY_RUN_ID }},MRMS_SOURCE_INVENTORY_URI=${{ env.SOURCE_INVENTORY_URI }},MRMS_SERVED_MASK_URI=${{ env.SERVED_MASK_URI }},MRMS_M0_GCS_OUTPUT_ROOT=${{ env.GCS_OUTPUT_ROOT }}"
 
       - name: Execute Cloud Run Job
         if: ${{ inputs.execute_after_deploy }}
@@ -108,6 +138,10 @@ jobs:
         run: |
           echo "Cloud Run Job: ${{ env.JOB_NAME }}"
           echo "Image: $IMAGE_NAME"
+          echo "Execution mode: ${{ inputs.execution_mode }}"
+          echo "Task count: ${{ inputs.task_count }}"
+          echo "Parallelism: ${{ inputs.parallelism }}"
           echo "Run ID: ${{ steps.run_id.outputs.value }}"
           echo "Batch: ${{ inputs.batch_start }} to ${{ inputs.batch_end }}"
+          echo "Batch spec: ${{ inputs.batch_spec_uri }}"
           echo "Output root: ${{ env.GCS_OUTPUT_ROOT }}/run_id=${{ steps.run_id.outputs.value }}/"

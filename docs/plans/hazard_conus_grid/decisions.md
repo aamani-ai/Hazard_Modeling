@@ -5,6 +5,46 @@ decisions live in each hazard subfolder.
 
 ---
 
+## DD-G9 · Use task-indexed Cloud Run fanout for hail MRMS M0 full denominator
+
+**Date:** 2026-06-16 · **Status:** decided for hail V1 scale-out.
+
+**Context.** The durable GitHub Actions / Artifact Registry / Cloud Run Job path now works from
+`aamani-ai/Hazard_Modeling`. A single 7-day durable-image proof succeeded, and the earlier 14-day bootstrap
+proof showed a normal inventory-generated batch fits comfortably inside Cloud Run limits. The full accepted
+MRMS denominator is 148 planned batch-spec rows.
+
+**Decision.** Use one Cloud Run Job in **task-indexed mode** for the full M0 fanout:
+
+```text
+Cloud Run task index 0 -> batch_spec row 0 -> batch_0001
+Cloud Run task index 1 -> batch_spec row 1 -> batch_0002
+...
+Cloud Run task index 147 -> batch_spec row 147 -> batch_0148
+```
+
+All tasks share one full-run `run_id`. Each task writes the existing M0 batch artifact shape under its own
+`batch=YYYYMMDD_YYYYMMDD` prefix. The runner reads the batch-spec CSV from GCS and uses
+`CLOUD_RUN_TASK_INDEX` to choose `date_start` and `date_end`.
+
+**Why.** This avoids 148 manual job updates while keeping the batch contract unchanged. It also keeps the run
+auditable: the batch spec is the control file, the `run_id` is the execution address, and each task writes a
+normal batch that can be reconciled by the existing M0 reconciliation script.
+
+**Guardrails.**
+
+- keep the inventory-generated 14-day batch windows for the first full run;
+- use bounded `parallelism`, not all 148 tasks at once;
+- write no QA maps during full fanout;
+- do not overwrite existing `run_id/batch=` prefixes;
+- reconcile the full batch set before M1 consumes anything.
+
+**Implementation pointer.** See
+[`hail/m0_m1_scaleout_execution.md`](hail/m0_m1_scaleout_execution.md) and
+[`common/gcp_execution_and_storage_conventions.md`](common/gcp_execution_and_storage_conventions.md).
+
+---
+
 ## DD-G8 · Defer canonical asset coupling finalization until full M0/M1 cell comparisons
 
 **Date:** 2026-06-16 · **Status:** decided for hail V1 sequencing.

@@ -300,7 +300,7 @@ Still needed before large batch processing:
 | Needed item | Why |
 |---|---|
 | Full-run `run_id` | One shared run id must address all full-denominator M0 batches. |
-| Batch fanout mode | Choose sequential job updates, per-batch jobs, or task-indexed fanout. |
+| Task-index proof | Prove `CLOUD_RUN_TASK_INDEX` selects the correct batch-spec rows before the 148-task run. |
 | Full-run reconciliation policy | The proof works for two non-overlapping batches; the full run still needs the accepted-batch registry and final full-denominator acceptance rule. |
 | Artifact retention rules | Decide what local summaries/manifests stay versus GCS-only parquet outputs. |
 
@@ -339,13 +339,14 @@ gs://infrasure-benchmark/hazard_conus_grid/dev/hail/v1_mrms_only/m0_daily_cell_e
 ```
 
 The immediate operational task is no longer a permissions fix. Cloud Run Jobs, GCS writes, and the durable
-GitHub Actions image path are proven. The remaining choice is how to fan out the 148 planned 14-day batches:
-sequential job updates, per-batch jobs, or a task-indexed Cloud Run Job.
+GitHub Actions image path are proven. The fanout decision is task-indexed Cloud Run Jobs: each task reads the
+inventory batch-spec CSV and uses `CLOUD_RUN_TASK_INDEX` to select one 14-day batch window.
 
 Next:
 
-1. Choose the full-run fanout mode and one shared full-run `run_id`.
-2. Launch the full accepted MRMS denominator.
-3. Reconcile the full batch set before M1.
+1. Run a 2-task task-index proof.
+2. Choose one shared full-run `run_id`.
+3. Launch the full accepted MRMS denominator with 148 tasks and bounded parallelism.
+4. Reconcile the full batch set before M1.
 
 Use [`m0_m1_scaleout_execution.md`](m0_m1_scaleout_execution.md) as the execution guide.

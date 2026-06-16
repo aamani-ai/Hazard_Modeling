@@ -202,6 +202,19 @@ Else:
 
 The runner must not change the artifact contract. It only changes where the same batch code executes.
 
+Current decision: use **task-indexed Cloud Run fanout** for the first full accepted MRMS denominator.
+
+```text
+Cloud Run task index
+  -> batch-spec row
+  -> date_start/date_end
+  -> one normal M0 batch output prefix
+```
+
+Reason: the durable-image Cloud Run path is proven, normal 14-day batches fit comfortably, and task indexing
+avoids manually updating/executing the same job 148 times. Keep `parallelism` bounded for the first full run
+so source reads, GCS writes, and failures remain observable.
+
 ### Current GCP Execution Decision
 
 Use `modeling-nonprod-svc-db5x` as the first Cloud Run target, not `vertexai-models`.
@@ -506,15 +519,18 @@ The full accepted MRMS denominator is **not running yet**.
 
 Next operational step:
 
-1. choose sequential job updates vs task-indexed fanout for the 148 planned batches;
+1. run a small task-indexed Cloud Run proof with `task_count=2` and `parallelism=2`;
 2. choose the full-run `run_id`;
-3. launch the full 148-batch denominator only after that execution choice is pinned.
+3. launch the full 148-batch denominator with task-indexed fanout and bounded `parallelism`.
 
 Current recommendation:
 
 - project: `modeling-nonprod-svc-db5x`;
 - output bucket prefix:
   `gs://infrasure-benchmark/hazard_conus_grid/dev/hail/v1_mrms_only/m0_daily_cell_evidence/`;
+- fanout mode: task-indexed Cloud Run Job from the inventory batch-spec CSV;
+- first task-index proof: `task_count=2`, `parallelism=2`;
+- first full run: `task_count=148`, bounded `parallelism` instead of all tasks at once;
 - batch size: keep the inventory-generated 14-day batches for the first full run unless Cloud Run timeout tests
   force smaller windows;
 - overwrite policy: never overwrite an existing run/batch prefix; failed batches get a new `run_id` or a

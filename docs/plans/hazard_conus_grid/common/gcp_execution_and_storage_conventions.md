@@ -214,6 +214,44 @@ For full fanout, use the prebuilt Artifact Registry image produced by:
 The bootstrap pattern that installs dependencies inside `python:3.12-slim` was useful for early proofs, but
 is no longer the preferred repeated full-run path.
 
+## Task-Indexed Fanout Convention
+
+For hail MRMS M0 full fanout, use Cloud Run Jobs task indexing:
+
+```text
+--tasks 148
+--parallelism <bounded value>
+MRMS_M0_TASK_INDEXED=1
+MRMS_M0_BATCH_SPEC_URI=gs://.../mrms_v1_m0_daily_evidence_batch_spec_20140101_20260615_20260616T165806Z.csv
+HAZARD_CONUS_GRID_RUN_ID=<ONE_SHARED_FULL_RUN_ID>
+```
+
+Cloud Run provides `CLOUD_RUN_TASK_INDEX`. The runner uses that zero-based index to choose the matching row in
+the batch-spec CSV:
+
+```text
+task 0   -> batch_0001 -> 2020-10-14 to 2020-10-27
+task 1   -> batch_0002 -> 2020-10-28 to 2020-11-10
+...
+task 147 -> batch_0148 -> 2026-06-03 to 2026-06-15
+```
+
+Each task writes the same artifact shape as a single-batch run:
+
+```text
+gs://infrasure-benchmark/hazard_conus_grid/dev/hail/v1_mrms_only/m0_daily_cell_evidence/
+  run_id=<ONE_SHARED_FULL_RUN_ID>/
+    batch=<YYYYMMDD_YYYYMMDD>/
+      date=<YYYY-MM-DD>/part-000.parquet
+      metadata_<BATCH>_<RUN_ID>.json
+      *_manifest_*.csv
+      *_summary_*.csv
+```
+
+Task-indexing must not change the row contract. It only changes how a task chooses its `batch_start` and
+`batch_end`. Keep `parallelism` bounded for the first full run so public MRMS reads and GCS writes are
+observable and restartable.
+
 ## Control Inputs
 
 Remote jobs should read control files from GCS, not from local untracked files.
