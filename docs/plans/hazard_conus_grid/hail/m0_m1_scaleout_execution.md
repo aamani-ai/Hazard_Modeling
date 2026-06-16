@@ -315,6 +315,35 @@ Temporary remote-proof fallback:
 - keep this as proof infrastructure only. The durable path should be either moving this repo/workflow under
   the allowed WIF condition or updating the WIF condition for this repo.
 
+Temporary fallback execution result:
+
+| Item | Value |
+|---|---:|
+| Cloud Run Job | `hazard-conus-grid-mrms-m0-bootstrap` |
+| execution | `hazard-conus-grid-mrms-m0-bootstrap-7jqj5` |
+| execution status | succeeded |
+| execution start | `2026-06-16T20:59:17Z` |
+| execution complete | `2026-06-16T21:01:25Z` |
+| run id | `20260616T205852Z_cloudrun_bootstrap_7d` |
+| batch | `2024-06-01` to `2024-06-07` |
+| rows | 91,595 |
+| severe cell-days | 1,450 |
+| sub-severe cell-days | 21,134 |
+| no-hail cell-days | 69,011 |
+| maps | skipped |
+| runner processing elapsed | 29.474 seconds |
+
+GCS output:
+
+```text
+gs://infrasure-benchmark/hazard_conus_grid/dev/hail/v1_mrms_only/m0_daily_cell_evidence/
+  run_id=20260616T205852Z_cloudrun_bootstrap_7d/batch=20240601_20240607/
+```
+
+This matches the local 7-day proof row count and status counts. Do not blindly re-execute this temporary job:
+the command contains a fixed run id and the runner intentionally refuses to overwrite existing GCS prefixes.
+For additional remote batches, deploy/update the job with a new run id or move to the durable image workflow.
+
 ## Stage 4 - Scaled M0 Daily Evidence
 
 Once the runner is selected, process the full accepted source-date denominator in independent batches.
