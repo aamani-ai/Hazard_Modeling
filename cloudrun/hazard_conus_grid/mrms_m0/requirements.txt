@@ -1,0 +1,9 @@
+numpy
+pandas
+pyarrow
+requests
+xarray
+cfgrib
+eccodes
+matplotlib
+google-cloud-storage

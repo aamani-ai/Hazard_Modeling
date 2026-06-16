@@ -1,0 +1,113 @@
+name: Deploy Hazard CONUS Grid MRMS M0 Job
+
+on:
+  workflow_dispatch:
+    inputs:
+      batch_start:
+        description: First accepted MRMS date to process.
+        required: true
+        default: "2024-06-01"
+      batch_end:
+        description: Last accepted MRMS date to process.
+        required: true
+        default: "2024-06-07"
+      run_id:
+        description: Optional run id. Leave blank to generate a UTC timestamp.
+        required: false
+        default: ""
+      execute_after_deploy:
+        description: Execute the Cloud Run Job immediately after deploy.
+        required: true
+        type: boolean
+        default: false
+
+env:
+  PROJECT_ID: modeling-nonprod-svc-db5x
+  PROJECT_NUMBER: "952205173464"
+  REGION: us-central1
+  GAR_REPO: infrasuremodelingdocker
+  JOB_NAME: hazard-conus-grid-mrms-m0
+  DEPLOY_SERVICE_ACCOUNT: gh-actions-deploy@modeling-nonprod-svc-db5x.iam.gserviceaccount.com
+  RUNTIME_SERVICE_ACCOUNT: project-service-account@modeling-nonprod-svc-db5x.iam.gserviceaccount.com
+  SOURCE_INVENTORY_RUN_ID: "20260616T165806Z"
+  SOURCE_INVENTORY_URI: gs://infrasure-benchmark/hazard_conus_grid/dev/hail/v1_mrms_only/m0_source_inventory/run_id=20260616T165806Z/mrms_v1_source_inventory_20140101_20260615_20260616T165806Z.parquet
+  SERVED_MASK_URI: gs://infrasure-benchmark/hazard_conus_grid/dev/common/benchmark_grid/served_conus_cell_ids_v2026_06.csv
+  GCS_OUTPUT_ROOT: gs://infrasure-benchmark/hazard_conus_grid/dev/hail/v1_mrms_only/m0_daily_cell_evidence
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v3
+        with:
+          project_id: ${{ env.PROJECT_ID }}
+          workload_identity_provider: projects/${{ env.PROJECT_NUMBER }}/locations/global/workloadIdentityPools/infrasure-gh-actions-pool/providers/github-repo-provider
+          service_account: ${{ env.DEPLOY_SERVICE_ACCOUNT }}
+
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v3
+
+      - name: Configure Docker for Artifact Registry
+        run: gcloud auth configure-docker ${{ env.REGION }}-docker.pkg.dev --quiet
+
+      - name: Resolve run id
+        id: run_id
+        run: |
+          RUN_ID="${{ inputs.run_id }}"
+          if [ -z "$RUN_ID" ]; then
+            RUN_ID="$(date -u +%Y%m%dT%H%M%SZ)"
+          fi
+          echo "value=$RUN_ID" >> "$GITHUB_OUTPUT"
+
+      - name: Prepare image context
+        run: |
+          cp scripts/run_mrms_v1_m0_daily_evidence_batch.py \
+            cloudrun/hazard_conus_grid/mrms_m0/run_mrms_v1_m0_daily_evidence_batch.py
+
+      - name: Build and push image
+        run: |
+          IMAGE_NAME="${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.GAR_REPO }}/${{ env.JOB_NAME }}:${{ github.sha }}"
+          docker build \
+            -f cloudrun/hazard_conus_grid/mrms_m0/Dockerfile \
+            -t "$IMAGE_NAME" \
+            cloudrun/hazard_conus_grid/mrms_m0
+          docker push "$IMAGE_NAME"
+          echo "IMAGE_NAME=$IMAGE_NAME" >> "$GITHUB_ENV"
+
+      - name: Deploy Cloud Run Job
+        run: |
+          gcloud run jobs deploy "${{ env.JOB_NAME }}" \
+            --project "${{ env.PROJECT_ID }}" \
+            --region "${{ env.REGION }}" \
+            --image "$IMAGE_NAME" \
+            --service-account "${{ env.RUNTIME_SERVICE_ACCOUNT }}" \
+            --tasks 1 \
+            --max-retries 1 \
+            --task-timeout 3600 \
+            --cpu 2 \
+            --memory 4Gi \
+            --set-env-vars "MRMS_M0_BATCH_START=${{ inputs.batch_start }},MRMS_M0_BATCH_END=${{ inputs.batch_end }},HAZARD_CONUS_GRID_RUN_ID=${{ steps.run_id.outputs.value }},HAZARD_CONUS_GRID_UPLOAD_TO_GCS=1,MRMS_M0_SKIP_MAPS=1,MRMS_SOURCE_INVENTORY_RUN_ID=${{ env.SOURCE_INVENTORY_RUN_ID }},MRMS_SOURCE_INVENTORY_URI=${{ env.SOURCE_INVENTORY_URI }},MRMS_SERVED_MASK_URI=${{ env.SERVED_MASK_URI }},MRMS_M0_GCS_OUTPUT_ROOT=${{ env.GCS_OUTPUT_ROOT }}"
+
+      - name: Execute Cloud Run Job
+        if: ${{ inputs.execute_after_deploy }}
+        run: |
+          gcloud run jobs execute "${{ env.JOB_NAME }}" \
+            --project "${{ env.PROJECT_ID }}" \
+            --region "${{ env.REGION }}" \
+            --wait
+
+      - name: Print run context
+        run: |
+          echo "Cloud Run Job: ${{ env.JOB_NAME }}"
+          echo "Image: $IMAGE_NAME"
+          echo "Run ID: ${{ steps.run_id.outputs.value }}"
+          echo "Batch: ${{ inputs.batch_start }} to ${{ inputs.batch_end }}"
+          echo "Output root: ${{ env.GCS_OUTPUT_ROOT }}/run_id=${{ steps.run_id.outputs.value }}/"
