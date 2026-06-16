@@ -374,9 +374,70 @@ Result:
 This proves the reconciliation contract can accept multiple batch prefixes. It is still a partial,
 non-contiguous proof, not a full-denominator M0 layer.
 
-## Full-Run Gate
+## Full Hail M0 Run
 
-Do not start the full accepted MRMS denominator until these are pinned:
+The first full accepted MRMS denominator has completed with task-indexed Cloud Run fanout.
+
+Cloud execution:
+
+| Item | Value |
+|---|---:|
+| GitHub Actions run | `27651275076` |
+| Cloud Run Job | `hazard-conus-grid-mrms-m0` |
+| Cloud Run execution | `hazard-conus-grid-mrms-m0-54dm7` |
+| run id | `20260616T220624Z_m0_full_conus_task_indexed` |
+| task count | 148 |
+| parallelism | 8 |
+| task result | 148 succeeded, 0 failed |
+| Cloud Run elapsed | about 40 minutes 31 seconds |
+
+Batch output root:
+
+```text
+gs://infrasure-benchmark/hazard_conus_grid/dev/hail/v1_mrms_only/m0_daily_cell_evidence/
+  run_id=20260616T220624Z_m0_full_conus_task_indexed/
+```
+
+Reconciled M0 output:
+
+| Item | Value |
+|---|---:|
+| script | `scripts/reconcile_mrms_v1_m0_batches.py --streaming` |
+| run id | `20260616T225000Z_m0_full_conus_reconciled` |
+| input batches | 148 |
+| dates | 2,071 |
+| served cells/date | 13,085 |
+| rows | 27,099,035 |
+| duplicate `cell_id/date` rows | 0 |
+| row-count failures | 0 |
+| GCS objects | 2,075 |
+| status | `streaming_reconciliation_passed_row_contract` |
+| QA flags | `extreme_mesh_ge_300mm` |
+
+Reconciled root:
+
+```text
+gs://infrasure-benchmark/hazard_conus_grid/dev/hail/v1_mrms_only/m0_reconciled_daily_cell_evidence/
+  run_id=20260616T225000Z_m0_full_conus_reconciled/
+```
+
+The reconciled output is partitioned by date and does **not** include a single giant combined parquet:
+
+```text
+run_id=20260616T225000Z_m0_full_conus_reconciled/
+  date=YYYY-MM-DD/part-000.parquet
+  metadata_20260616T225000Z_m0_full_conus_reconciled.json
+  mrms_v1_m0_reconciled_batch_manifest_20260616T225000Z_m0_full_conus_reconciled.csv
+  mrms_v1_m0_reconciled_date_coverage_20260616T225000Z_m0_full_conus_reconciled.csv
+  mrms_v1_m0_reconciled_status_summary_20260616T225000Z_m0_full_conus_reconciled.csv
+```
+
+This is the first full-grid M0 layer that M1 should consume after QA review. The raw task batch outputs remain
+audit/debug material; M1 should not consume them directly.
+
+## Completed Full-Run Gate
+
+The full accepted MRMS denominator was started only after these were pinned:
 
 - full-run `run_id`;
 - batch list source;
@@ -387,6 +448,7 @@ Do not start the full accepted MRMS denominator until these are pinned:
 
 Recommended next steps for hail:
 
-1. Decide whether the full denominator will run as sequential job updates or a task-indexed fanout.
-2. Choose the full-run `run_id`.
-3. Start the full 148-batch denominator only after that fanout decision is pinned.
+1. Review the `extreme_mesh_ge_300mm` QA flag and decide whether it is acceptable as raw M0 evidence or needs
+   a named downstream QA filter.
+2. Build M1 from the reconciled M0 root, not from individual batch prefixes.
+3. Create map/table review outputs from the reconciled sidecars before moving to M2.

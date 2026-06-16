@@ -192,6 +192,28 @@ It reconciled 2 non-overlapping Cloud Run batches, 21 dates, and 274,785 rows wi
 `cell_id/date` rows. It flagged `extreme_mesh_ge_300mm` because the 14-day batch contains one extreme raw MESH
 value.
 
+The first full task-indexed Cloud Run run and full streaming reconciliation have now succeeded:
+
+```text
+Cloud Run run_id:      20260616T220624Z_m0_full_conus_task_indexed
+GitHub Actions run:    27651275076
+Cloud Run execution:   hazard-conus-grid-mrms-m0-54dm7
+tasks / parallelism:   148 / 8
+task result:           148 succeeded, 0 failed
+
+reconciled run_id:     20260616T225000Z_m0_full_conus_reconciled
+reconciled gcs:        gs://infrasure-benchmark/hazard_conus_grid/dev/hail/v1_mrms_only/m0_reconciled_daily_cell_evidence/run_id=20260616T225000Z_m0_full_conus_reconciled/
+dates:                 2,071
+served cells/date:     13,085
+rows:                  27,099,035
+duplicate cell-dates:  0
+row-count failures:    0
+qa flags:              extreme_mesh_ge_300mm
+```
+
+This reconciled root is the active M0 input for M1 after QA review. Do not build M1 from individual raw
+`m0_daily_cell_evidence/run_id=.../batch=...` prefixes.
+
 ## Artifact Organization
 
 Treat current hail grid outputs in three groups:
@@ -200,11 +222,10 @@ Treat current hail grid outputs in three groups:
 |---|---|---|
 | Research / selected-cell proof | `selected_pilot_cells_*`, `m1_selected_cell_*`, MYRORSS selected-cell scans, solar smoke outputs | Interface and source-learning evidence only. |
 | M0 proof outputs | `m0_mrms_v1_one_day_proof/`, `run_id=20260616T172929Z`, `run_id=20260616T205852Z_cloudrun_bootstrap_7d`, `run_id=20260616T214036Z_wif_deploy_probe` | Row contract, remote execution, durable image, and GCS write proof. |
-| Main V1 build candidates | future `dev_full` M0/M1 runs under `v1_mrms_only/` after reconciliation is ready | Inputs to M1 and later M2-M4. |
+| Main V1 build | `run_id=20260616T225000Z_m0_full_conus_reconciled` under `m0_reconciled_daily_cell_evidence/` | Active M0 input to M1 after QA review. |
 
-The full MRMS denominator is not running yet. The durable image path is now proven. The next hail cloud step is
-to choose the full-run fanout mode, choose one shared full-run `run_id`, then launch the accepted source-date
-denominator.
+The full MRMS denominator and reconciled M0 layer now exist. The next hail grid step is to review the M0 QA
+flag and build M1 frequency / empirical size-distribution summaries from the reconciled root.
 
 ## Current Solar Smoke Test
 

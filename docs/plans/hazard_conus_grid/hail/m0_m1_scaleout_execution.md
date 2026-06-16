@@ -498,10 +498,12 @@ the real M1 layer, not by source-inventory or pilot artifacts.
 Wind comes later because wind exposure/coupling is more nuanced and should reuse the M1 layer only after the
 solar path is stable.
 
-## Immediate Next Step
+## Current Execution State
 
-The scaled runner has been proven with Cloud Run Jobs for a seven-day batch. The completed local small batch
-to preserve is:
+The scaled runner has now been proven and used for the first full MRMS-only hail M0 denominator. Earlier proof
+outputs remain useful for debugging, but the main M0 layer is the reconciled full-run output below.
+
+The completed local small batch to preserve is:
 
 ```text
 data/hazard_conus_grid/hail/v1_mrms_only/m0_daily_cell_evidence/
@@ -515,26 +517,57 @@ gs://infrasure-benchmark/hazard_conus_grid/dev/hail/v1_mrms_only/m0_daily_cell_e
   run_id=20260616T205852Z_cloudrun_bootstrap_7d/batch=20240601_20240607/
 ```
 
-The full accepted MRMS denominator is **not running yet**.
+The task-indexed proof also succeeded:
 
-Next operational step:
+```text
+GitHub Actions run: 27650904912
+Cloud Run execution: hazard-conus-grid-mrms-m0-bn9lk
+run_id: 20260616T215911Z_task_index_2batch_proof
+task_count / parallelism: 2 / 2
+rows: 366,380 across two non-overlapping 14-day batches
+```
 
-1. run a small task-indexed Cloud Run proof with `task_count=2` and `parallelism=2`;
-2. choose the full-run `run_id`;
-3. launch the full 148-batch denominator with task-indexed fanout and bounded `parallelism`.
+The full task-indexed Cloud Run run then succeeded:
 
-Current recommendation:
+```text
+GitHub Actions run: 27651275076
+Cloud Run execution: hazard-conus-grid-mrms-m0-54dm7
+run_id: 20260616T220624Z_m0_full_conus_task_indexed
+task_count / parallelism: 148 / 8
+task result: 148 succeeded, 0 failed
+elapsed: about 40 minutes 31 seconds
+gcs: gs://infrasure-benchmark/hazard_conus_grid/dev/hail/v1_mrms_only/m0_daily_cell_evidence/run_id=20260616T220624Z_m0_full_conus_task_indexed/
+```
+
+The full run was reconciled with streaming output:
+
+```text
+script: scripts/reconcile_mrms_v1_m0_batches.py --streaming
+run_id: 20260616T225000Z_m0_full_conus_reconciled
+gcs: gs://infrasure-benchmark/hazard_conus_grid/dev/hail/v1_mrms_only/m0_reconciled_daily_cell_evidence/run_id=20260616T225000Z_m0_full_conus_reconciled/
+status: streaming_reconciliation_passed_row_contract
+dates: 2,071
+served cells/date: 13,085
+rows: 27,099,035
+duplicate cell-date rows: 0
+row-count failures: 0
+qa flags: extreme_mesh_ge_300mm
+```
+
+The active recommendation after the full run:
 
 - project: `modeling-nonprod-svc-db5x`;
 - output bucket prefix:
   `gs://infrasure-benchmark/hazard_conus_grid/dev/hail/v1_mrms_only/m0_daily_cell_evidence/`;
 - fanout mode: task-indexed Cloud Run Job from the inventory batch-spec CSV;
-- first task-index proof: `task_count=2`, `parallelism=2`;
-- first full run: `task_count=148`, bounded `parallelism` instead of all tasks at once;
-- batch size: keep the inventory-generated 14-day batches for the first full run unless Cloud Run timeout tests
-  force smaller windows;
+- future full reruns: keep bounded `parallelism`; do not run all tasks at once unless measured evidence supports it;
+- batch size: keep the inventory-generated 14-day batches unless a retry or future source change forces smaller
+  windows;
 - overwrite policy: never overwrite an existing run/batch prefix; failed batches get a new `run_id` or a
   deliberate retry prefix;
 - maps: write QA PNG maps for proof batches only; use `--skip-maps` for full fanout and create review maps from
   reconciled summaries later.
 - metadata format: JSON is authoritative; CSV is allowed only for flat summaries/manifests.
+
+Next operational step: build M1 from the reconciled M0 root, after reviewing the `extreme_mesh_ge_300mm` QA
+flag and producing a small set of review maps/tables from the reconciled sidecars.

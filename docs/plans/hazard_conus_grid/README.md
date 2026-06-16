@@ -212,11 +212,18 @@ The first M0 batch wrote 91,595 rows (`7 x 13,085`), produced 7 CONUS QA maps, a
 gs://infrasure-benchmark/hazard_conus_grid/dev/hail/v1_mrms_only/m0_daily_cell_evidence/run_id=20260616T172929Z/batch=20240601_20240607/
 ```
 
-Current cloud status: a 7-day Cloud Run proof succeeded under
-`run_id=20260616T205852Z_cloudrun_bootstrap_7d`, matching the local proof counts exactly. The full accepted
-MRMS denominator is **not** running yet. Next build target: run one 14-day remote batch, then build/verify
-batch reconciliation before any full 148-batch fanout. MYRORSS, Murillo & Homeyer de-biasing, EVT tail, and
-more complex sparse-cell/frequency modeling remain V1.5/V2 after the MRMS-only grid contract is clean.
+Current cloud status: the first full MRMS-only M0 denominator has completed and reconciled. The task-indexed
+Cloud Run fanout used `run_id=20260616T220624Z_m0_full_conus_task_indexed`; the accepted reconciled M0 root is:
+
+```text
+gs://infrasure-benchmark/hazard_conus_grid/dev/hail/v1_mrms_only/m0_reconciled_daily_cell_evidence/run_id=20260616T225000Z_m0_full_conus_reconciled/
+```
+
+It contains 2,071 accepted MRMS dates, 13,085 served CONUS cells per date, and 27,099,035 cell-day rows with
+zero duplicate `cell_id/date` rows and zero date row-count failures. Next build target: review the M0 QA flag
+(`extreme_mesh_ge_300mm`) and build M1 frequency / empirical size-distribution summaries from the reconciled
+root. MYRORSS, Murillo & Homeyer de-biasing, EVT tail, and more complex sparse-cell/frequency modeling remain
+V1.5/V2 after the MRMS-only grid contract is clean.
 
 ## Cross-read/source map
 

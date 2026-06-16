@@ -3,7 +3,9 @@
 Status: active plan-of-record for the first full-grid hail build. The one-day full-grid proof, seven-day
 source-inventory/GCS upload proof, full intended MRMS source inventory, first local seven-day full-grid M0
 daily-evidence batch, Cloud Run seven-day M0 proof, Cloud Run 14-day M0 proof, and first two-batch
-reconciliation proof have run. The full accepted source-date denominator is not running yet.
+reconciliation proof have run. The full accepted source-date denominator has now completed through
+task-indexed Cloud Run fanout and streaming reconciliation under
+`run_id=20260616T225000Z_m0_full_conus_reconciled`.
 
 ## Decision
 
@@ -294,15 +296,20 @@ The local proof is done and `gcloud` bucket listing works. Current known choices
 | Cloud Run 14-day proof | Run `20260616T211247Z_m0_batch0001_14d_cloud_proof`, batch `20201014_20201027`, wrote 183,190 rows. |
 | M0 reconciliation proof | Run `20260616T211844Z_m0_reconcile_2batch_proof`, reconciled 2 batch prefixes, 21 dates, 274,785 rows, duplicate `cell_id/date` rows = 0. |
 | Durable image / Cloud Run Job proof | GitHub Actions run `27649989510` deployed `hazard-conus-grid-mrms-m0`; execution `hazard-conus-grid-mrms-m0-lcqqg` wrote 91,595 rows for `20240601_20240607`. |
+| Task-indexed fanout proof | GitHub Actions run `27650904912`; execution `hazard-conus-grid-mrms-m0-bn9lk`; task count 2; wrote 366,380 rows across two adjacent 14-day batches. |
+| Full task-indexed M0 run | GitHub Actions run `27651275076`; execution `hazard-conus-grid-mrms-m0-54dm7`; task count 148, parallelism 8; all tasks succeeded. |
+| Full M0 reconciliation | Run `20260616T225000Z_m0_full_conus_reconciled`; 148 input batches, 2,071 dates, 27,099,035 rows, duplicate `cell_id/date` rows = 0, row-count failures = 0. |
 
-Still needed before large batch processing:
+Current main output:
 
-| Needed item | Why |
-|---|---|
-| Full-run `run_id` | One shared run id must address all full-denominator M0 batches. |
-| Task-index proof | Prove `CLOUD_RUN_TASK_INDEX` selects the correct batch-spec rows before the 148-task run. |
-| Full-run reconciliation policy | The proof works for two non-overlapping batches; the full run still needs the accepted-batch registry and final full-denominator acceptance rule. |
-| Artifact retention rules | Decide what local summaries/manifests stay versus GCS-only parquet outputs. |
+```text
+gs://infrasure-benchmark/hazard_conus_grid/dev/hail/v1_mrms_only/m0_reconciled_daily_cell_evidence/
+  run_id=20260616T225000Z_m0_full_conus_reconciled/
+```
+
+This is the first full-grid M0 layer. It is partitioned by date, with JSON metadata plus flat CSV sidecars
+for batch manifest, date coverage, and status summary. Individual Cloud Run batch outputs are audit/debug
+material; M1 should consume the reconciled root.
 
 See [`../common/storage_artifacts.md`](../common/storage_artifacts.md) for the full path contract and
 [`../common/gcp_execution_and_storage_conventions.md`](../common/gcp_execution_and_storage_conventions.md)
@@ -338,15 +345,15 @@ GCS path:
 gs://infrasure-benchmark/hazard_conus_grid/dev/hail/v1_mrms_only/m0_daily_cell_evidence/run_id=20260616T172929Z/batch=20240601_20240607/
 ```
 
-The immediate operational task is no longer a permissions fix. Cloud Run Jobs, GCS writes, and the durable
-GitHub Actions image path are proven. The fanout decision is task-indexed Cloud Run Jobs: each task reads the
-inventory batch-spec CSV and uses `CLOUD_RUN_TASK_INDEX` to select one 14-day batch window.
+The immediate operational task is no longer a permissions or fanout fix. Cloud Run Jobs, GCS writes, the
+durable GitHub Actions image path, task indexing, and full-run reconciliation are proven.
 
 Next:
 
-1. Run a 2-task task-index proof.
-2. Choose one shared full-run `run_id`.
-3. Launch the full accepted MRMS denominator with 148 tasks and bounded parallelism.
-4. Reconcile the full batch set before M1.
+1. Review the `extreme_mesh_ge_300mm` QA flag in the reconciled M0 metadata and decide whether it remains a
+   raw-evidence caveat or becomes a named downstream QA filter.
+2. Create compact map/table review outputs from the reconciled sidecars.
+3. Build M1 frequency and empirical MESH-size summaries from the reconciled M0 root.
+4. Only after M1 review, resume M2-M4 solar coupling and loss metrics.
 
 Use [`m0_m1_scaleout_execution.md`](m0_m1_scaleout_execution.md) as the execution guide.

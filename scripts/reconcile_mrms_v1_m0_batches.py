@@ -5,6 +5,10 @@ Reconcile MRMS-only V1 M0 daily cell evidence batches.
 This utility accepts explicit batch roots, validates batch metadata and row-level
 contracts, and writes a reconciled partial/full M0 panel. It is intentionally
 batch-root driven: M1 must consume reconciled M0, not arbitrary batch outputs.
+
+Small proof runs can use the default in-memory mode. Full-denominator runs should
+use --streaming, which validates one batch at a time and writes partitioned
+date=YYYY-MM-DD parquet output without concatenating every batch into memory.
 """
 
 from __future__ import annotations
@@ -34,6 +38,7 @@ ALLOWED_STATUSES = {
     "observed_severe_hail",
     "no_native_pixel_coverage",
 }
+_STORAGE_CLIENT: Any | None = None
 
 
 def parse_args() -> argparse.Namespace:
@@ -49,6 +54,11 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--max-mesh-warning-mm", type=float, default=300.0)
     parser.add_argument("--upload", action="store_true", default=os.environ.get("HAZARD_CONUS_GRID_UPLOAD_TO_GCS") == "1")
     parser.add_argument("--force", action="store_true", help="Replace an existing local reconciliation output.")
+    parser.add_argument(
+        "--streaming",
+        action="store_true",
+        help="Write date partitions and compact sidecars one batch at a time; do not write a giant combined panel.",
+    )
     parser.add_argument("--dry-run", action="store_true")
     return parser.parse_args()
 
@@ -65,6 +75,15 @@ def split_gcs_uri(uri: str) -> tuple[str, str]:
     if not bucket or not blob:
         raise ValueError(f"invalid gs:// URI: {uri}")
     return bucket, blob
+
+
+def get_storage_client() -> Any:
+    global _STORAGE_CLIENT
+    if _STORAGE_CLIENT is None:
+        from google.cloud import storage  # type: ignore
+
+        _STORAGE_CLIENT = storage.Client()
+    return _STORAGE_CLIENT
 
 
 def list_uri_files(root_uri: str) -> list[str]:
@@ -88,28 +107,38 @@ def download_uri(uri: str, local_dir: Path) -> Path:
         return Path(uri)
 
     try:
-        from google.cloud import storage  # type: ignore
+        client = get_storage_client()
     except Exception:
         subprocess.run(["gcloud", "storage", "cp", uri, str(local_path)], check=True)
         return local_path
 
     bucket_name, blob_name = split_gcs_uri(uri)
-    storage.Client().bucket(bucket_name).blob(blob_name).download_to_filename(local_path)
+    client.bucket(bucket_name).blob(blob_name).download_to_filename(local_path)
     return local_path
 
 
 def upload_file_to_gcs(local_path: Path, destination_uri: str) -> None:
     try:
-        from google.cloud import storage  # type: ignore
+        client = get_storage_client()
     except Exception:
         subprocess.run(["gcloud", "storage", "cp", str(local_path), destination_uri], check=True)
         return
 
     bucket_name, blob_name = split_gcs_uri(destination_uri)
-    storage.Client().bucket(bucket_name).blob(blob_name).upload_from_filename(local_path)
+    client.bucket(bucket_name).blob(blob_name).upload_from_filename(local_path)
 
 
 def gcs_prefix_exists(uri: str) -> bool:
+    try:
+        client = get_storage_client()
+    except Exception:
+        pass
+    else:
+        bucket_name, blob_prefix = split_gcs_uri(uri.rstrip("/") + "/placeholder")
+        prefix = blob_prefix.rsplit("/", 1)[0].rstrip("/") + "/"
+        blobs = client.list_blobs(bucket_name, prefix=prefix, max_results=1)
+        return any(True for _ in blobs)
+
     result = subprocess.run(
         ["gcloud", "storage", "ls", f"{uri.rstrip('/')}/**"],
         text=True,
@@ -198,6 +227,172 @@ def load_batch(root_uri: str, temp_dir: Path, expected_cells: int, max_mesh_warn
     return panel, manifest
 
 
+def append_records_csv(path: Path, records: list[dict[str, Any]]) -> None:
+    if not records:
+        return
+    frame = pd.DataFrame(records)
+    frame.to_csv(path, index=False, mode="a", header=not path.exists())
+
+
+def update_count_dict(target: dict[str, int], values: dict[Any, Any]) -> None:
+    for key, value in values.items():
+        target[str(key)] = int(target.get(str(key), 0) + int(value))
+
+
+def reconcile_streaming(args: argparse.Namespace, local_run_dir: Path, t0: float) -> dict[str, Any]:
+    seen_dates: set[str] = set()
+    manifests: list[dict[str, Any]] = []
+    date_coverage_rows: list[dict[str, Any]] = []
+    status_summary_rows: list[dict[str, Any]] = []
+    coverage_status_counts: dict[str, int] = {}
+    n_output_rows = 0
+
+    manifest_csv = local_run_dir / f"mrms_v1_m0_reconciled_batch_manifest_{args.run_id}.csv"
+    date_coverage_csv = local_run_dir / f"mrms_v1_m0_reconciled_date_coverage_{args.run_id}.csv"
+    status_summary_csv = local_run_dir / f"mrms_v1_m0_reconciled_status_summary_{args.run_id}.csv"
+    metadata_json = local_run_dir / f"metadata_{args.run_id}.json"
+
+    for batch_number, root in enumerate(args.batch_root_uri, start=1):
+        print(
+            f"[mrms-m0-reconcile] streaming batch {batch_number}/{len(args.batch_root_uri)}: {root}",
+            flush=True,
+        )
+        with tempfile.TemporaryDirectory() as tmp:
+            panel, manifest = load_batch(root, Path(tmp), args.expected_cells, args.max_mesh_warning_mm)
+
+        batch_dates = sorted(panel["date"].unique())
+        overlapping_dates = sorted(seen_dates.intersection(batch_dates))
+        if overlapping_dates:
+            raise ValueError(
+                f"{root}: duplicate dates across batches; affected dates={overlapping_dates[:10]}"
+            )
+
+        for date_str, day_panel in panel.sort_values(["date", "cell_id"]).groupby("date", sort=True):
+            partition_dir = local_run_dir / f"date={date_str}"
+            partition_dir.mkdir(parents=True, exist_ok=False)
+            day_panel.to_parquet(partition_dir / "part-000.parquet", index=False)
+
+            status_counts = day_panel["coverage_status"].value_counts().to_dict()
+            coverage_row: dict[str, Any] = {
+                "date": date_str,
+                "n_rows": int(len(day_panel)),
+                "expected_rows": int(args.expected_cells),
+                "row_count_status": "pass" if len(day_panel) == args.expected_cells else "fail",
+            }
+            coverage_row.update({str(key): int(value) for key, value in status_counts.items()})
+            date_coverage_rows.append(coverage_row)
+            update_count_dict(coverage_status_counts, status_counts)
+
+        batch_status = (
+            panel.groupby(["date", "coverage_status"])
+            .agg(
+                n_cells=("cell_id", "size"),
+                n_positive_pixels=("n_native_pixels_positive", "sum"),
+                n_severe_pixels=("n_native_pixels_severe", "sum"),
+                max_mesh_mm=("mesh_max_mm", "max"),
+            )
+            .reset_index()
+            .sort_values(["date", "coverage_status"])
+        )
+        status_summary_rows.extend(batch_status.to_dict(orient="records"))
+
+        manifests.append(manifest)
+        seen_dates.update(batch_dates)
+        n_output_rows += int(len(panel))
+        print(
+            f"[mrms-m0-reconcile] wrote {len(batch_dates)} date partitions; "
+            f"cumulative_dates={len(seen_dates)} cumulative_rows={n_output_rows}",
+            flush=True,
+        )
+
+    if not manifests:
+        raise ValueError("no input batches were reconciled")
+
+    date_coverage = pd.DataFrame(date_coverage_rows).sort_values("date").reset_index(drop=True)
+    status_columns = sorted(ALLOWED_STATUSES.intersection(date_coverage.columns))
+    if status_columns:
+        date_coverage[status_columns] = date_coverage[status_columns].fillna(0).astype(int)
+    status_summary = pd.DataFrame(status_summary_rows).sort_values(["date", "coverage_status"]).reset_index(drop=True)
+    manifest_frame = pd.DataFrame(manifests)
+
+    append_records_csv(manifest_csv, manifests)
+    date_coverage.to_csv(date_coverage_csv, index=False)
+    status_summary.to_csv(status_summary_csv, index=False)
+
+    date_start = str(date_coverage["date"].min())
+    date_end = str(date_coverage["date"].max())
+    qa_flags = sorted({flag for m in manifests for flag in str(m["qa_flags"]).split(";") if flag})
+    expected_rows = int(args.expected_cells * len(seen_dates))
+    failed_dates = date_coverage.loc[date_coverage["row_count_status"] != "pass", "date"].astype(str).tolist()
+
+    metadata: dict[str, Any] = {
+        "artifact_family": "mrms_v1_m0_reconciled_daily_cell_evidence",
+        "status": "streaming_reconciliation",
+        "execution_type": "local_reconciliation",
+        "streaming_reconciliation": True,
+        "combined_panel_written": False,
+        "run_id": args.run_id,
+        "hazard": "hail",
+        "variant": "v1_mrms_only",
+        "layer": "m0_reconciled_daily_cell_evidence",
+        "input_batch_roots": [root.rstrip("/") for root in args.batch_root_uri],
+        "n_input_batches": int(len(args.batch_root_uri)),
+        "date_start": date_start,
+        "date_end": date_end,
+        "n_dates": int(len(seen_dates)),
+        "n_served_cells": int(args.expected_cells),
+        "expected_rows": expected_rows,
+        "n_output_rows": int(n_output_rows),
+        "duplicate_cell_date_rows": 0,
+        "coverage_status_counts": coverage_status_counts,
+        "qa_flags": qa_flags,
+        "failed_date_row_counts": failed_dates,
+        "elapsed_seconds": round(time.perf_counter() - t0, 3),
+        "local_run_dir": str(local_run_dir),
+        "gcs_run_root": f"{args.gcs_output_root.rstrip('/')}/run_id={args.run_id}",
+        "upload_requested": bool(args.upload),
+        "outputs": {
+            "partitioned_daily_cell_evidence": str(local_run_dir / "date=YYYY-MM-DD" / "part-000.parquet"),
+            "batch_manifest_csv": str(manifest_csv),
+            "date_coverage_csv": str(date_coverage_csv),
+            "status_summary_csv": str(status_summary_csv),
+            "metadata_json": str(metadata_json),
+        },
+        "allowed_use": [
+            "M0 reconciled daily cell evidence",
+            "M1 frequency and empirical size-distribution input after QA acceptance",
+        ],
+        "not_allowed_use": [
+            "reportable EAL/PML/VaR/TVaR input until M1-M4 are built and reviewed",
+        ],
+        "caveats": [
+            "Raw MRMS MESH is radar-estimated and not de-biased.",
+            "M0 evidence records cell-day hazard observations; asset-specific footprint coupling happens in M2.",
+        ],
+    }
+    if n_output_rows != expected_rows or failed_dates:
+        metadata["status"] = "streaming_reconciliation_failed_qa"
+        metadata["allowed_use"] = ["QA investigation only"]
+    elif int(manifest_frame["n_dates"].sum()) == len(seen_dates):
+        metadata["status"] = "streaming_reconciliation_passed_row_contract"
+    metadata_json.write_text(json.dumps(metadata, indent=2) + "\n")
+
+    if args.upload:
+        gcs_run_root = f"{args.gcs_output_root.rstrip('/')}/run_id={args.run_id}"
+        uploaded = upload_tree(local_run_dir, gcs_run_root)
+        metadata["upload_status"] = "uploaded"
+        metadata["uploaded_gcs_outputs"] = uploaded
+    else:
+        metadata["upload_status"] = "skipped"
+        metadata["uploaded_gcs_outputs"] = []
+    metadata_json.write_text(json.dumps(metadata, indent=2) + "\n")
+
+    if args.upload:
+        upload_file_to_gcs(metadata_json, f"{args.gcs_output_root.rstrip('/')}/run_id={args.run_id}/{metadata_json.name}")
+
+    return metadata
+
+
 def main() -> int:
     args = parse_args()
     t0 = time.perf_counter()
@@ -217,6 +412,16 @@ def main() -> int:
             raise FileExistsError(f"local reconciliation dir exists; pass --force: {local_run_dir}")
         shutil.rmtree(local_run_dir)
     local_run_dir.mkdir(parents=True, exist_ok=True)
+
+    if args.streaming:
+        metadata = reconcile_streaming(args, local_run_dir, t0)
+        print(
+            "[mrms-m0-reconcile] DONE "
+            f"rows={metadata['n_output_rows']} dates={metadata['n_dates']} "
+            f"duplicates=0 qa_flags={metadata['qa_flags']} upload_status={metadata['upload_status']}",
+            flush=True,
+        )
+        return 0
 
     with tempfile.TemporaryDirectory() as tmp:
         temp_dir = Path(tmp)

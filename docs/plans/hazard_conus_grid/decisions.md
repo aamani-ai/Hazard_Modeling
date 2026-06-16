@@ -39,6 +39,29 @@ normal batch that can be reconciled by the existing M0 reconciliation script.
 - do not overwrite existing `run_id/batch=` prefixes;
 - reconcile the full batch set before M1 consumes anything.
 
+**Execution result.** Completed on 2026-06-16:
+
+```text
+Cloud Run run id:      20260616T220624Z_m0_full_conus_task_indexed
+GitHub Actions run:    27651275076
+Cloud Run execution:   hazard-conus-grid-mrms-m0-54dm7
+tasks / parallelism:   148 / 8
+task result:           148 succeeded, 0 failed
+batch output root:     gs://infrasure-benchmark/hazard_conus_grid/dev/hail/v1_mrms_only/m0_daily_cell_evidence/run_id=20260616T220624Z_m0_full_conus_task_indexed/
+```
+
+The full run was then reconciled in streaming mode:
+
+```text
+reconciled run id:     20260616T225000Z_m0_full_conus_reconciled
+reconciled root:       gs://infrasure-benchmark/hazard_conus_grid/dev/hail/v1_mrms_only/m0_reconciled_daily_cell_evidence/run_id=20260616T225000Z_m0_full_conus_reconciled/
+dates:                 2,071
+served cells/date:     13,085
+rows:                  27,099,035
+duplicate cell-dates:  0
+status:                streaming_reconciliation_passed_row_contract
+```
+
 **Implementation pointer.** See
 [`hail/m0_m1_scaleout_execution.md`](hail/m0_m1_scaleout_execution.md) and
 [`common/gcp_execution_and_storage_conventions.md`](common/gcp_execution_and_storage_conventions.md).
