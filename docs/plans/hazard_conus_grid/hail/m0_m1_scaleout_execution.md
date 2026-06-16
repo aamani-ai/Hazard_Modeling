@@ -407,23 +407,29 @@ solar path is stable.
 
 ## Immediate Next Step
 
-Choose the scaled runner and remote execution plan. The completed small batch to preserve is:
+The scaled runner has been proven with Cloud Run Jobs for a seven-day batch. The completed local small batch
+to preserve is:
 
 ```text
 data/hazard_conus_grid/hail/v1_mrms_only/m0_daily_cell_evidence/
   run_id=20260616T172929Z/batch=20240601_20240607/
 ```
 
-The local result is small and fast enough that Cloud Run Jobs is plausible, and the remote write path has now
-been confirmed for this batch. Do not start full denominator fanout until the execution/billing project,
-batch window size, retry policy, and overwrite policy are pinned.
+The completed Cloud Run proof to preserve is:
 
-Before large remote execution, still pin:
+```text
+gs://infrasure-benchmark/hazard_conus_grid/dev/hail/v1_mrms_only/m0_daily_cell_evidence/
+  run_id=20260616T205852Z_cloudrun_bootstrap_7d/batch=20240601_20240607/
+```
 
-- execution/billing GCP project;
-- preferred batch window size;
-- remote overwrite policy;
-- artifact retention policy.
+The full accepted MRMS denominator is **not running yet**.
+
+Next operational step:
+
+1. run one fresh 14-day Cloud Run batch with a new full-run-style `run_id`;
+2. build/verify the M0 reconciliation step over multiple batch prefixes;
+3. fix or explicitly accept the image strategy for repeated fanout;
+4. launch the full 148-batch denominator only after reconciliation and overwrite/retry policy are ready.
 
 Current recommendation:
 
@@ -436,3 +442,4 @@ Current recommendation:
   deliberate retry prefix;
 - maps: write QA PNG maps for proof batches only; use `--skip-maps` for full fanout and create review maps from
   reconciled summaries later.
+- metadata format: JSON is authoritative; CSV is allowed only for flat summaries/manifests.
