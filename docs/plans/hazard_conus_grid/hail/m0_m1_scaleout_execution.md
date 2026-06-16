@@ -344,6 +344,34 @@ This matches the local 7-day proof row count and status counts. Do not blindly r
 the command contains a fixed run id and the runner intentionally refuses to overwrite existing GCS prefixes.
 For additional remote batches, deploy/update the job with a new run id or move to the durable image workflow.
 
+Fourteen-day Cloud Run proof:
+
+| Item | Value |
+|---|---:|
+| Cloud Run Job | `hazard-conus-grid-mrms-m0-bootstrap` |
+| execution | `hazard-conus-grid-mrms-m0-bootstrap-qzx4r` |
+| execution status | succeeded |
+| execution start | `2026-06-16T21:13:09Z` |
+| execution complete | `2026-06-16T21:15:27Z` |
+| run id | `20260616T211247Z_m0_batch0001_14d_cloud_proof` |
+| batch | `2020-10-14` to `2020-10-27` |
+| rows | 183,190 |
+| severe cell-days | 251 |
+| sub-severe cell-days | 10,610 |
+| no-hail cell-days | 172,329 |
+| maps | skipped |
+| runner processing elapsed | 31.796 seconds |
+
+GCS output:
+
+```text
+gs://infrasure-benchmark/hazard_conus_grid/dev/hail/v1_mrms_only/m0_daily_cell_evidence/
+  run_id=20260616T211247Z_m0_batch0001_14d_cloud_proof/batch=20201014_20201027/
+```
+
+QA note: this batch has an extreme raw MRMS MESH value (`max_mesh_mm=1057.7` on `2020-10-27`). The value is
+not corrected in M0; it is carried forward as a QA flag so M1 can decide whether to cap/filter/de-bias later.
+
 ## Stage 4 - Scaled M0 Daily Evidence
 
 Once the runner is selected, process the full accepted source-date denominator in independent batches.
@@ -368,6 +396,31 @@ It must prove:
 - no duplicate `cell_id x date` rows;
 - source failures and no-hail days remain distinct;
 - all accepted batches use the same grid mask, threshold, product, and aggregation rules.
+
+First reconciliation proof:
+
+| Item | Value |
+|---|---:|
+| script | `scripts/reconcile_mrms_v1_m0_batches.py` |
+| run id | `20260616T211844Z_m0_reconcile_2batch_proof` |
+| input batches | 2 |
+| dates | 21 |
+| rows | 274,785 |
+| duplicate `cell_id/date` rows | 0 |
+| severe cell-days | 1,701 |
+| sub-severe cell-days | 31,744 |
+| no-hail cell-days | 241,340 |
+| QA flags | `extreme_mesh_ge_300mm` |
+
+GCS output:
+
+```text
+gs://infrasure-benchmark/hazard_conus_grid/dev/hail/v1_mrms_only/m0_reconciled_daily_cell_evidence/
+  run_id=20260616T211844Z_m0_reconcile_2batch_proof/
+```
+
+This proves multi-batch validation and upload. It is a partial, non-contiguous proof only; it is not the full
+M0 layer for M1.
 
 ## Stage 6 - Build M1
 
@@ -426,10 +479,9 @@ The full accepted MRMS denominator is **not running yet**.
 
 Next operational step:
 
-1. run one fresh 14-day Cloud Run batch with a new full-run-style `run_id`;
-2. build/verify the M0 reconciliation step over multiple batch prefixes;
-3. fix or explicitly accept the image strategy for repeated fanout;
-4. launch the full 148-batch denominator only after reconciliation and overwrite/retry policy are ready.
+1. fix or explicitly accept the image strategy for repeated fanout;
+2. choose sequential job updates vs task-indexed fanout for the 148 planned batches;
+3. launch the full 148-batch denominator only after that execution choice is pinned.
 
 Current recommendation:
 

@@ -240,34 +240,66 @@ Rules:
 
 ## Current Hail Cloud Proof
 
-The first successful Cloud Run proof was:
+Successful Cloud Run proofs:
+
+| Item | 7-day proof | 14-day proof |
+|---|---|---|
+| job | `hazard-conus-grid-mrms-m0-bootstrap` | `hazard-conus-grid-mrms-m0-bootstrap` |
+| execution | `hazard-conus-grid-mrms-m0-bootstrap-7jqj5` | `hazard-conus-grid-mrms-m0-bootstrap-qzx4r` |
+| run id | `20260616T205852Z_cloudrun_bootstrap_7d` | `20260616T211247Z_m0_batch0001_14d_cloud_proof` |
+| batch | `2024-06-01` to `2024-06-07` | `2020-10-14` to `2020-10-27` |
+| rows | 91,595 | 183,190 |
+| severe cell-days | 1,450 | 251 |
+| sub-severe cell-days | 21,134 | 10,610 |
+| no-hail cell-days | 69,011 | 172,329 |
+| maps | skipped | skipped |
+| runner elapsed | 29.474 seconds | 31.796 seconds |
+| Cloud Run elapsed | about 2 minutes 8 seconds | about 2 minutes 18 seconds |
+
+Outputs:
 
 ```text
-job:       hazard-conus-grid-mrms-m0-bootstrap
-execution: hazard-conus-grid-mrms-m0-bootstrap-7jqj5
-run_id:    20260616T205852Z_cloudrun_bootstrap_7d
-batch:     2024-06-01 to 2024-06-07
+gs://infrasure-benchmark/hazard_conus_grid/dev/hail/v1_mrms_only/m0_daily_cell_evidence/
+  run_id=20260616T205852Z_cloudrun_bootstrap_7d/batch=20240601_20240607/
+  run_id=20260616T211247Z_m0_batch0001_14d_cloud_proof/batch=20201014_20201027/
+```
+
+The 14-day proof uses `batch_0001` from the accepted inventory batch spec. It also surfaced an extreme raw
+MESH value (`max_mesh_mm=1057.7` on `2020-10-27`), which is carried forward as a QA flag in reconciliation.
+
+These prove Cloud Run execution and GCS write behavior. They do not mean the full historical run is already
+running.
+
+## Current Hail Reconciliation Proof
+
+The first MRMS M0 reconciliation proof accepted two non-overlapping Cloud Run batch prefixes:
+
+```text
+run_id=20260616T211247Z_m0_batch0001_14d_cloud_proof/batch=20201014_20201027
+run_id=20260616T205852Z_cloudrun_bootstrap_7d/batch=20240601_20240607
 ```
 
 Output:
 
 ```text
-gs://infrasure-benchmark/hazard_conus_grid/dev/hail/v1_mrms_only/m0_daily_cell_evidence/
-  run_id=20260616T205852Z_cloudrun_bootstrap_7d/batch=20240601_20240607/
+gs://infrasure-benchmark/hazard_conus_grid/dev/hail/v1_mrms_only/m0_reconciled_daily_cell_evidence/
+  run_id=20260616T211844Z_m0_reconcile_2batch_proof/
 ```
 
 Result:
 
-- rows: 91,595;
-- severe cell-days: 1,450;
-- sub-severe cell-days: 21,134;
-- no-hail cell-days: 69,011;
-- maps skipped;
-- runner processing elapsed: 29.474 seconds;
-- Cloud Run execution elapsed: about 2 minutes 8 seconds, including bootstrap dependency installation.
+- input batches: 2;
+- dates: 21;
+- rows: 274,785;
+- duplicate `cell_id/date` rows: 0;
+- severe cell-days: 1,701;
+- sub-severe cell-days: 31,744;
+- no-hail cell-days: 241,340;
+- QA flags: `extreme_mesh_ge_300mm`;
+- metadata JSON uploaded and treated as the authoritative reconciliation sidecar.
 
-This proves Cloud Run execution and GCS write behavior. It does not mean the full historical run is already
-running.
+This proves the reconciliation contract can accept multiple batch prefixes. It is still a partial,
+non-contiguous proof, not a full-denominator M0 layer.
 
 ## Full-Run Gate
 
@@ -283,8 +315,7 @@ Do not start the full accepted MRMS denominator until these are pinned:
 
 Recommended next steps for hail:
 
-1. Run one 14-day Cloud Run batch with a fresh run id using the same output contract.
-2. Build/confirm a reconciliation step that can accept multiple batch prefixes.
-3. Fix the durable image path by moving the workflow under an allowed WIF repo/org or updating the WIF
+1. Fix the durable image path by moving the workflow under an allowed WIF repo/org or updating the WIF
    condition for this repo.
-4. Start the full 148-batch denominator only after the reconciliation step is ready.
+2. Decide whether the full denominator will run as sequential job updates or a task-indexed fanout.
+3. Start the full 148-batch denominator only after the image/fanout decision is pinned.

@@ -151,8 +151,29 @@ batch:  2024-06-01 to 2024-06-07
 gcs:    gs://infrasure-benchmark/hazard_conus_grid/dev/hail/v1_mrms_only/m0_daily_cell_evidence/run_id=20260616T205852Z_cloudrun_bootstrap_7d/batch=20240601_20240607/
 ```
 
-It wrote 91,595 rows and matched the local proof counts exactly. This is a `cloud_proof`, not the full
-historical CONUS run.
+A second 14-day Cloud Run proof has also succeeded:
+
+```text
+job:    hazard-conus-grid-mrms-m0-bootstrap
+run_id: 20260616T211247Z_m0_batch0001_14d_cloud_proof
+batch:  2020-10-14 to 2020-10-27
+gcs:    gs://infrasure-benchmark/hazard_conus_grid/dev/hail/v1_mrms_only/m0_daily_cell_evidence/run_id=20260616T211247Z_m0_batch0001_14d_cloud_proof/batch=20201014_20201027/
+```
+
+The 7-day proof wrote 91,595 rows and matched the local proof counts exactly. The 14-day proof wrote 183,190
+rows. These are `cloud_proof` outputs, not the full historical CONUS run.
+
+The first reconciliation proof has also succeeded:
+
+```text
+script: scripts/reconcile_mrms_v1_m0_batches.py
+run_id: 20260616T211844Z_m0_reconcile_2batch_proof
+gcs:    gs://infrasure-benchmark/hazard_conus_grid/dev/hail/v1_mrms_only/m0_reconciled_daily_cell_evidence/run_id=20260616T211844Z_m0_reconcile_2batch_proof/
+```
+
+It reconciled 2 non-overlapping Cloud Run batches, 21 dates, and 274,785 rows with zero duplicate
+`cell_id/date` rows. It flagged `extreme_mesh_ge_300mm` because the 14-day batch contains one extreme raw MESH
+value.
 
 ## Artifact Organization
 
@@ -164,9 +185,8 @@ Treat current hail grid outputs in three groups:
 | M0 proof outputs | `m0_mrms_v1_one_day_proof/`, `run_id=20260616T172929Z`, `run_id=20260616T205852Z_cloudrun_bootstrap_7d` | Row contract, remote execution, and GCS write proof. |
 | Main V1 build candidates | future `dev_full` M0/M1 runs under `v1_mrms_only/` after reconciliation is ready | Inputs to M1 and later M2-M4. |
 
-The full MRMS denominator is not running yet. The next hail cloud step should be one fresh 14-day remote batch,
-then a reconciliation step that can accept multiple batch prefixes. Only after that should the full accepted
-source-date denominator be launched.
+The full MRMS denominator is not running yet. The next hail cloud step is to fix or explicitly accept the
+durable-image/fanout strategy, then launch the full accepted source-date denominator.
 
 ## Current Solar Smoke Test
 

@@ -29,6 +29,9 @@ shapely
 requests
 python-dotenv
 
+# GCP artifact IO for backend/Cloud Run style batch runners
+google-cloud-storage
+
 # Plotting
 matplotlib
 

@@ -2,8 +2,8 @@
 
 Status: active plan-of-record for the first full-grid hail build. The one-day full-grid proof, seven-day
 source-inventory/GCS upload proof, full intended MRMS source inventory, first local seven-day full-grid M0
-daily-evidence batch, and first Cloud Run seven-day M0 proof have run. The full accepted source-date
-denominator is not running yet.
+daily-evidence batch, Cloud Run seven-day M0 proof, Cloud Run 14-day M0 proof, and first two-batch
+reconciliation proof have run. The full accepted source-date denominator is not running yet.
 
 ## Decision
 
@@ -291,6 +291,8 @@ The local proof is done and `gcloud` bucket listing works. Current known choices
 | Full source-denominator upload | Run `20260616T165806Z` uploaded 7 full-window inventory artifacts. |
 | Small M0 evidence batch | Run `20260616T172929Z`, batch `20240601_20240607`, wrote 91,595 rows and 7 QA maps; uploaded 19 GCS objects. |
 | Cloud Run M0 evidence proof | Run `20260616T205852Z_cloudrun_bootstrap_7d`, batch `20240601_20240607`, wrote 91,595 rows; matched local proof counts. |
+| Cloud Run 14-day proof | Run `20260616T211247Z_m0_batch0001_14d_cloud_proof`, batch `20201014_20201027`, wrote 183,190 rows. |
+| M0 reconciliation proof | Run `20260616T211844Z_m0_reconcile_2batch_proof`, reconciled 2 batch prefixes, 21 dates, 274,785 rows, duplicate `cell_id/date` rows = 0. |
 
 Still needed before large batch processing:
 
@@ -299,7 +301,7 @@ Still needed before large batch processing:
 | Durable image path | GitHub Actions WIF currently rejects this repo, and the successful Cloud Run proof used a bootstrap job. |
 | Full-run `run_id` | One shared run id must address all full-denominator M0 batches. |
 | Batch fanout mode | Choose sequential job updates, per-batch jobs, or task-indexed fanout. |
-| Reconciliation step | M1 must consume reconciled M0, not arbitrary unreconciled batch prefixes. |
+| Full-run reconciliation policy | The proof works for two non-overlapping batches; the full run still needs the accepted-batch registry and final full-denominator acceptance rule. |
 | Artifact retention rules | Decide what local summaries/manifests stay versus GCS-only parquet outputs. |
 
 See [`../common/storage_artifacts.md`](../common/storage_artifacts.md) for the full path contract and
@@ -342,8 +344,8 @@ durable-image/WIF issue still to fix before repeated full fanout.
 
 Next:
 
-1. Run one fresh 14-day Cloud Run batch with a new run id.
-2. Build/verify M0 batch reconciliation.
-3. Only then launch the full accepted MRMS denominator.
+1. Fix or explicitly accept the durable image / fanout strategy.
+2. Launch the full accepted MRMS denominator.
+3. Reconcile the full batch set before M1.
 
 Use [`m0_m1_scaleout_execution.md`](m0_m1_scaleout_execution.md) as the execution guide.
