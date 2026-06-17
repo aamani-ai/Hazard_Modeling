@@ -1,7 +1,8 @@
 # Convective Wind × Wind Farm — the asset cell (M2 → M3 → M4)
 
 The **(peril × asset)** cell for the convective-wind peril on a **wind farm** — the wind analogue of
-[`hail/solar/`](../../hail/solar/README.md). It **inherits the shared convective-wind catalog** (peril-level,
+[`hail/solar/`](../../hail/solar/README.md). See the [**convective-wind peril overview**](../README.md) for the
+sub-peril framing + the shared catalog. It **inherits the shared convective-wind catalog** (peril-level,
 asset-independent): [`../layer0/`](../layer0/) (hazard definition) + [`../m0_input_data/`](../m0_input_data/) (M0:
 ASCE RP surface + SPC record + asset geometry) + [`../m1_catalog/`](../m1_catalog/) (M1: λ + severity, per
 sub-peril). *This* folder is where **coupling, damage, and loss specialize to a wind farm**.

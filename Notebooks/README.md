@@ -58,6 +58,7 @@ with full provenance (external citations + research-repo links) in [`docs/refere
 - **[`hail/solar/`](hail/solar/README.md)** — hail × solar, the first cell built end-to-end (M2→M4),
   with the headline risk numbers.
 - **[`wildfire/solar/`](wildfire/solar/m4_loss_metrics/README.md)** — wildfire × solar (site-conditioned).
+- **[`convective_wind/`](convective_wind/README.md)** — the convective-wind peril (two sub-perils + the shared catalog).
 - **[`convective_wind/wind_farm/`](convective_wind/wind_farm/README.md)** — convective wind × wind farm: **two
   sub-perils** (tornado + strong wind) on one shared catalog, M2 folder-forked, M3 one turbine / two curves, M4 combined.
 
