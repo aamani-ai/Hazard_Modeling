@@ -56,9 +56,9 @@ The owner is **new to this domain** and asked that the planning + decision + haz
 
 ## Files touched
 
-- **Created (committed `5010a61`):** `docs/plans/wind/` — `README.md`, `00_intent.md`, `00_hazard_definition.md`,
+- **Created (committed `5010a61`):** `docs/plans/convective_wind/` — `README.md`, `00_intent.md`, `00_hazard_definition.md`,
   `decisions.md` (DD-WN-1..13), `assumptions.md` (AWN-*), `m0_input_data.md`, `m1_catalog.md`, `m2_coupling.md`,
-  `m3_damage.md`, `m4_loss_metrics.md`, `done/README.md`; `docs/extra/discussion/wind/` — `README.md`,
+  `m3_damage.md`, `m4_loss_metrics.md`, `done/README.md`; `docs/extra/discussion/convective_wind/` — `README.md`,
   `01_scope_and_sub_peril_taxonomy.md`, `02_coupling_buckets_and_wind.md`, `03_hazard_definition_and_thresholds.md`.
 - **Created (this folder):** the 4 task-history files.
 - **Earlier this session (committed `20ac205`/`e7486f3`/`78ec5ff`):** wildfire M4 notebook + plan/done docs;

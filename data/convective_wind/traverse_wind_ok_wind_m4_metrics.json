@@ -1,0 +1,48 @@
+{
+  "layer": "M4",
+  "source": "m4_loss_metrics/01_loss_metrics",
+  "peril": "wind",
+  "scope": "combined (both sub-perils)",
+  "asset": {
+    "slug": "traverse_wind_ok",
+    "name": "Traverse Wind Energy Center",
+    "role": "proving (high-wind)"
+  },
+  "tiv_usd": 1398600000.0,
+  "mc_years": 300000,
+  "tornado_process": "NegBin(\u03c6=12.0)",
+  "lambda_strongwind": 0.9035,
+  "lambda_tornado_asset": 0.23983,
+  "metrics_usd": {
+    "EAL": 890347.0,
+    "EAL_strongwind": 283437.0,
+    "EAL_tornado": 606910.0,
+    "VaR99 (AEP-PML100)": 13126395.0,
+    "PML250 (AEP-99.6)": 55855970.0,
+    "TVaR99": 68262902.0,
+    "OEP-PML100": 10633800.0,
+    "max annual loss": 885496806.0
+  },
+  "metrics_pct_tiv": {
+    "EAL": 0.0637,
+    "EAL_strongwind": 0.0203,
+    "EAL_tornado": 0.0434,
+    "VaR99 (AEP-PML100)": 0.9385,
+    "PML250 (AEP-99.6)": 3.9937,
+    "TVaR99": 4.8808,
+    "OEP-PML100": 0.7603,
+    "max annual loss": 63.3131
+  },
+  "eal_attribution_pct_tiv": {
+    "strong_wind": 0.0203,
+    "tornado": 0.0434
+  },
+  "zero_loss_year_fraction": 0.384,
+  "doctrine": "every metric off ONE sampled distribution; each sub-peril its own M3 curve; EAL additive across sub-perils, tail off the joint; never Method 0 (DD-WN-13)",
+  "caveats": [
+    "strong wind \u22480 (disruption/degradation deferred, AWN-31)",
+    "tornado sparse \u2192 TVaR is the honest tail (VaR can floor; AWN-16)",
+    "M3 curves are the dominant uncertainty (approximate; AWN-26)",
+    "single-site \u2014 portfolio correlation deferred (AWN-22)"
+  ]
+}

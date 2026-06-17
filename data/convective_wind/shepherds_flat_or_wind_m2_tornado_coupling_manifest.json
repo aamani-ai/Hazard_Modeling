@@ -1,0 +1,51 @@
+{
+  "layer": "M2",
+  "source": "m2_coupling/tornado/01_coupling",
+  "peril": "wind",
+  "sub_peril": "tornado",
+  "coupling_bucket": "areal_hit_or_miss (path-aware Minkowski)",
+  "asset": {
+    "slug": "shepherds_flat_or",
+    "name": "Shepherds Flat",
+    "role": "baseline (low-wind)"
+  },
+  "frequency": {
+    "lambda_collection_per_yr": 0.7931,
+    "lambda_asset_per_yr": 0.00252,
+    "fano_factor": 1.115,
+    "process": "poisson",
+    "thinning": "\u03bb_asset = \u03bb_collection \u00b7 \u03a3 ef_mix\u00b7p_hit (Poisson-thinned per EF)"
+  },
+  "p_hit_per_ef": {
+    "0": 0.003056,
+    "1": 0.003739
+  },
+  "p_ef_given_strike": {
+    "0": 0.79517,
+    "1": 0.20483
+  },
+  "swept_fraction_per_ef": {
+    "0": 1e-05,
+    "1": 0.00153
+  },
+  "conditional_severity": {
+    "family": "bounded_gpd",
+    "mu_ms": 29.0,
+    "sigma": 6.83,
+    "xi": -0.0813,
+    "L_ms": 113.0
+  },
+  "ef_gust_mid_ms": {
+    "0": 33.5,
+    "1": 43.8,
+    "2": 55.0,
+    "3": 67.3,
+    "4": 81.8,
+    "5": 101.0
+  },
+  "tiv_usd": 1183000000.0,
+  "footprint_km2": 211.2,
+  "collection_radius_km": 150.0,
+  "v1_treatment": "swept_fraction = w\u00b7min(L,a)/s (chord \u00f7 farm area); refined per-turbine path-intersection deferred",
+  "notes": "rare per site (sparse MC \u2192 TVaR+SE at M4, learning-10); A cancels (learning-06)"
+}

@@ -1,9 +1,10 @@
 # AGENTS.md — Hazard_modeling
 
-> **Status — building, notebooks-first.** The first hazard pipeline is **built end-to-end in
-> notebooks**: *hail × solar*, M0→M4 (raw data → catalog → coupling → damage → annual loss & risk
-> metrics), with real (record-limited) numbers. Hazard **1 of 3** (hail ✅ · wildfire · wind), *then*
-> a production folder architecture. Start at [`Notebooks/README.md`](Notebooks/README.md) — the
+> **Status — building, notebooks-first.** All **three** hazards' first **(peril × asset)** cells are
+> **built end-to-end in notebooks**, M0→M4 (raw data → catalog → coupling → damage → annual loss & risk
+> metrics), with real (record-limited) numbers: **hail × solar ✅ · wildfire × solar ✅ · convective-wind ×
+> wind-farm ✅** (Hazard **3 of 3** — convective wind = two sub-perils, tornado + strong wind, combined).
+> **Next:** a production folder architecture. Start at [`Notebooks/README.md`](Notebooks/README.md) — the
 > peril × asset map.
 
 **Hazard_modeling** is the **Hazard Risk Modeling** engine of InfraSure's risk platform — the tier
@@ -98,7 +99,9 @@ Notebooks live in `Notebooks/`; register the kernel from `.venv` if needed.
 
 ## Status
 
-**Hazard 1 of 3 — *hail × solar* built end-to-end** in notebooks (M0→M4: catalog → coupling → damage →
-loss & metrics; real but record-limited numbers, math-validated). **Next:** wildfire, then wind — same
-notebooks-first pattern — *then* a production folder architecture (not before). Latest session context:
-the newest handoff in [`docs/extra/tasks_history/`](docs/extra/tasks_history/).
+**Hazard 3 of 3 — all three first cells built end-to-end** in notebooks (M0→M4: catalog → coupling →
+damage → loss & metrics; real but record-limited numbers, math-validated): **hail × solar**, **wildfire ×
+solar**, and **convective-wind × wind-farm** (two sub-perils — tornado + strong wind — co-sampled into one
+loss distribution; M2 folder-forked, M3 one turbine / two curves, M4 combined). **Next:** a production
+folder architecture (not before). Latest session context: the newest handoff in
+[`docs/extra/tasks_history/`](docs/extra/tasks_history/).

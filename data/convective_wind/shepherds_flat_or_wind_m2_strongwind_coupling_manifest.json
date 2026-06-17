@@ -1,0 +1,30 @@
+{
+  "layer": "M2",
+  "source": "m2_coupling/strong_wind/01_coupling",
+  "peril": "wind",
+  "sub_peril": "strong_wind",
+  "coupling_bucket": "site_conditioned (no hit-or-miss; no spatial factor)",
+  "asset": {
+    "slug": "shepherds_flat_or",
+    "name": "Shepherds Flat",
+    "role": "baseline (low-wind)"
+  },
+  "frequency": {
+    "lambda_asset_per_yr": 0.3574,
+    "fano_factor": 1.0,
+    "process": "poisson",
+    "thinning": "NONE \u2014 site-conditioned, \u03bb_asset = M1 \u03bb unchanged"
+  },
+  "p_hit": 1.0,
+  "exposure_fraction": 1.0,
+  "conditional_severity": {
+    "family": "bounded_gpd",
+    "mu_ms": 25.92,
+    "sigma": 3.391,
+    "xi": 0.0,
+    "L_ms": 113.0
+  },
+  "tiv_usd": 1183000000.0,
+  "portfolio_correlation": "documented, DEFERRED (broad-swath correlated across farms; single-site V1, AWN-22)",
+  "damage_note": "strong-wind damage \u22480 (AWN-31): this thin coupling feeds a \u22480 curve in M3; disruption/degradation deferred"
+}

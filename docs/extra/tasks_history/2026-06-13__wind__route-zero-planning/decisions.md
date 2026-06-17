@@ -1,10 +1,10 @@
 # Decisions — wind route-zero session
 
-The **canonical** wind design decisions live in [`docs/plans/wind/decisions.md`](../../../plans/wind/decisions.md)
+The **canonical** wind design decisions live in [`docs/plans/convective_wind/decisions.md`](../../../plans/convective_wind/decisions.md)
 (`DD-WN-1..13`, ADR-style with revisit triggers). This file indexes them and records the **session-level
 meta-decisions** (how we worked, not what the model is).
 
-## Canonical wind decisions (index → `plans/wind/decisions.md`)
+## Canonical wind decisions (index → `plans/convective_wind/decisions.md`)
 
 | ID | One-line | Realizes in |
 |---|---|---|

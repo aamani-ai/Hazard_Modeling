@@ -1,0 +1,83 @@
+{
+  "layer": "M3",
+  "source": "m3_damage/01_damage",
+  "peril": "wind",
+  "scope": "shared turbine, two sub-peril curves",
+  "curve": "anchored subsystem logistic on 3-s gust (capex-weighted); DR(v)=\u03a3 w\u1d62/(1+exp(-k\u1d62(v-x0\u1d62))) per sub-peril",
+  "capex_weights": {
+    "rotor_blades": 0.26,
+    "nacelle_drivetrain": 0.21,
+    "tower": 0.16,
+    "foundation": 0.12,
+    "substation": 0.09,
+    "electrical": 0.09,
+    "civil": 0.07
+  },
+  "fragility_per_subperil": {
+    "tornado": {
+      "rotor_blades": {
+        "x0_ms": 52,
+        "k": 0.25
+      },
+      "nacelle_drivetrain": {
+        "x0_ms": 58,
+        "k": 0.24
+      },
+      "tower": {
+        "x0_ms": 66,
+        "k": 0.22
+      },
+      "foundation": {
+        "x0_ms": 80,
+        "k": 0.2
+      },
+      "substation": {
+        "x0_ms": 54,
+        "k": 0.24
+      },
+      "electrical": {
+        "x0_ms": 56,
+        "k": 0.24
+      },
+      "civil": {
+        "x0_ms": 62,
+        "k": 0.22
+      }
+    },
+    "strong_wind": {
+      "rotor_blades": {
+        "x0_ms": 60,
+        "k": 0.3
+      },
+      "nacelle_drivetrain": {
+        "x0_ms": 66,
+        "k": 0.28
+      },
+      "substation": {
+        "x0_ms": 62,
+        "k": 0.28
+      },
+      "electrical": {
+        "x0_ms": 64,
+        "k": 0.28
+      }
+    }
+  },
+  "aero_reach": [
+    "electrical",
+    "nacelle_drivetrain",
+    "rotor_blades",
+    "substation"
+  ],
+  "aero_weight": 0.65,
+  "mechanism_rule": "strong wind = feathered-survival overload \u2192 aero subsystems, onset at IEC survival (max DR\u22480.65); tornado = rotation defeats feathering + vertical/pressure/debris, EF damage-calibrated \u2192 all subsystems, lower onset + steeper (DR\u21921). DR_tornado(v) > DR_strongwind(v) at every gust (AWN-32).",
+  "iec_class_assumed": "II (Ve50\u224859.5 m/s) \u2014 confirm per turbine model per site (AWN-9)",
+  "thresholds_ms": {
+    "mu_strong_wind": 25.92,
+    "mu_tornado": 29.0,
+    "L": 113.0
+  },
+  "confidence": "Low (greenfield, approximate now / accurate later \u2014 AWN-26); the dominant irreducible uncertainty",
+  "known_answer_for_M4": "strong-wind EAL must verify \u22480 (gusts below onset); else the curve is mis-anchored",
+  "lut": "wind_m3_damage_curve_lut.parquet (gust_ms \u2192 dr_tornado, dr_strongwind)"
+}

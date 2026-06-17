@@ -1,0 +1,63 @@
+{
+  "layer": "M2",
+  "source": "m2_coupling/tornado/01_coupling",
+  "peril": "wind",
+  "sub_peril": "tornado",
+  "coupling_bucket": "areal_hit_or_miss (path-aware Minkowski)",
+  "asset": {
+    "slug": "traverse_wind_ok",
+    "name": "Traverse Wind Energy Center",
+    "role": "proving (high-wind)"
+  },
+  "frequency": {
+    "lambda_collection_per_yr": 25.4333,
+    "lambda_asset_per_yr": 0.23983,
+    "fano_factor": 12.003,
+    "process": "negative_binomial",
+    "thinning": "\u03bb_asset = \u03bb_collection \u00b7 \u03a3 ef_mix\u00b7p_hit (Poisson-thinned per EF)"
+  },
+  "p_hit_per_ef": {
+    "0": 0.008646,
+    "1": 0.009381,
+    "2": 0.01066,
+    "3": 0.013577,
+    "4": 0.021171,
+    "5": 0.031119
+  },
+  "p_ef_given_strike": {
+    "0": 0.51068,
+    "1": 0.31552,
+    "2": 0.08445,
+    "3": 0.05284,
+    "4": 0.02354,
+    "5": 0.01298
+  },
+  "swept_fraction_per_ef": {
+    "0": 1e-05,
+    "1": 0.00018,
+    "2": 0.00092,
+    "3": 0.00574,
+    "4": 0.03278,
+    "5": 0.06556
+  },
+  "conditional_severity": {
+    "family": "bounded_gpd",
+    "mu_ms": 29.0,
+    "sigma": 13.193,
+    "xi": -0.1571,
+    "L_ms": 113.0
+  },
+  "ef_gust_mid_ms": {
+    "0": 33.5,
+    "1": 43.8,
+    "2": 55.0,
+    "3": 67.3,
+    "4": 81.8,
+    "5": 101.0
+  },
+  "tiv_usd": 1398600000.0,
+  "footprint_km2": 602.6,
+  "collection_radius_km": 150.0,
+  "v1_treatment": "swept_fraction = w\u00b7min(L,a)/s (chord \u00f7 farm area); refined per-turbine path-intersection deferred",
+  "notes": "rare per site (sparse MC \u2192 TVaR+SE at M4, learning-10); A cancels (learning-06)"
+}

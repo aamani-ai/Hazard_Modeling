@@ -1,0 +1,48 @@
+{
+  "layer": "M4",
+  "source": "m4_loss_metrics/01_loss_metrics",
+  "peril": "wind",
+  "scope": "combined (both sub-perils)",
+  "asset": {
+    "slug": "shepherds_flat_or",
+    "name": "Shepherds Flat",
+    "role": "baseline (low-wind)"
+  },
+  "tiv_usd": 1183000000.0,
+  "mc_years": 300000,
+  "tornado_process": "Poisson",
+  "lambda_strongwind": 0.3574,
+  "lambda_tornado_asset": 0.00252,
+  "metrics_usd": {
+    "EAL": 67903.0,
+    "EAL_strongwind": 67838.0,
+    "EAL_tornado": 65.0,
+    "VaR99 (AEP-PML100)": 744470.0,
+    "PML250 (AEP-99.6)": 1765574.0,
+    "TVaR99": 4168470.0,
+    "OEP-PML100": 715195.0,
+    "max annual loss": 436468639.0
+  },
+  "metrics_pct_tiv": {
+    "EAL": 0.0057,
+    "EAL_strongwind": 0.0057,
+    "EAL_tornado": 0.0,
+    "VaR99 (AEP-PML100)": 0.0629,
+    "PML250 (AEP-99.6)": 0.1492,
+    "TVaR99": 0.3524,
+    "OEP-PML100": 0.0605,
+    "max annual loss": 36.8951
+  },
+  "eal_attribution_pct_tiv": {
+    "strong_wind": 0.0057,
+    "tornado": 0.0
+  },
+  "zero_loss_year_fraction": 0.698,
+  "doctrine": "every metric off ONE sampled distribution; each sub-peril its own M3 curve; EAL additive across sub-perils, tail off the joint; never Method 0 (DD-WN-13)",
+  "caveats": [
+    "strong wind \u22480 (disruption/degradation deferred, AWN-31)",
+    "tornado sparse \u2192 TVaR is the honest tail (VaR can floor; AWN-16)",
+    "M3 curves are the dominant uncertainty (approximate; AWN-26)",
+    "single-site \u2014 portfolio correlation deferred (AWN-22)"
+  ]
+}

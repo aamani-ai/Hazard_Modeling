@@ -15,9 +15,14 @@ adds its own coupling/damage/loss.
 Notebooks/
   hail/                 ← peril: shared catalog (M0 raw data, M1 events + frequency)
     m0_input_data/  m1_catalog/
-    solar/              ← asset: M2 coupling · M3 damage · M4 loss & metrics   ✅ built end-to-end
-    # wind/             ← onshore wind farm — next
-  # wildfire/ , windstorm/ , flood/ …   ← same shape, later
+    solar/              ← asset cell: M2 coupling · M3 damage · M4 loss & metrics   ✅ built end-to-end
+  wildfire/             ← peril: shared catalog (M0, M1)
+    m0_input_data/  m1_catalog/
+    solar/              ← asset cell (M2 → M3 → M4)                                 ✅ built end-to-end
+  convective_wind/      ← peril: two sub-perils (tornado + strong/straight-line wind); shared catalog
+    layer0/  m0_input_data/  m1_catalog/
+    wind_farm/          ← asset cell: M2 (fork → tornado · strong_wind) · M3 (one turbine, two curves) · M4 (combined)   ✅ built
+  # offshore wind / hurricane / flood …   ← same shape, later
 ```
 
 ## The matrix — what's built, what's next
@@ -30,12 +35,16 @@ interface, but the **coupling physics changes per (peril × asset)**.
 | Peril ↓ \ Asset → | Solar PV *(dense areal polygon)* | Onshore wind *(turbine point-cloud)* | Offshore wind | BESS |
 |---|---|---|---|---|
 | **Hail** | **areal hit-or-miss ✅ built** | per-turbine hit-or-miss — **next** | — | areal (point) |
-| Tornado | areal hit-or-miss | per-turbine hit-or-miss | — | — |
-| Straight-line / synoptic wind | field-intensity | field-intensity (per turbine) | field-intensity | field-intensity |
+| **Tornado** *(convective wind)* | areal hit-or-miss | **areal hit-or-miss, path-aware ✅ built** | — | — |
+| **Straight-line wind** *(convective wind)* | site-conditioned | **site-conditioned ✅ built** | site-conditioned | site-conditioned |
 | Hurricane wind | field-intensity | field-intensity | field-intensity | field-intensity |
-| Wildfire (flame) | site-conditioned | site-conditioned | — | site-conditioned |
+| **Wildfire (flame)** | **site-conditioned ✅ built** | site-conditioned | — | site-conditioned |
 | Flood | site-conditioned | site-conditioned | (surge) | site-conditioned |
 | Winter (snow / ice) | field-intensity | field-intensity | — | field-intensity |
+
+> **Convective wind = one peril, two sub-perils** (tornado [T] + strong/straight-line wind [W]) — built as
+> `convective_wind/wind_farm/` (M2 folder-forks per sub-peril; M3/M4 shared). **Hurricane** is a *separate* peril
+> (field-intensity), deferred — it shares only the 3-s-gust damage curve, not the catalog.
 
 ✅ = built end-to-end. Everything else is roadmap. **The three coupling types** (the M2 physics):
 **areal hit-or-miss** (finite footprint covers the asset or misses — Minkowski `(√F+√s)²/A`) ·
@@ -48,16 +57,19 @@ with full provenance (external citations + research-repo links) in [`docs/refere
 - **[`hail/`](hail/README.md)** — the hail peril (shared catalog + the per-asset pipelines).
 - **[`hail/solar/`](hail/solar/README.md)** — hail × solar, the first cell built end-to-end (M2→M4),
   with the headline risk numbers.
+- **[`wildfire/solar/`](wildfire/solar/m4_loss_metrics/README.md)** — wildfire × solar (site-conditioned).
+- **[`convective_wind/wind_farm/`](convective_wind/wind_farm/README.md)** — convective wind × wind farm: **two
+  sub-perils** (tornado + strong wind) on one shared catalog, M2 folder-forked, M3 one turbine / two curves, M4 combined.
 
-## Why solar and a wind farm differ (the next build)
+## Why solar and a wind farm differ (now built)
 
 A **solar farm** is a *dense areal polygon* — panels fill a contiguous boundary, so "did the footprint
 cover the plant?" ≈ loss fraction → **areal hit-or-miss**. A **wind farm** is a *sparse cloud of point
 turbines* (we have the turbine lat/longs) scattered across a large lease — so a bounding-polygon area
 *overcounts*; you intersect the footprint with the **turbine points** (which turbines are hit), and
 wind loads sample a **continuous field at each turbine**. Same M0→M4 interface, genuinely different M2
-coupling. (A21 flags this as the *"wind-farm open question"* — the coupling geometry is the design
-decision, not yet built.)
+coupling. (A21's *"wind-farm open question"* is now **resolved in [`convective_wind/wind_farm/`](convective_wind/wind_farm/README.md)**:
+tornado intersects the farm footprint **path-aware** + swept-fraction; strong wind reads the **site RP gust**.)
 
 ## Environment
 

@@ -1,0 +1,74 @@
+{
+  "layer": "M1",
+  "source": "01_catalog",
+  "peril": "wind",
+  "asset": {
+    "slug": "traverse_wind_ok",
+    "name": "Traverse Wind Energy Center",
+    "role": "proving (high-wind)",
+    "state": "OK"
+  },
+  "magnitude_metric": "3s_gust_ms",
+  "tiv_usd": 1398600000.0,
+  "footprint_km2": 602.6,
+  "strong_wind": {
+    "route": "profile-assembly off ASCE RP surface (Gumbel/log-linear fit; \u03be=0)",
+    "frequency_process_params": {
+      "lambda_per_yr": 0.9035,
+      "fano_factor": 1.0,
+      "scope": "per_site_final"
+    },
+    "severity_distribution": {
+      "family": "bounded_gpd",
+      "mu_ms": 25.92,
+      "sigma": 3.581,
+      "xi": 0.0,
+      "L_ms": 113.0
+    },
+    "fit_r2": 0.9992,
+    "note": "\u03be=0 light tail; L far above range \u2014 strong wind ~0 turbine damage"
+  },
+  "tornado": {
+    "route": "event-fit from bias-corrected SPC record (1996+ stable window) + EF-mix severity",
+    "frequency_process_params": {
+      "lambda_collection_per_yr": 25.4333,
+      "fano_factor": 12.003,
+      "process": "negative_binomial",
+      "scope": "collection_regional_thin_in_M2",
+      "window": [
+        1996,
+        2025
+      ]
+    },
+    "severity_distribution": {
+      "family": "bounded_gpd",
+      "mu_ms": 29.0,
+      "sigma": 13.193,
+      "xi": -0.1571,
+      "L_ms": 113.0
+    },
+    "ef_mix": {
+      "0": 0.5570117955439057,
+      "1": 0.31716906946264745,
+      "2": 0.07470511140235911,
+      "3": 0.03669724770642202,
+      "4": 0.010484927916120577,
+      "5": 0.003931847968545216
+    },
+    "ef2plus_full_record_per_yr": 5.2237,
+    "path_stats_km2": {
+      "EF0": 0.009,
+      "EF1": 0.132,
+      "EF2": 0.524,
+      "EF3": 3.237,
+      "EF4": 27.745,
+      "EF5": 77.862
+    },
+    "bias_correction": "\u03bb on 1996+ detection-stable window; -9 unknown excluded; EF2+ cross-check; rural-low EF bias pushes true tail higher (caveat)"
+  },
+  "physical_bound_L_ms": 113.0,
+  "checks": {
+    "strongwind_r2": 0.9992,
+    "tornado_xi_neg": true
+  }
+}

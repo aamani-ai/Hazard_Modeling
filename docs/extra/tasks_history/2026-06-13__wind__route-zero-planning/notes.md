@@ -29,7 +29,7 @@ PY
 # (full snippet in the session transcript; Traverse OK + Shepherds Flat OR chosen.)
 
 # Commit + push (route-zero):
-git add docs/plans/wind docs/extra/discussion/wind
+git add docs/plans/convective_wind docs/extra/discussion/convective_wind
 git commit -F - <<'EOF' ... EOF        # 5010a61
 git push origin main                    # SSH alias github.com-work
 ```

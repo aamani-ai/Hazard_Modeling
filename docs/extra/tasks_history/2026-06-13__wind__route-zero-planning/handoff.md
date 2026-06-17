@@ -3,18 +3,18 @@
 ## 60-second summary (what happened, not how)
 
 1. **Built the wind-hazard route-zero** (hazard **3 of 3**: hail ✅ · wildfire ✅ · wind). 15 planning docs —
-   `docs/plans/wind/` (11) + `docs/extra/discussion/wind/` (4). **Plans only, no notebooks/data yet.** This is
+   `docs/plans/convective_wind/` (11) + `docs/extra/discussion/convective_wind/` (4). **Plans only, no notebooks/data yet.** This is
    the doc set the *next* chat builds from.
 2. **Route = inland-convective.** Build **strong / straight-line wind first** (site-conditioned), **then
    tornado** (areal). **Hurricane deferred** (field-intensity — the one unbuilt coupling bucket). Settled in
    `DD-WN-2`.
 3. **NEW layer-0 = the hazard-definition layer.** Wind is the first peril where **no data product pre-defines
    the event** (MESH did for hail, FSim for wildfire) — so we **author** the definition from standards. The
-   plan-of-record is [`plans/wind/00_hazard_definition.md`](../../../plans/wind/00_hazard_definition.md).
+   plan-of-record is [`plans/convective_wind/00_hazard_definition.md`](../../../plans/convective_wind/00_hazard_definition.md).
 4. **Coupling — wind tours all three buckets** (the "sub-perils matter" payoff): **tornado = areal hit-or-miss**
    (reuse hail's Minkowski, path-aware), **strong wind = site-conditioned** (reuse wildfire's M2; the **ASCE
    7-22 RP gust surface = a pre-integrated return-level profile**, the FSim analogue), **hurricane =
-   field-intensity** (deferred). Deep-dive that teaches it: [`discussion/wind/02`](../../discussion/wind/02_coupling_buckets_and_wind.md).
+   field-intensity** (deferred). Deep-dive that teaches it: [`discussion/convective_wind/02`](../../discussion/convective_wind/02_coupling_buckets_and_wind.md).
 5. **Thresholds anchored in standards:** 3-s gust observable; μ = NWS ≥58 mph (strong) / EF scale (tornado);
    bound L ≈ EF5 113 m/s; **two thresholds kept distinct** — meteorological event (counts λ) vs IEC-61400
    turbine survival (damage onset, ~52–70 m/s) → **anchored** curve. Severity = bounded GPD (EVT-on-intensity).
@@ -33,15 +33,15 @@
 
 ## Read these before starting (in order)
 
-1. [`plans/wind/00_hazard_definition.md`](../../../plans/wind/00_hazard_definition.md) — **layer-0**: the "why
+1. [`plans/convective_wind/00_hazard_definition.md`](../../../plans/convective_wind/00_hazard_definition.md) — **layer-0**: the "why
    this layer exists" table, the coupling-taxonomy primer, the two-thresholds anchored-curve.
-2. [`discussion/wind/02_coupling_buckets_and_wind.md`](../../discussion/wind/02_coupling_buckets_and_wind.md) —
+2. [`discussion/convective_wind/02_coupling_buckets_and_wind.md`](../../discussion/convective_wind/02_coupling_buckets_and_wind.md) —
    the coupling deep-dive (site-conditioned vs field-intensity; the old-repo "got strong-wind coupling wrong"
    evidence).
-3. [`plans/wind/decisions.md`](../../../plans/wind/decisions.md) — `DD-WN-1..13` (settled choices + revisit
+3. [`plans/convective_wind/decisions.md`](../../../plans/convective_wind/decisions.md) — `DD-WN-1..13` (settled choices + revisit
    triggers).
-4. [`plans/wind/README.md`](../../../plans/wind/README.md) (phase table) +
-   [`m0_input_data.md`](../../../plans/wind/m0_input_data.md) + [`m1_catalog.md`](../../../plans/wind/m1_catalog.md).
+4. [`plans/convective_wind/README.md`](../../../plans/convective_wind/README.md) (phase table) +
+   [`m0_input_data.md`](../../../plans/convective_wind/m0_input_data.md) + [`m1_catalog.md`](../../../plans/convective_wind/m1_catalog.md).
 5. **Prior art to mine** (symlink `hazard_analysis/`): `src/mag_sim/mag_sim_methodology.md` (the bounded-GPD
    μ/L analytic solve; `HAZARD_CONFIG` μ=25.92 m/s, L=113 m/s); `docs/suggested_architecture/issues/strong-wind-var-worked-example.md`
    (the Method-0-vs-3 ~12× proof); `config/subsystems/wind_config_default.csv` (the turbine subsystem split);
@@ -60,8 +60,8 @@ source .venv/bin/activate                          # python3.12, kernel "hazard_
 git remote -v                                       # origin = git@github.com-work:D-ivyy/Hazard_Modeling.git (push via SSH)
 git log --oneline -2                                # 5010a61 wind route-zero ; <hash> session handoff
 # every DD-WN reference in the m-plans resolves to a real decision header:
-for d in $(grep -rohE "DD-WN-[0-9]+" docs/plans/wind/m*.md | sort -u); do
-  grep -q "## $d " docs/plans/wind/decisions.md && echo "OK $d" || echo "MISSING $d"; done
+for d in $(grep -rohE "DD-WN-[0-9]+" docs/plans/convective_wind/m*.md | sort -u); do
+  grep -q "## $d " docs/plans/convective_wind/decisions.md && echo "OK $d" || echo "MISSING $d"; done
 # NO wind notebooks/data yet — nothing to execute. The build starts fresh from layer-0/M0.
 ```
 
@@ -84,32 +84,32 @@ for d in $(grep -rohE "DD-WN-[0-9]+" docs/plans/wind/m*.md | sort -u); do
 Mirror the hail/wildfire notebooks-first rhythm — one notebook at a time, each cell legible (description → code
 → output → plots → tables), every basic verified against a known answer. Build order:
 
-### Phase A — layer-0 + M0 (`Notebooks/wind/m0_input_data/`)
-Per [`m0_input_data.md`](../../../plans/wind/m0_input_data.md), three M0 notebooks:
+### Phase A — layer-0 + M0 (`Notebooks/convective_wind/m0_input_data/`)
+Per [`m0_input_data.md`](../../../plans/convective_wind/m0_input_data.md), three M0 notebooks:
 **`01_asce_hazard`** (the ASCE RP gust surfaces — strong-wind basic-wind + Ch 32 tornado; the **pre-integrated
 profiles** — build FIRST, fastest path to a real number, the FSim parallel), **`02_spc_storm_record`** (the
 SPC/Storm-Events extraction — the catalog-fit cross-check + tornado path stats), **`03_asset_geometry`** (the
 two sites: boundary polygon + USWTDB turbine points; two exposure views). **Bias-correct SPC** (population bias)
 *before* any frequency fit (`AWN-1`). Honor the exploratory-data-notebook principle.
 
-### Phase B — M1 catalog (`Notebooks/wind/m1_catalog/01_catalog`, one notebook, split by sub-peril)
+### Phase B — M1 catalog (`Notebooks/convective_wind/m1_catalog/01_catalog`, one notebook, split by sub-peril)
 **Strong wind = profile-assembly** from the ASCE RP surface (pre-integrated, **no λ-fit** — `DD-WN-3`,
 learning-09). **Tornado = Poisson λ + EF/path-stats** fit from SPC (`DD-WN-5`). **Severity = bounded GPD**
 (μ-anchored, L-truncated, ξ<0; **fit μ_mean to observed gusts, NOT back-solved from an EAL target** — the old
 repo's weakness — `DD-WN-8`).
 
 ### Phase C — M2 coupling (FORK)
-**`strong_wind/m2_coupling`** = site-conditioned (reuse wildfire's thin M2; p_hit≈1, no spatial factor;
-`DD-WN-4`). **`tornado/m2_coupling`** = areal hit-or-miss (reuse hail's Minkowski, **path-aware thin-rectangle**
+**`m2_coupling/strong_wind`** = site-conditioned (reuse wildfire's thin M2; p_hit≈1, no spatial factor;
+`DD-WN-4`). **`m2_coupling/tornado`** = areal hit-or-miss (reuse hail's Minkowski, **path-aware thin-rectangle**
 `(L+a)(w+a)`; `DD-WN-5`). Tornado is sparse → invoke **learning-10** (report SE; TVaR alongside VaR — VaR floors
 to $0 in the sparse tail). Note per-turbine point-cloud (USWTDB) vs areal-footprint.
 
-### Phase D — M3 damage (`Notebooks/wind/m3_damage/01_damage`, SHARED)
+### Phase D — M3 damage (`Notebooks/convective_wind/m3_damage/01_damage`, SHARED)
 Anchored subsystem logistic on 3-s gust, IEC-survival onset, operational-state aware (`DD-WN-11`); subsystem
 reach differs by sub-peril (strong wind = aero; EF-level tornado also takes the tower). Build the turbine curve
 in `infrasure-damage-curves`. **Approximate now, accurate later** (like hail/wildfire).
 
-### Phase E — M4 loss & metrics (`Notebooks/wind/m4_loss_metrics/01_loss_metrics`, SHARED + COMBINED)
+### Phase E — M4 loss & metrics (`Notebooks/convective_wind/m4_loss_metrics/01_loss_metrics`, SHARED + COMBINED)
 Shared compound-Poisson/NegBin MC; **combine both sub-perils** into one annual-loss distribution + a
 strong-wind/tornado split. EAL/VaR/PML/TVaR off the **sampled** distribution, **% of TIV alongside $**. Strong
 wind well-populated; tornado rare. **Never Method 0** (the expected-loss shortcut — `DD-WN-13`).
