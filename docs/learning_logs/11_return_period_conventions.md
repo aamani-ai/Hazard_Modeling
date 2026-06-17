@@ -37,11 +37,22 @@ most common input-side error,"* close for rare perils and divergent for frequent
 [methodology doc](../google_drive_docs/hazard_asset_loss_distribution_methodology.docx) §5: *"the chance of zero
 events in a year is `exp(−λ)`; the chance of at least one is `1 − exp(−λ)`."*
 
-`[OURS]` The operational seam the docs don't spell out: our **collection-level** rate is **not** rare (hail
-`λ_collection ≈ 29.6/yr`; regional tornado rates are high too) — there `1/λ` and `1/p` are wildly apart. It is only
-**after thinning to the asset** (`λ_asset ≪ 1`) and folding in severity that the event becomes rare and the two
-reconverge. So the rule that makes the strong-wind-MRI + tornado-rate combine in M4 legitimate is: **mixing an ASCE
-MRI with a fitted Poisson rate is safe only at the *asset* level, never at the collection level.**
+`[OURS]` Two *distinct* things get conflated here (an earlier draft of this entry merged them — keep them apart):
+- **Why we can *combine* the two sub-perils into one loss distribution → disjointness, NOT rarity.** Co-sampling two
+  *independent* compound-Poisson streams is *always* valid (their superposition is again compound-Poisson; EAL adds;
+  the tail is the convolution) — it needs **independence** ([AWN-28](../plans/convective_wind/assumptions.md) /
+  [DD-WN-15](../plans/convective_wind/decisions.md): tornado ⊥ strong wind, disjoint by data product). Rarity is
+  irrelevant to *this*.
+- **Why an ASCE MRI and a fitted Poisson rate sit on the same footing (rate ↔ return-period) → THIS is the rarity
+  part.** `1/λ ≈ 1/p` only when `λ ≪ 1`. And here is where the **collection-vs-asset** line lives: our collection-level
+  rate is **not** rare (hail `λ_collection ≈ 29.6/yr`; regional tornado rates high) — there `1/λ` and `1/p` are wildly
+  apart; only **after thinning to the asset** (`λ_asset ≪ 1`) and folding in severity do they reconverge.
+
+In the build the second concern is real but **benign**: M1 converts the ASCE return-level curve to a Poisson rate
+(profile-assembly, ξ≈0 fit anchored on the rare design tail, where `1/p = 1/λ` is exact), and the only frequent
+regime — the 58 mph μ-threshold, `λ_sw ≈ 0.9/yr` — carries `DR ≈ 0` (below IEC survival), so **no loss flows through
+where the rare-approximation would be loosest.** The loss lives in the rare damaging tail, where the interchange is
+exact.
 
 `[EVT-LIT]` *(external literature, brought in to connect — not to contradict the house convention.)* The broader
 EVT / hydrology literature uses **two** return-period definitions, and it helps to see ours as a labelled choice
@@ -56,6 +67,17 @@ identical math.** The only difference is which quantity the *word* "return perio
 literature call `1/λ` a return period; **our docs reserve "return period" for `1/p` and name `λ` the "rate,"**
 precisely to head off the conflation that loose POT usage invites. When citing the POT `1/λ` form, say so explicitly
 and map it back to `λ` (rate), not to `T` (return period).
+
+**Which branch ASCE actually uses (pinned).** ASCE 7-22's **non-hurricane** maps — the branch our inland sites read —
+are a **2-D Poisson-process / peaks-over-threshold** EVT model + local regression (NIST), with a **bounded** tail
+(reverse-Weibull / POT-GPD, **ξ<0**; [Simiu 1996 *Peaks-Over-Threshold*](https://ascelibrary.org/doi/10.1061/%28ASCE%290733-9445%281996%29122%3A5%28539%29),
+Peterka-Shahid 1998; [ASCE 7-22 App F](https://amplify.asce.org/content/standard/9780784415788/part/provisions/back-matter/appf),
+[NIST mapping](https://www.nist.gov/publications/mapping-return-values-extreme-wind-speeds)). So it is **POT, not
+block/annual-maxima** (annual-maxima + Gumbel was the *pre-1995, fastest-mile* basis). Two consequences for us: (1)
+the ASCE *generating* tail is **bounded (ξ<0)**, but its return-level curve is **near-log-linear over MRI ≤ 10⁶**, so
+our M1 ξ≈0-+-cap-at-L is a faithful approximation (the bound bites only far beyond our range) — corrected from an
+earlier "not a bounded GPD" overstatement ([AWN-17](../plans/convective_wind/assumptions.md)); (2) the **deep-tail
+Appendix-F speeds (10⁴–10⁶ MRI) carry large SE ≈ 10–16 mph** (NIST) — real uncertainty in the gusts we read.
 
 **Worked.** How far apart the two are, by rarity:
 

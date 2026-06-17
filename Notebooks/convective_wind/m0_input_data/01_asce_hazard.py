@@ -313,6 +313,14 @@ print("\n⇒ a site's return-level CURVE = sample the SAME lat/lon across all 11
 # speeds come from Monte-Carlo simulation of synthetic hurricanes; tornado (Ch 32) from a separate NIST tornado
 # simulation. So the **tail is already fitted** — we *read* the return-level curve, we do not re-fit it
 # (profile-assembly; the wildfire/FSim parallel, [learning-09](../../../docs/learning_logs/09_pre_integrated_vs_extracted_catalog.md)).
+# >
+# > **Which EVT (our inland sites = the non-hurricane branch).** ASCE 7-22's non-hurricane maps use a **2-D
+# > Poisson-process / peaks-over-threshold** model + local regression (NIST), with a **bounded** tail
+# > (reverse-Weibull / POT-GPD, ξ<0; Simiu 1996, Peterka-Shahid 1998) — **POT, not annual/block-maxima.** We *read*
+# > this curve; M1 then re-characterizes it as ≈log-linear (ξ≈0) over MRI ≤ 10⁶ — a faithful approximation of the
+# > bounded tail, since the bound bites only far beyond our range (the profile-assembly is distribution-agnostic).
+# > **Caveat:** the deep-tail Appendix-F speeds (10⁴–10⁶ MRI) carry **large SE ≈ 10–16 mph** (NIST). Full provenance
+# > + the rate-vs-return-period conventions: [learning-11](../../../docs/learning_logs/11_return_period_conventions.md).
 # The Hazard-Data-Reference frames it exactly so: *"Design maps give RP surfaces … fast point/county lookup,
 # regulator-recognized"* (free ASCE-hosted tier, ~1000 req/mo — we make ~15 per site).
 #
