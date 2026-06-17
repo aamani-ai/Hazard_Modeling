@@ -103,7 +103,7 @@
 # | Value | What it is | Units / reference base | What it is **NOT** | Use |
 # |---|---|---|---|---|
 # | **basic wind speed** | the design 3-s peak gust at a given MRI | **mph, 3-s gust @ 33 ft (10 m), Exposure C** (open terrain) | not at hub height; not the site's actual terrain | the strong-wind hazard intensity |
-# | **MRI** | mean recurrence interval = **return period** | years | not a forecast horizon | indexes the return-level curve |
+# | **MRI** | mean recurrence interval = **return period** `T = 1/p` (`p = 1−e^{−λ}`, annual-exceedance) | years | not a forecast horizon; **not** an event rate `1/λ` | indexes the return-level curve |
 # | **risk category → MRI** | ASCE 7-22 maps the gust by consequence-of-failure tier | RC I=300 · **II=700** · III=1,700 · IV=3,000 yr | RC ≠ a multiplier (7-22 *drops* the old importance factor) | which MRI a structure designs to |
 # | **Appendix-F gust** | the deep-tail RP gusts | mph @ MRI 10⁴ / 10⁵ / 10⁶ yr | not a code design value for ordinary structures | the catastrophic-tail return levels |
 # | **Ch-32 tornado speed** | design tornado 3-s gust | mph, a function of **effective plan area Aₑ** and MRI; RC III/IV only; **caps ~EF2** | not the violent-tornado tail; not the tornado *catalog* | a cross-check on tornado (spine = SPC, `02`) |
@@ -111,6 +111,10 @@
 # > **Frame rule.** A bare "110 mph" is a latent bug. It is the **700-yr** (RC II) 3-s gust at **33 ft, Exposure C** —
 # > name the return period *and* the reference height/terrain or it cannot be used. Reading several MRIs = sampling
 # > the EVT return-level curve at fixed exceedance probabilities (cf. [discussion/03](../../../docs/extra/discussion/convective_wind/03_hazard_definition_and_thresholds.md) §6).
+# >
+# > **MRI is `1/p` (annual-exceedance), not `1/λ` (event rate)** — the two coincide only for *rare* events, which is
+# > why we can mix this ASCE MRI (strong wind) with a *fitted* Poisson rate (tornado) only at the **asset** level.
+# > Full treatment + the EVT/hydrology conventions: [learning-11](../../../docs/learning_logs/11_return_period_conventions.md).
 
 # %%
 from __future__ import annotations
