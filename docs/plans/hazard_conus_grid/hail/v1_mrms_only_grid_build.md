@@ -299,6 +299,7 @@ The local proof is done and `gcloud` bucket listing works. Current known choices
 | Task-indexed fanout proof | GitHub Actions run `27650904912`; execution `hazard-conus-grid-mrms-m0-bn9lk`; task count 2; wrote 366,380 rows across two adjacent 14-day batches. |
 | Full task-indexed M0 run | GitHub Actions run `27651275076`; execution `hazard-conus-grid-mrms-m0-54dm7`; task count 148, parallelism 8; all tasks succeeded. |
 | Full M0 reconciliation | Run `20260616T225000Z_m0_full_conus_reconciled`; 148 input batches, 2,071 dates, 27,099,035 rows, duplicate `cell_id/date` rows = 0, row-count failures = 0. |
+| Full M0 review | Run `20260616T232500Z_m0_review`; row contract passed; 613 records / 585 cells / 38 dates have `mesh_max_mm >= 300`, so raw MESH severity needs a named QA filter or sensitivity before empirical size/loss use. |
 
 Current main output:
 
@@ -310,6 +311,28 @@ gs://infrasure-benchmark/hazard_conus_grid/dev/hail/v1_mrms_only/m0_reconciled_d
 This is the first full-grid M0 layer. It is partitioned by date, with JSON metadata plus flat CSV sidecars
 for batch manifest, date coverage, and status summary. Individual Cloud Run batch outputs are audit/debug
 material; M1 should consume the reconciled root.
+
+Current review output:
+
+```text
+gs://infrasure-benchmark/hazard_conus_grid/dev/hail/v1_mrms_only/m0_review/
+  run_id=20260616T232500Z_m0_review/
+```
+
+Review result:
+
+- M0 row contract: **passed**;
+- dates: 2,071;
+- rows: 27,099,035;
+- cells with any severe hail day: 12,111;
+- max severe hail days in one cell: 255;
+- raw annualized severe-day proxy max: 44.97 days/year;
+- extreme raw MESH records: 613 cell-days, 585 cells, 38 dates;
+- max raw MESH: 1,437.4 mm.
+
+Interpretation: the GCP output/reconciliation is mechanically usable. The raw severity values are not ready
+to feed empirical size summaries or losses without a named extreme-MESH QA/capping rule. M1 frequency can
+proceed from severe-day flags after review; M1 size summaries need the QA decision.
 
 See [`../common/storage_artifacts.md`](../common/storage_artifacts.md) for the full path contract and
 [`../common/gcp_execution_and_storage_conventions.md`](../common/gcp_execution_and_storage_conventions.md)
@@ -350,10 +373,9 @@ durable GitHub Actions image path, task indexing, and full-run reconciliation ar
 
 Next:
 
-1. Review the `extreme_mesh_ge_300mm` QA flag in the reconciled M0 metadata and decide whether it remains a
-   raw-evidence caveat or becomes a named downstream QA filter.
-2. Create compact map/table review outputs from the reconciled sidecars.
-3. Build M1 frequency and empirical MESH-size summaries from the reconciled M0 root.
+1. Define the V1 extreme-MESH severity rule: cap, exclude, or produce named raw/capped sensitivity fields.
+2. Build M1 frequency from the reconciled M0 severe-day flags.
+3. Build M1 empirical MESH-size summaries only with the severity QA rule made explicit.
 4. Only after M1 review, resume M2-M4 solar coupling and loss metrics.
 
 Use [`m0_m1_scaleout_execution.md`](m0_m1_scaleout_execution.md) as the execution guide.

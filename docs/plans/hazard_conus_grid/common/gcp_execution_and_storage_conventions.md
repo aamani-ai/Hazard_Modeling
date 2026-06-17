@@ -435,6 +435,23 @@ run_id=20260616T225000Z_m0_full_conus_reconciled/
 This is the first full-grid M0 layer that M1 should consume after QA review. The raw task batch outputs remain
 audit/debug material; M1 should not consume them directly.
 
+Review artifact:
+
+| Item | Value |
+|---|---:|
+| notebook | `Notebooks/hazard_conus_grid/hail/m0_input_data/01_mrms_daily_mesh/05_mrms_v1_full_m0_review.ipynb` |
+| run id | `20260616T232500Z_m0_review` |
+| GCS root | `gs://infrasure-benchmark/hazard_conus_grid/dev/hail/v1_mrms_only/m0_review/run_id=20260616T232500Z_m0_review/` |
+| local row contract | passed |
+| extreme raw MESH records | 613 cell-days |
+| extreme raw MESH cells | 585 |
+| extreme raw MESH dates | 38 |
+| max raw MESH | 1,437.4 mm |
+
+Interpretation: the Cloud Run/reconciled M0 output is mechanically clean. Raw MESH severity is not clean
+enough to feed empirical size/loss silently; downstream M1/M2 must carry an explicit extreme-MESH cap, filter,
+or sensitivity decision.
+
 ## Completed Full-Run Gate
 
 The full accepted MRMS denominator was started only after these were pinned:
@@ -448,7 +465,7 @@ The full accepted MRMS denominator was started only after these were pinned:
 
 Recommended next steps for hail:
 
-1. Review the `extreme_mesh_ge_300mm` QA flag and decide whether it is acceptable as raw M0 evidence or needs
-   a named downstream QA filter.
-2. Build M1 from the reconciled M0 root, not from individual batch prefixes.
-3. Create map/table review outputs from the reconciled sidecars before moving to M2.
+1. Define the V1 extreme-MESH severity rule: cap, exclude, or produce named raw/capped sensitivity fields.
+2. Build M1 frequency from the reconciled M0 root, not from individual batch prefixes.
+3. Build M1 empirical size summaries only after the severity QA rule is explicit.
+4. Create M1 review maps/tables before moving to M2.

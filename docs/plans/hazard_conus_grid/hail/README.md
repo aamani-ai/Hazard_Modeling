@@ -214,6 +214,17 @@ qa flags:              extreme_mesh_ge_300mm
 This reconciled root is the active M0 input for M1 after QA review. Do not build M1 from individual raw
 `m0_daily_cell_evidence/run_id=.../batch=...` prefixes.
 
+The first full M0 review artifact has also been produced:
+
+```text
+review run_id:         20260616T232500Z_m0_review
+review gcs:            gs://infrasure-benchmark/hazard_conus_grid/dev/hail/v1_mrms_only/m0_review/run_id=20260616T232500Z_m0_review/
+row contract status:   passed
+extreme raw MESH:      613 cell-days, 585 cells, 38 dates, max 1,437.4 mm
+recommendation:        frequency can proceed after review; empirical size/loss severity needs a named
+                       extreme-MESH QA/capping rule or sensitivity
+```
+
 ## Artifact Organization
 
 Treat current hail grid outputs in three groups:
@@ -224,8 +235,9 @@ Treat current hail grid outputs in three groups:
 | M0 proof outputs | `m0_mrms_v1_one_day_proof/`, `run_id=20260616T172929Z`, `run_id=20260616T205852Z_cloudrun_bootstrap_7d`, `run_id=20260616T214036Z_wif_deploy_probe` | Row contract, remote execution, durable image, and GCS write proof. |
 | Main V1 build | `run_id=20260616T225000Z_m0_full_conus_reconciled` under `m0_reconciled_daily_cell_evidence/` | Active M0 input to M1 after QA review. |
 
-The full MRMS denominator and reconciled M0 layer now exist. The next hail grid step is to review the M0 QA
-flag and build M1 frequency / empirical size-distribution summaries from the reconciled root.
+The full MRMS denominator, reconciled M0 layer, and M0 review artifact now exist. The next hail grid step is
+to define the V1 extreme-MESH severity rule, then build M1 frequency from the reconciled root. Empirical
+size-distribution summaries must carry the raw/capped/filter decision explicitly.
 
 ## Current Solar Smoke Test
 

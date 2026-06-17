@@ -220,10 +220,12 @@ gs://infrasure-benchmark/hazard_conus_grid/dev/hail/v1_mrms_only/m0_reconciled_d
 ```
 
 It contains 2,071 accepted MRMS dates, 13,085 served CONUS cells per date, and 27,099,035 cell-day rows with
-zero duplicate `cell_id/date` rows and zero date row-count failures. Next build target: review the M0 QA flag
-(`extreme_mesh_ge_300mm`) and build M1 frequency / empirical size-distribution summaries from the reconciled
-root. MYRORSS, Murillo & Homeyer de-biasing, EVT tail, and more complex sparse-cell/frequency modeling remain
-V1.5/V2 after the MRMS-only grid contract is clean.
+zero duplicate `cell_id/date` rows and zero date row-count failures. The M0 review run
+`20260616T232500Z_m0_review` confirmed the row contract, but found repeated extreme raw MESH values
+(`613` cell-days, `585` cells, `38` dates, max `1,437.4 mm`). Next build target: define the V1
+extreme-MESH severity rule, then build M1 frequency from the reconciled root. Empirical size summaries must
+carry the raw/capped/filter decision explicitly. MYRORSS, Murillo & Homeyer de-biasing, EVT tail, and more
+complex sparse-cell/frequency modeling remain V1.5/V2 after the MRMS-only grid contract is clean.
 
 ## Cross-read/source map
 
