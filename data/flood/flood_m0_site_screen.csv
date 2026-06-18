@@ -1,6 +1,7 @@
 Plant Code,Plant Name,State,County,solar_mw,Latitude,Longitude,zone,zone_subty,in_sfha,sfha_in_buffer,score
 67104,Bayou Galion Solar Project,LA,Morehouse Parish,98.1,32.79754,-91.78413,A,,True,True,3
 61646,LA3 West Baton Rouge Solar Facility,LA,West Baton Rouge,50.0,30.465105,-91.331855,A,,True,True,3
+66193,Oak Ridge Solar,LA,Richland,200.0,32.575,-91.7884,X,AREA WITH REDUCED FLOOD RISK DUE TO LEVEE,False,True,1
 65483,"Big Cypress Solar, LLC",AR,Crittenden,180.0,35.3446,-90.3075,X,0.2 PCT ANNUAL CHANCE FLOOD HAZARD,False,True,1
 65482,West Memphis Solar Station,AR,Crittenden,180.0,35.15689,-90.310482,X,0.2 PCT ANNUAL CHANCE FLOOD HAZARD,False,True,1
 66185,"Crooked Lake Solar, LLC",AR,Mississippi,175.0,35.914697,-89.784328,X,0.2 PCT ANNUAL CHANCE FLOOD HAZARD,False,True,1
@@ -23,14 +24,13 @@ Plant Code,Plant Name,State,County,solar_mw,Latitude,Longitude,zone,zone_subty,i
 60552,Hattiesburg Solar Farm,MS,Forrest,50.0,31.275828,-89.301156,X,AREA OF MINIMAL FLOOD HAZARD,False,True,1
 64307,New Orleans Solar Station,LA,Orleans,20.0,30.015,-89.92,X,AREA WITH REDUCED FLOOD RISK DUE TO LEVEE,False,True,1
 65030,Oxbow Solar 1,LA,Pointe Coupee,300.0,30.667878,-91.391706,NONE,,False,False,0
-66193,Oak Ridge Solar,LA,Richland,200.0,32.575,-91.7884,X,AREA WITH REDUCED FLOOD RISK DUE TO LEVEE,False,,0
 66112,Newport Solar Project,AR,Jackson,180.0,35.668902,-91.187108,X,AREA OF MINIMAL FLOOD HAZARD,False,False,0
 65736,Driver Solar,AR,Mississippi,150.0,35.640573,-89.969392,X,0.2 PCT ANNUAL CHANCE FLOOD HAZARD,False,False,0
 65291,Golden Triangle II,MS,Lowndes,150.0,33.4155,-88.6223,X,AREA OF MINIMAL FLOOD HAZARD,False,False,0
 65976,Prairie Ronde Solar Farm,LA,St Landry,135.0,30.61,-92.17,X,AREA OF MINIMAL FLOOD HAZARD,False,False,0
 66282,Woodruff County Solar,AR,Woodruff,122.0,35.256256,-91.340186,NONE,,False,False,0
 67504,Walnut Bend Solar Station PV,AR,Lee,100.0,34.860346,-91.082006,NONE,,False,False,0
-63295,Chicot Solar,AR,Chicot,100.0,33.479,-91.349,ERR,"('Connection aborted.', ConnectionResetE",False,False,0
+63295,Chicot Solar,AR,Chicot,100.0,33.479,-91.349,X,AREA WITH REDUCED FLOOD RISK DUE TO LEVEE,False,False,0
 63766,Happy Solar 1,AR,White,95.0,35.167715,-91.660279,X,AREA OF MINIMAL FLOOD HAZARD,False,False,0
 62163,Meridian III,MS,Lauderdale,52.5,32.453955,-88.549484,X,AREA OF MINIMAL FLOOD HAZARD,False,False,0
 60303,Sumrall II Solar Farm,MS,Lamar,52.0,31.397089,-89.485884,X,AREA OF MINIMAL FLOOD HAZARD,False,False,0

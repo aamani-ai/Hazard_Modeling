@@ -29,6 +29,14 @@ revisable. Prefix `AFL-*`. Grows as we plan and build.
 | AFL-18 | M4 | ~~10-yr onset = assumed shallow depth (0.5 ft)~~ **superseded by JD-FL-8**: 10/25/50-yr depths are now regression-rating, BLE-anchored; EAL 0.13%→**0.155%** (+18%), robust to channel slope | [JD-FL-8](decisions.md) | **built** | regression-Q standard error propagated as MC overlay |
 | AFL-19 | M3/M4 | **Duration / business-interruption unmodeled** (Gen-1) — physical loss only | A25; team scope | open | BI tier opens |
 
+### Pluvial sub-peril — `AFL-P*`
+
+| ID | Layer | Assumption | Source / decision | Status | Revisit trigger |
+|---|---|---|---|---|---|
+| AFL-P1 | M1 | Pluvial depth = **NOAA Atlas 14 24-hr rainfall → SCS Curve Number runoff** (CN≈80, graded solar / soil-C) → sheet ponding; **no free pluvial depth product exists** (the blind-spot) | [JD-FL-9](decisions.md); Flood-Data-Ref §2/§5/§7 | **built** | Atlas 15 (climate-aware, ~Sept 2026); FFRD national / commercial pluvial grid |
+| AFL-P2 | M1 | Ponding = **sheet model** — footprint-avg = `r·Q` (retention **r=0.5**), wet depth = `r·Q/f` over **ponding fraction f=0.4** (low-lying share of the graded pad). **Both r and f are judgment knobs (no anchor)**; DEM-hypsometry rejected (10 m σ = site slope, not micro-relief → absurd deep pools) | [JD-FL-9](decisions.md); M1 build | **built** | 1 m lidar depression analysis for `f`; 2-D overland run for depth; pluvial depth anchor |
+| AFL-P3 | M4 | **Combine = co-sample comonotonic + worse-source-wins** (headline, φ=1); **additive-capped = recorded upper envelope** (φ=0). Headline is **pluvial-dominated** here (driven by `f`) → riverine masked; marginals reported | [JD-FL-11](decisions.md); [research](../../../jdocs/flood_subperil_research_result.md) | **built** | sub-asset spatial exposure → true per-location max-then-sum; riverine↔pluvial copula |
+
 ### Wind-farm cell (V2) — `AFL-W*`
 
 | ID | Layer | Assumption | Source / decision | Status | Revisit trigger |

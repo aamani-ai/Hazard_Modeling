@@ -20,7 +20,7 @@ anti-pattern), known-answer checks at every layer. Then **harden the EAL** (this
   USGS **NLDI** (snap to NHDPlus reach 15078158 → 1.91 mi² drainage) → **NSS** regression (LA Coastal Plain
   SIR 2024-5031) → Q(2…100-yr) → **power-law rating `depth = d₁₀₀·(Q/Q₁₀₀)^p`**, exponent pinned by both BLE depths.
 - **Robustness result:** densified depths are **near-invariant to the (unmeasurable) channel slope** — the rating
-  exponent absorbs it (10-yr depth 0.97 ft across slope 3/8/20 ft/mi). → learning log 11.
+  exponent absorbs it (10-yr depth 0.97 ft across slope 3/8/20 ft/mi). → learning log 13.
 - **EAL 0.13% → 0.155% TIV** (+18%); densified value cross-checks against the old "assumed @1.0 ft" guess; PML@100/500
   unchanged (BLE-anchored). All M1–M4 known-answer checks pass; full chain re-runs clean.
 - Architecture: densification lives in **M1** (emits a variable-length RP profile); M2/M3/M4 flowed through unchanged
@@ -38,7 +38,7 @@ anti-pattern), known-answer checks at every layer. Then **harden the EAL** (this
 **Docs:**
 - `docs/plans/flood/decisions.md` — **+ JD-FL-8**.
 - `docs/plans/flood/{m1_catalog,m4_loss_metrics}.md` + `assumptions.md` (AFL-12 built, AFL-18 superseded).
-- `docs/learning_logs/11_densify_sparse_rp_anchor_the_shape.md` (+ index row).
+- `docs/learning_logs/13_densify_sparse_rp_anchor_the_shape.md` (+ index row).
 - This `tasks_history/` folder.
 
 **Data manifests** (kept; large parquets/cache gitignored): `data/flood/flood_m{1,3,4}_*manifest*.json`,

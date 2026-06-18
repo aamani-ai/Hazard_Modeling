@@ -1,29 +1,66 @@
 {
   "peril": "flood",
-  "sub_peril": "riverine",
+  "sub_peril": [
+    "riverine",
+    "pluvial"
+  ],
   "event_family_id": null,
   "layer": "M4",
-  "event_model": "annual-maximum MC sampling the (JD-FL-8 densified) RP loss curve (JD-FL-7)",
+  "event_model": "annual-max MC; sub-perils co-sampled comonotonic, combined worse-source-wins (JD-FL-7/JD-FL-11)",
+  "combine_rule": "HEADLINE = max(riverine, pluvial) at one annual AEP (\u03c6=1, shared-ground; research-backed, Bates 2021); metrics on the JOINT per-year vector",
+  "combine_envelope_sensitivity": {
+    "Elizabeth Solar Plant": {
+      "headline_eal_pct": 0.27,
+      "additive_capped_eal_pct_UB": 0.423,
+      "note": "headline worse-wins (used downstream) \u2192 additive-capped upper bound (recorded only)"
+    },
+    "Hayhurst Texas Solar": {
+      "headline_eal_pct": 0.06,
+      "additive_capped_eal_pct_UB": 0.076,
+      "note": "headline worse-wins (used downstream) \u2192 additive-capped upper bound (recorded only)"
+    }
+  },
   "n_sim_years": 500000,
   "onset_aep": 0.1,
   "rp_points_per_site": {
-    "Elizabeth Solar Plant": [
+    "Elizabeth Solar Plant \u00b7 pluvial": [
       10,
       25,
       50,
       100,
       500
     ],
-    "Hayhurst Texas Solar": [
+    "Elizabeth Solar Plant \u00b7 riverine": [
+      10,
+      25,
+      50,
+      100,
+      500
+    ],
+    "Hayhurst Texas Solar \u00b7 pluvial": [
+      10,
+      25,
+      50,
+      100,
+      500
+    ],
+    "Hayhurst Texas Solar \u00b7 riverine": [
       100,
       500
     ]
   },
+  "marginal_eal_pct": {
+    "Elizabeth Solar Plant \u00b7 pluvial": 0.27,
+    "Elizabeth Solar Plant \u00b7 riverine": 0.153,
+    "Hayhurst Texas Solar \u00b7 pluvial": 0.06,
+    "Hayhurst Texas Solar \u00b7 riverine": 0.016
+  },
   "metric_frame": "per-year loss vectors; PML_T = (1-1/T) percentile (DD-4)",
   "caveats": [
-    "EAL densified (JD-FL-8) \u2014 lower RPs (10/25/50-yr) are regression flow-frequency depths anchored to both BLE depths; see \u00a72b vs the old assumed-onset method.",
-    "PML@100/500-yr anchored to real BLE depth (solid); regression-Q standard error not yet propagated as an MC overlay.",
-    "value\u221darea exposure; Elizabeth TIV estimated; medium-confidence curves; duration unmodeled"
+    "RIVERINE: BLE tail + JD-FL-8 regression densification (lower RPs); PML@100/500 BLE-anchored (solid).",
+    "PLUVIAL: blind-spot \u2014 Atlas-14 rainfall + SCS-CN + sheet ponding; NO depth anchor, assumption-driven (retention r, ponding-fraction f) \u2192 screening-grade; often DOMINATES the combined loss (driven by the f exposure knob).",
+    "COMBINE (JD-FL-11): comonotonic worse-wins \u2014 overstates correlation slightly, ignores compound stacking; independent-sum / additive-stacking are the sensitivity variants.",
+    "value\u221darea exposure; Elizabeth TIV estimated; medium-confidence curves; duration unmodeled; regression-Q + pluvial-knob uncertainty not yet propagated."
   ],
   "external_validation": {
     "source": "USGS STN high-water marks (regional, Aug-2016 LA flood era)",
@@ -47,31 +84,39 @@
       "name": "Elizabeth Solar Plant",
       "role": "proving (high-flood)",
       "tiv_usd": 211772400,
-      "EAL_pct": 0.15,
-      "EAL_usd": 323119.47,
-      "VaR99_pct": 2.62,
-      "TVaR99_pct": 3.76,
-      "PML100_pct": 2.62,
-      "PML250_pct": 3.65,
-      "PML500_pct": 4.46,
-      "PML100_usd": 5539207.95,
-      "PML250_usd": 7738813.73,
-      "PML500_usd": 9455316.6
+      "EAL_pct": 0.27,
+      "EAL_usd": 572198.89,
+      "VaR99_pct": 4.45,
+      "TVaR99_pct": 6.6,
+      "PML100_pct": 4.45,
+      "PML250_pct": 6.4,
+      "PML500_pct": 7.92,
+      "PML100_usd": 9425089.47,
+      "PML250_usd": 13547847.86,
+      "PML500_usd": 16765118.27,
+      "EAL_pluvial_pct": 0.27,
+      "EAL_riverine_pct": 0.15,
+      "EAL_addUB_pct": 0.42,
+      "PML500_addUB_pct": 12.38
     },
     {
       "name": "Hayhurst Texas Solar",
       "role": "baseline (low-flood)",
       "tiv_usd": 36778400,
-      "EAL_pct": 0.02,
-      "EAL_usd": 5919.8,
-      "VaR99_pct": 0.13,
-      "TVaR99_pct": 0.16,
-      "PML100_pct": 0.13,
-      "PML250_pct": 0.4,
-      "PML500_pct": 0.62,
-      "PML100_usd": 47811.92,
-      "PML250_usd": 148443.38,
-      "PML500_usd": 227841.62
+      "EAL_pct": 0.06,
+      "EAL_usd": 21899.39,
+      "VaR99_pct": 0.97,
+      "TVaR99_pct": 1.46,
+      "PML100_pct": 0.97,
+      "PML250_pct": 1.42,
+      "PML500_pct": 1.78,
+      "PML100_usd": 356706.56,
+      "PML250_usd": 522373.08,
+      "PML500_usd": 653049.36,
+      "EAL_pluvial_pct": 0.06,
+      "EAL_riverine_pct": 0.02,
+      "EAL_addUB_pct": 0.08,
+      "PML500_addUB_pct": 2.4
     }
   ]
 }

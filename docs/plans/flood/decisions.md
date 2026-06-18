@@ -14,6 +14,108 @@ Running record of the non-obvious design decisions for the flood → solar build
 
 ---
 
+## JD-FL-11 · Sub-peril combine — **co-sample (comonotonic) + worse-source-wins headline; additive-capped as the recorded upper envelope** (research-confirmed)
+
+**Date:** 2026-06-17 · **Status:** decided · The M4 combine for JD-FL-10 · **Backed by [`flood_subperil_research_result.md`](../../../jdocs/flood_subperil_research_result.md)** (Bates 2021; FFRD/HEC-WAT; Guan 2023; Ward 2018; Oasis LMF).
+
+**Context.** With riverine + pluvial both built, M4 must turn two per-sub-peril loss curves into one annual flood loss.
+Both are **rain-driven** → positively correlated (one storm often causes both); and they act through the **same
+depth-damage curve on the same equipment**. The **old model** treats Riverine/Flash/Coastal as **independent perils
+and sums** them — which **double-counts** the shared storm and mis-states occurrence dependence.
+
+**Decision.** Two parts, both research-endorsed:
+1. **Occurrence = co-sample comonotonic.** Draw one annual AEP `u ~ U(0,1)` per year; read **both** sub-peril loss
+   curves at `u` (one shared storm — matches FFRD shared-storm logic / RMS single-event identity).
+2. **Severity = worse-source-wins (per-location max depth → one damage eval).** The year's flood loss =
+   **max(loss_riverine(u), loss_pluvial(u))** — physically correct for **shared ground** (a component drowns once; this
+   is exactly what the Bates 2021 / Fathom / First Street engine does: *"max depth at each pixel"*). This is the
+   **headline number** (single-valued, like every other peril → combinable into Total Loss). Metrics on the
+   **combined per-year vector** (never summed marginals — Oasis LMF; comonotonic-sum is the upper bound, not the answer).
+3. **Recorded envelope (not used in the math):** the general rule is `L = max + (1−φ)·min(L_r, L_p)`, φ = shared-ground
+   overlap. For a **compact, flat solar footprint where both sources pond on the same low ground (Elizabeth), φ skews
+   high (0.6–0.8)** → worse-wins (φ=1) is the defensible **headline**; **additive-capped** (φ=0, `min(TIV, L_r+L_p)`)
+   is the **upper sensitivity bound** reported beside it. Keep per-sub-peril marginals.
+
+**Why.** Worse-wins is the research's recommended default *when overlap is high* (our case) and avoids double-counting
+the same drowned equipment; co-sampling is correlation-honest; single-valued headline keeps flood consistent +
+Total-Loss-combinable; the envelope carries the honest spread without false precision in φ.
+
+**Honest caveats.** (1) The **headline is pluvial-dominated** here (pluvial > riverine at every RP, driven by the
+screening-grade `f` exposure knob) → the well-anchored riverine is masked in the combined; **report marginals**, treat
+the headline as screening-grade until pluvial gains a depth anchor. (2) **Differs from convective_wind on purpose** —
+wind *adds* its sub-perils (tornado/strong-wind hit *different* subsystems); flood *maxes* (same water, same equipment).
+Intentional, not a bug. (3) Inland riverine↔pluvial dependence is a **published knowledge gap** (Guan 2023) → φ is
+judgment, hence the reported envelope.
+
+**Revisit trigger.** Sub-asset spatial-exposure data → drop the φ heuristic for true per-location max-then-sum; a
+measured riverine↔pluvial copula → replace comonotonic occurrence; pluvial depth anchor → narrow the envelope.
+
+---
+
+## JD-FL-10 · Sub-peril structure — **fork the catalog (M1) per sub-peril; share M2/M3; combine at M4**
+
+**Date:** 2026-06-17 · **Status:** decided · Realizes the [JD-FL-4](#jd-fl-4) family hooks · Sets the pluvial/coastal layout.
+
+**Context.** Riverine shipped as a single implicit cell. Adding **pluvial** (then coastal) needs a folder/data shape.
+The convective_wind precedent forks sub-perils at **M2** (tornado vs strong-wind *couple* differently, share M0/M1).
+Flood is different: its sub-perils differ in **data + footprint** (BLE/streamflow vs Atlas-14 rainfall vs SLOSH surge)
+but share **one damage driver — inundation depth** (the reference: *"handle each separately, then combine on the
+shared depth metric"*).
+
+**Decision.** Fork **at the catalog (M1)**, not at M2 and not a top-level `flood/riverine/` tree:
+```
+flood/ m0_input_data/                    # shared site geometry + DEM
+       m1_catalog/ riverine/ 01_catalog  # BLE + streamflow densification  (built)
+                   pluvial/  01_catalog  # NOAA Atlas-14 rainfall → ponding depth
+       solar/ m2_coupling/ m3_damage/    # SHARED — depth→damage is identical per sub-peril
+              m4_loss_metrics/           # reads ALL sub-peril catalogs, COMBINES (per JD-FL-?, the combine rule)
+```
+Each catalog emits the **same depth-at-RP schema** tagged `sub_peril`; M2/M3 process whatever rows arrive; M4 combines.
+
+**Why.** Matches flood's actual shape (diverge at the data, re-converge at depth→damage) and the JD-FL-4 hooks
+(`sub_peril` key already in every manifest). Avoids duplicating the shared M2/M3/M4 framework. Coastal slots in the
+same way later — with its catalog **shared from hurricane** + the `event_family_id` link switched on (its extra twists).
+
+**Revisit trigger.** A sub-peril whose *coupling* (not just data) differs would justify an M2 fork too (none yet).
+
+---
+
+## JD-FL-9 · Pluvial depth source — **NOAA Atlas 14 rainfall → SCS-CN runoff → DEM-hypsometry ponding** (no free pluvial grid exists)
+
+**Date:** 2026-06-17 · **Status:** decided · The pluvial analogue of [JD-FL-6](#jd-fl-6) (riverine BLE). Reference-aligned (Flood-Data-Ref §2/§5/§7).
+
+**Context.** Pluvial = intense-rainfall surface flooding — *"the blind spot"* (Flood-Data-Ref §7): FEMA NFHL
+**under-maps it ~3×** (Wing/Bates 41M vs FEMA 13M in the 1% floodplain), and — unlike riverine — there is **no free
+pluvial *depth* product** to anchor to (FFRD pilot-only; First Street/Fathom commercial). So we have easy *frequency*
+(rainfall) but must *model* depth with **nothing observed to calibrate against** (the inherent weakness, flagged).
+
+**Options.** (a) Atlas-14 rainfall → a **rainfall-driven depth model** on our 3DEP DEM (runnable, approximate);
+(b) full **HEC-RAS rain-on-grid** 2-D (gold standard, not runnable here — the HAND problem again); (c) **FFRD** (pilot,
+not at site) / **commercial** (paid, excluded); (d) NWC-FIM flash (HAND — more flash-riverine than pure pluvial).
+
+**Decision — option (a), the free reference-recommended method.**
+1. **Frequency = NOAA Atlas 14** point precipitation-frequency (24-hr depth at 10/25/50/100/500-yr; PFDS CSV — probed,
+   reachable: Elizabeth 100-yr 24-hr ≈ 13.8″). *The pluvial frequency backbone, as StreamStats is for riverine.*
+2. **Rainfall → runoff = SCS Curve-Number** (CN≈80, graded solar open-space/soil-C): `Q = (P−0.2S)²/(P+0.8S)`,
+   `S=1000/CN−10` — the net runoff depth (the flood water available to pond).
+3. **Runoff → ponding depth = DEM-hypsometry bathtub:** pour `Q` over the footprint's 3DEP elevation distribution
+   (≈ Normal(μ,σ) from M0's `elev_mean`/`elev_std`); solve the ponded water surface so footprint-average depth = `Q`
+   (the **conservative no-drainage** limit) → `inund_frac = Φ((WSE−μ)/σ)`, `conditional_depth = Q/inund_frac`.
+   Emits the **same depth-at-RP schema** riverine does (JD-FL-10), `sub_peril="pluvial"`.
+
+**Why.** The only **free, self-serve, reference-endorsed** pluvial path (Flood-Data-Ref §5: *"drive a rainfall-based
+model from Atlas 14… or use FFRD/commercial"*). Reuses the DEM M0 already pulled; keeps us hazard-first.
+
+**Honest caveats.** (1) **No depth anchor** (vs riverine's BLE) → pluvial depths are inherently **softer/wider** — the
+reference's blind-spot, not a shortcut. (2) **No-drainage** assumption (all runoff ponds in place) → an **upper bound**;
+real grading/drainage reduces it (the pluvial analogue of riverine's onset-depth — sensitivity-test). (3) `CN` and the
+24-hr duration are assumptions. (4) Atlas-14 LA Vol-9 is stationary + aging (§8).
+
+**Revisit trigger.** **Atlas 15** (climate-aware, CONUS ~Sept 2026) for the rainfall input; **FFRD** national / a free
+pluvial depth grid → swap in and demote the rainfall-runoff model; commercial budget → Fathom/First-Street pluvial.
+
+---
+
 ## JD-FL-W4 · Wind-cell depth — **extent-based bathtub off 3DEP** (Zone A has no BFE/BLE)
 
 **Date:** 2026-06-17 · **Status:** decided · Specializes [JD-FL-6](#jd-fl-6) to the wind high site · *basics-spot-on*

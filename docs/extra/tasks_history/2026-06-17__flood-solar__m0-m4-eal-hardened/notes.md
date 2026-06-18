@@ -45,7 +45,7 @@ frac (lower RPs)     → log-RP interp between real BLE extents {10:f10, 100:f10
   `stn.wim.usgs.gov/STNServices/HWMs/FilteredHWMs.json?States=<ST>`. **NRI** county-EAL benchmark **not done** — FEMA
   reorganized NRI's public access (old API/download → RAPT tool redirect); GIS server exposes only report GPServers.
 
-## Key insight (→ learning log 11)
+## Key insight (→ learning log 13)
 
 **To fill the frequent end of a sparse RP curve, anchor a regional *shape* to your real points — don't import a
 heavier *absolute* model.** Anchoring at two real points cancels the shape-source's poorly-known absolute inputs (the

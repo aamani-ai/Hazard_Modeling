@@ -18,8 +18,23 @@ hardened.** Two sites: **Elizabeth Solar Plant** (EIA 66111, Allen Parish **LA**
   SIR 2024-5031 → Q(T)) fed into a **power-law rating anchored to both real BLE depths**. The 10-yr depth went
   0.5 → **0.97 ft** (measurement-anchored), and EAL **0.13% → 0.155% TIV** (+18%). PML@100/500 unchanged (still BLE).
 
-**Final metrics (% TIV):** Elizabeth EAL **0.155**, VaR99 = PML100 **2.62**, PML500 **4.46**, TVaR99 **3.76**;
-Hayhurst near-zero baseline (EAL 0.02). Every layer is known-answer-checked; all checks pass.
+**UPDATE (2026-06-18) — pluvial sub-peril added + sub-perils combined.** Flood × solar is now **riverine + pluvial**:
+- **Pluvial built** ([JD-FL-9](../../../plans/flood/decisions.md)) — NOAA Atlas 14 rainfall → SCS-CN runoff → **sheet
+  ponding** (we *rejected* DEM-hypsometry — 10 m σ is site slope, not micro-relief → absurd 5 ft pools). Screening-grade:
+  **no depth anchor**, rests on soft knobs `r=0.5` (retention), `f=0.4` (ponding fraction). Catalog fork
+  [JD-FL-10](../../../plans/flood/decisions.md): `m1_catalog/riverine/` + `m1_catalog/pluvial/`, shared M2/M3, combine at M4.
+- **Combine** ([JD-FL-11](../../../plans/flood/decisions.md), backed by `jdocs/flood_subperil_research_result.md`) —
+  co-sample comonotonic + **worse-source-wins** headline (φ=1; max-per-location, a component drowns once — Bates 2021);
+  **additive-capped recorded as the upper envelope** (φ=0). Metrics on the joint vector; marginals kept.
+
+**Final metrics (% TIV) — combined riverine + pluvial (headline = worse-wins):**
+- **Elizabeth** EAL **0.27** (envelope 0.27–0.42) · PML100 **4.45** · PML500 **7.92** · TVaR99 **6.60**
+- **Hayhurst** EAL 0.06 · PML500 1.78
+- **Marginals:** Elizabeth riverine 0.15 + pluvial 0.27 (riverine-only metrics still in the manifest).
+- **⚠️ Headline is pluvial-dominated** (driven by the screening-grade `f` knob) → the well-anchored riverine is masked;
+  headline is screening-grade until pluvial gains a depth anchor. "Pluvial dominates" is a model statement, not a fact.
+
+Every layer known-answer-checked; full chain (riverine + pluvial → M2 → M3 → M4) re-runs clean. + learning log 14.
 
 ## Reproduce
 

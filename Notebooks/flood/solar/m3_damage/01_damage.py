@@ -43,8 +43,8 @@ OUT = ROOT / "data" / "flood"
 FT_M = 0.3048
 
 m2 = pd.DataFrame(json.loads((OUT / "flood_m2_coupling_manifest.json").read_text())["rows"])
-print("M2 coupling contract (input):")
-print(m2[["name", "rp_years", "exposure_fraction", "conditional_depth_m"]].to_string(index=False))
+print("M2 coupling contract (input — all sub-perils):")
+print(m2[["sub_peril", "name", "rp_years", "exposure_fraction", "conditional_depth_m"]].to_string(index=False))
 
 # %% [markdown]
 # ## 1 · The curve library — RIVERINE_FLOOD × solar (vendored)
@@ -95,9 +95,9 @@ for r in curves.itertuples():
     ax.plot(xs, [dr_anchored(x, r.L, r.k, r.x0_ft) for x in xs], "--", alpha=0.5,
             label=f"{r.subsystem} (x0={r.x0_ft}ft)")
 ax.plot(xs, [asset_dr(x) for x in xs], "k-", lw=2.5, label="ASSET (capex-weighted)")
-for _, s in m2[m2.rp_years == 500].iterrows():
+for _, s in m2[(m2.rp_years == 500) & (m2.sub_peril == "riverine")].iterrows():
     ax.axvline(s["conditional_depth_m"] / FT_M, color="C3" if "Eliz" in s["name"] else "C7", ls=":",
-               label=f"{s['name'].split()[0]} 500yr depth")
+               label=f"{s['name'].split()[0]} 500yr depth (riverine)")
 ax.set_xlabel("flood depth above ground (ft)"); ax.set_ylabel("damage ratio (anchored)")
 ax.set_title("Flood × solar depth-damage — RIVERINE_FLOOD × solar (infrasure-damage-curves)")
 ax.legend(fontsize=7, ncol=2); ax.grid(alpha=0.3)
@@ -119,7 +119,7 @@ m2["depth_ft"] = m2["conditional_depth_m"] / FT_M
 m2["asset_dr"] = m2["depth_ft"].map(asset_dr).round(4)
 m2["cond_loss_frac_tiv"] = (m2["exposure_fraction"] * m2["asset_dr"]).round(4)
 m2["cond_loss_usd"] = (m2["cond_loss_frac_tiv"] * m2["tiv_usd"]).round(0)
-print(m2[["name", "rp_years", "depth_ft", "exposure_fraction", "asset_dr", "cond_loss_frac_tiv", "cond_loss_usd"]]
+print(m2[["sub_peril", "name", "rp_years", "depth_ft", "exposure_fraction", "asset_dr", "cond_loss_frac_tiv", "cond_loss_usd"]]
       .to_string(index=False))
 
 # %% [markdown]
@@ -131,14 +131,18 @@ print(m2[["name", "rp_years", "depth_ft", "exposure_fraction", "asset_dr", "cond
 # %%
 assert abs(asset_dr(0.0)) < 1e-9, "Asset_DR(0) must be 0 (anchored)"
 assert dr_anchored(1.0, 0.95, 3.5, 0.75) > dr_anchored(1.0, 0.9, 1.8, 2.5), "inverter should drown before panels (inversion)"
-eliz = m2[m2.name == "Elizabeth Solar Plant"].set_index("rp_years")
-hay = m2[m2.name == "Hayhurst Texas Solar"].set_index("rp_years")
-assert eliz.loc[500, "cond_loss_frac_tiv"] >= eliz.loc[100, "cond_loss_frac_tiv"] > 0, "Elizabeth loss should grow 100→500yr"
-assert eliz.loc[500, "cond_loss_frac_tiv"] > 3 * hay.loc[500, "cond_loss_frac_tiv"], "Elizabeth should dominate Hayhurst"
+riv = m2[m2.sub_peril == "riverine"]
+eliz = riv[riv.name == "Elizabeth Solar Plant"].set_index("rp_years")
+hay = riv[riv.name == "Hayhurst Texas Solar"].set_index("rp_years")
+assert eliz.loc[500, "cond_loss_frac_tiv"] >= eliz.loc[100, "cond_loss_frac_tiv"] > 0, "Elizabeth riverine loss should grow 100→500yr"
+assert eliz.loc[500, "cond_loss_frac_tiv"] > 3 * hay.loc[500, "cond_loss_frac_tiv"], "Elizabeth riverine should dominate Hayhurst"
+# pluvial priced too, monotone, both sites
+pluv = m2[(m2.sub_peril == "pluvial") & (m2.name == "Elizabeth Solar Plant")].sort_values("rp_years")
+assert pluv["cond_loss_frac_tiv"].is_monotonic_increasing and pluv["cond_loss_frac_tiv"].iloc[-1] > 0, "pluvial loss should grow with RP"
 print(f"✓ anchored: Asset_DR(0)=0 | inverter drowns before panels (DR@1ft: inv {dr_anchored(1,0.95,3.5,0.75):.2f} > pv {dr_anchored(1,0.9,1.8,2.5):.2f})")
-print(f"✓ Elizabeth: 100yr {eliz.loc[100,'cond_loss_frac_tiv']*100:.2f}% → 500yr {eliz.loc[500,'cond_loss_frac_tiv']*100:.2f}% of TIV (grows)")
-print(f"✓ Hayhurst: 500yr {hay.loc[500,'cond_loss_frac_tiv']*100:.3f}% of TIV (baseline)")
-print("✓ M3 known-answer checks pass.")
+print(f"✓ riverine Elizabeth: 100yr {eliz.loc[100,'cond_loss_frac_tiv']*100:.2f}% → 500yr {eliz.loc[500,'cond_loss_frac_tiv']*100:.2f}% TIV (grows, dominates Hayhurst)")
+print(f"✓ pluvial Elizabeth: 10yr {pluv['cond_loss_frac_tiv'].iloc[0]*100:.2f}% → 500yr {pluv['cond_loss_frac_tiv'].iloc[-1]*100:.2f}% TIV (priced, grows)")
+print("✓ M3 known-answer checks pass (riverine + pluvial).")
 
 # %% [markdown]
 # ## 5 · Vendor the curve + persist the M3 manifest
