@@ -1,0 +1,33 @@
+{
+  "notebook": "hurricane/solar/m4_loss_metrics/01_loss_metrics",
+  "engine": "shared compound-Poisson MC (event-based, no RP bridge); N_years=500000",
+  "headline_metric": "% of TIV (dollars secondary \u2014 $/MW TIV estimate, ATC-16)",
+  "high_site": "Everglades Solar Energy Center",
+  "headline_curve": "tracker_stow (PROVISIONAL) \u2014 point estimate, consistent with other cells (not a stow range)",
+  "headline_pct_of_TIV": {
+    "EAL": 2.23,
+    "EAL_with_freq_unc": [
+      1.85,
+      2.6
+    ],
+    "PML100": 31.4,
+    "PML250": 37.4,
+    "PML500": 41.5,
+    "TVaR99": 37.3
+  },
+  "recorded_sensitivity_not_headline": {
+    "harsher_provisional_curve_EAL": 4.08,
+    "harsher_provisional_curve_PML500": 66.2
+  },
+  "baseline": "Hayhurst EAL = 0 (true-zero control, \u03bb=0)",
+  "caveats": [
+    "LOSS side is curve-limited (provisional ATC-14 curves) \u2014 the dominant uncertainty; hazard side is ASCE-validated",
+    "EAL is high & curve-driven (mounting onset x0 120) \u2014 awaits replacement curve + loss benchmark (Hazus/NRI)",
+    "PML reported to 500-yr only (~1000-yr catalog limit); capped at ~48% DR (no total-loss representation)",
+    "EAL \u00b117% from the 33-storm rate sample; $ figures ride on the $/MW TIV estimate"
+  ],
+  "outputs": {
+    "metrics_parquet": "data/hurricane/tc_m4_loss_metrics.parquet",
+    "ep_curve_png": "data/hurricane/tc_m4_ep_curve.png"
+  }
+}

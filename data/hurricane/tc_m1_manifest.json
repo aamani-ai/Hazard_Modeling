@@ -1,0 +1,49 @@
+{
+  "notebook": "hurricane/m1_catalog/01_holland_field_catalog",
+  "method": "RAFT tracks \u2192 Holland (1980) field \u2192 per-site peak 3-s gust; frequency observed-anchored (JD-TC-8)",
+  "magnitude_metric": "3-s peak gust (mph) at the site \u2014 Holland (1980) wind field on RAFT tracks",
+  "levers": {
+    "holland_B": 1.3,
+    "gust_factor_1min_to_3s": 1.2,
+    "anchor_radius_km": 100.0,
+    "hurricane_kt": 64.0
+  },
+  "frequency_calibration": {
+    "decision": "JD-TC-8: lambda from OBSERVED distinct HURDAT2 hurricanes passing within 100 km (close-passage rulebook, matches RAFT severity); severity from RAFT Holland field",
+    "record_years": 173,
+    "per_site": {
+      "Hayhurst Texas Solar": {
+        "lambda_per_yr": 0.0,
+        "obs_passages_100km": 0,
+        "raft_anchor_storms": 0
+      },
+      "Everglades Solar Energy Center": {
+        "lambda_per_yr": 0.1908,
+        "obs_passages_100km": 33,
+        "raft_anchor_storms": 260
+      },
+      "Discovery Solar Center": {
+        "lambda_per_yr": 0.0983,
+        "obs_passages_100km": 17,
+        "raft_anchor_storms": 280
+      },
+      "LA3 West Baton Rouge Solar Facility": {
+        "lambda_per_yr": 0.0809,
+        "obs_passages_100km": 14,
+        "raft_anchor_storms": 51
+      }
+    }
+  },
+  "event_family_id": "= RAFT storm_ID (reserved cross-link to flood coastal/pluvial-TC; unused in V1)",
+  "validation": "RAFT anchor-storm intensity vs observed HURDAT2 near high site (overlap confirmed); STORM RP grid cross-check deferred",
+  "units": "peak_gust_3s_mph = MPH (RAFT knots \u00d7 gust_factor \u00d7 1.150779)",
+  "outputs": {
+    "catalog": "data/hurricane/tc_m1_catalog.parquet",
+    "site_summary": "data/hurricane/tc_m1_site_summary.parquet"
+  },
+  "honest_caveats": [
+    "gust_factor (ATC-7) and Holland B (ATC-6) are sensitivity levers \u2014 V1 single values",
+    "symmetric Holland (no forward-motion asymmetry) \u2014 V1 simplification",
+    "Hayhurst lambda=0 \u2192 zero loss (true-zero control); a regional floor not applied"
+  ]
+}

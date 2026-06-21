@@ -1,0 +1,70 @@
+{
+ "peril": "hurricane",
+ "sub_peril": "wind",
+ "event_family_id": null,
+ "layer": "M0",
+ "screen": {
+  "population": "EIA-860 2024 operating solar fleet (reused from flood)",
+  "region": "Gulf/SE-Atlantic (TX, LA, MS, AL, FL, GA, SC, NC, VA)",
+  "metric": "HURDAT2 hurricane-intensity (\u226564 kt) landfalls within 100 km (1851\u20132023)",
+  "n_candidates": 513,
+  "min_mw": 20.0
+ },
+ "geometry_basis": "capacity\u2192radius circle (centroid = the degenerate field-sample point, JD-TC-2)",
+ "tiv_basis": "$1,483,000/MW (Hayhurst hail basis; coastal site estimated by capacity, ATC-16)",
+ "sites": [
+  {
+   "role": "baseline (low-TC)",
+   "name": "Hayhurst Texas Solar",
+   "eia": 66880,
+   "state": "TX",
+   "county": "Culberson",
+   "lat": 31.815992,
+   "lon": -104.085297,
+   "solar_mw": 24.8,
+   "landfalls_100km": 0,
+   "footprint_r_m": 392,
+   "tiv_usd": 36778400.0
+  },
+  {
+   "role": "proving (high-TC)",
+   "name": "Everglades Solar Energy Center",
+   "eia": 65423,
+   "state": "FL",
+   "county": "Miami Dade",
+   "lat": 25.54255,
+   "lon": -80.55434,
+   "solar_mw": 74.5,
+   "landfalls_100km": 31,
+   "footprint_r_m": 679,
+   "tiv_usd": 110483500.0
+  },
+  {
+   "role": "cross-link (flood-coastal)",
+   "name": "Discovery Solar Center",
+   "eia": 63109,
+   "state": "FL",
+   "county": "Brevard",
+   "lat": 28.5289,
+   "lon": -80.6789,
+   "solar_mw": 74.5,
+   "landfalls_100km": 9,
+   "footprint_r_m": 679,
+   "tiv_usd": 110483500.0,
+   "note": "appended for flood-coastal's wind+surge compound combine (JD-FL-16) \u2014 NOT a hurricane proving site; excluded from the hurricane headline (Everglades remains the example). Sourced from flood_coastal_m0_sites.json."
+  },
+  {
+   "role": "all-three (flood compound)",
+   "name": "LA3 West Baton Rouge Solar Facility",
+   "eia": 61646,
+   "state": "LA",
+   "county": "West Baton Rouge",
+   "lat": 30.4651,
+   "lon": -91.3319,
+   "solar_mw": 50.0,
+   "landfalls_100km": 6,
+   "footprint_r_m": 556,
+   "tiv_usd": 74150000.0
+  }
+ ]
+}

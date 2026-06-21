@@ -1,0 +1,26 @@
+{
+  "notebook": "hurricane/solar/m2_coupling/01_coupling",
+  "coupling_type": "field-intensity (3rd bucket) \u2014 SPATIALLY DEGENERATE on solar (JD-TC-2)",
+  "fraction_rule": "value_exposed_fraction = 1.0 (dense polygon, uniform field at storm scale)",
+  "uniformity_demonstrated": {
+    "footprint_radius_m": 679,
+    "gust_spread_across_footprint_pct": {
+      "median": 0.544,
+      "p95": 1.117,
+      "max": 7.937
+    },
+    "conclusion": "uniform for ~95% of storms (median 0.5%, p95 1.1%); rare ~8% max = near-eye direct hit (eyewall gradient across 1.4 km). fraction=1.0 OK for solar; foreshadows V2 per-point need"
+  },
+  "contract_fields": [
+    "site",
+    "storm_ID",
+    "event_family_id",
+    "gust_3s_mph",
+    "value_exposed_fraction"
+  ],
+  "n_events": 591,
+  "note": "full per-point field-intensity is the wind-farm V2 cell (asset tens of km \u2192 field varies)",
+  "outputs": {
+    "coupling_parquet": "data/hurricane/tc_m2_coupling.parquet"
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "notebook": "hurricane/solar/m3_damage/01_damage",
+  "curve_status": "PROVISIONAL (ATC-14) \u2014 library hurricane\u00d7solar, to be replaced",
+  "headline": "pv_array_tracker_stow (x0 148)",
+  "sensitivity_band": "pv_array_tracker_midtilt (x0 115)",
+  "spot_DR": {
+    "110mph": 0.102,
+    "130mph": 0.194,
+    "150mph": 0.306,
+    "170mph": 0.398,
+    "190mph": 0.448
+  },
+  "n_events": 591,
+  "outputs": {
+    "damage_parquet": "data/hurricane/tc_m3_damage.parquet",
+    "vendored_curve": "data/hurricane/damage_curves/hurricane_solar_asset_capex_weighted.json"
+  }
+}

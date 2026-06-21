@@ -1,0 +1,41 @@
+{
+  "notebook": "hurricane/wind_farm/m3_damage/01_damage",
+  "site": "Amazon Wind US East (NC)",
+  "slug": "amazon_wind_us_east",
+  "asset": "wind_farm",
+  "curve_status": "REUSED convective_wind turbine wind curve (strong-wind branch); Low confidence (AWN-26)",
+  "deliverable": "per-storm, per-subsystem wind DR stamped event_family_id \u2014 the EXACT input flood-coastal \u00d7 wind M4 joins to the surge leg (JD-FL-12, max(wind_DR\u1d62, surge_DR\u1d62) per subsystem)",
+  "subsystems": [
+    "rotor_blades",
+    "nacelle_drivetrain",
+    "tower",
+    "foundation",
+    "substation",
+    "electrical",
+    "civil"
+  ],
+  "aero_reach": [
+    "rotor_blades",
+    "nacelle_drivetrain",
+    "substation",
+    "electrical"
+  ],
+  "not_reached": [
+    "tower",
+    "foundation",
+    "civil"
+  ],
+  "n_storms": 24,
+  "tiv_usd": 291200000.0,
+  "worst_storm": {
+    "storm_ID": 27313,
+    "category": 3,
+    "conditional_DR": 0.110006,
+    "max_gust_3s_mph": 132.27638379556217
+  },
+  "finding": "bimodal \u2014 bulk DR tiny (median ~0.3%, storms below IEC survival), but the rare Cat-3 close passage (~132 mph) hits the steep aero onset \u2192 ~11% of TIV. A real-but-rare wind tail; no total loss (cap 0.65).",
+  "outputs": {
+    "damage_parquet": "data/hurricane/tc_windfarm_m3_damage.parquet",
+    "vendored_curve": "data/hurricane/damage_curves/hurricane_windfarm_asset_capex_weighted.json"
+  }
+}

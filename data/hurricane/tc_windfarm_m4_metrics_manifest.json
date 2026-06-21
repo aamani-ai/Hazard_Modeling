@@ -1,0 +1,34 @@
+{
+  "notebook": "hurricane/wind_farm/m4_loss_metrics/01_loss_metrics",
+  "site": "Amazon Wind US East (NC)",
+  "slug": "amazon_wind_us_east",
+  "asset": "wind_farm",
+  "engine": "shared compound-Poisson MC (event-based, no RP bridge); N_years=1000000",
+  "headline_metric": "% of TIV (dollars secondary \u2014 $/MW estimate)",
+  "lambda_per_yr": 0.0116,
+  "lambda_note": "SHARED coastal-event rate (\u226450 km, JD-FL-15) \u2014 reused so wind & surge legs share one event frame for the compound join; anchored on 2 obs / 173 yr \u2192 \u00b171% band; a \u2264100 km wind screen would raise it",
+  "headline_pct_of_TIV": {
+    "EAL": 0.012,
+    "EAL_with_freq_unc": [
+      0.004,
+      0.021
+    ],
+    "PML100": 0.02,
+    "PML250": 0.42,
+    "PML500": 1.43,
+    "VaR99": 0.02,
+    "TVaR99": 1.22
+  },
+  "zero_loss_year_fraction": 0.9885,
+  "caveats": [
+    "wind is SMALL at Amazon \u2014 frequent storms below IEC turbine survival; tail = rare Cat-3 close passage",
+    "the cell's MATERIAL hazard is SURGE (flood-coastal \u00d7 wind M4); this wind leg is the compound join partner",
+    "curve Low-confidence (reused convective_wind turbine curve); DR caps ~0.65 (no tower-collapse total loss)",
+    "\u03bb shared coastal-event rate (\u00b171%, 2-storm anchor); standalone-wind \u2264100 km screen is the documented upgrade"
+  ],
+  "outputs": {
+    "metrics_parquet": "data/hurricane/tc_windfarm_m4_loss_metrics.parquet",
+    "annual_vectors": "data/hurricane/tc_windfarm_m4_annual_vectors.parquet",
+    "ep_curve_png": "data/hurricane/tc_windfarm_m4_ep_curve.png"
+  }
+}

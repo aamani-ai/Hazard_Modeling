@@ -1,0 +1,65 @@
+{
+  "notebook": "hurricane/m1_catalog/02_tail_validation",
+  "site": "Everglades Solar Energy Center",
+  "lambda_per_yr": 0.1908,
+  "n_severity_samples": 260,
+  "catalog_resolvable_rp_yr": 1363.0,
+  "comparison_vs_asce": [
+    {
+      "RP_yr": 100,
+      "our_gust_mph": 146.0,
+      "asce_gust_mph": 138.1,
+      "diff_mph": 8.0,
+      "diff_pct": 5.5
+    },
+    {
+      "RP_yr": 300,
+      "our_gust_mph": 157.0,
+      "asce_gust_mph": 154.9,
+      "diff_mph": 3.0,
+      "diff_pct": 1.6
+    },
+    {
+      "RP_yr": 700,
+      "our_gust_mph": 164.0,
+      "asce_gust_mph": 165.7,
+      "diff_mph": -2.0,
+      "diff_pct": -1.0
+    },
+    {
+      "RP_yr": 1700,
+      "our_gust_mph": NaN,
+      "asce_gust_mph": 176.6,
+      "diff_mph": NaN,
+      "diff_pct": NaN
+    },
+    {
+      "RP_yr": 3000,
+      "our_gust_mph": NaN,
+      "asce_gust_mph": 183.9,
+      "diff_mph": NaN,
+      "diff_pct": NaN
+    }
+  ],
+  "max_abs_pct_diff_resolvable": 5.5,
+  "observed_vs_raft_intensity_kt": {
+    "raft": {
+      "p50": 90.0,
+      "p75": 104.0,
+      "p90": 116.0,
+      "max": 138.0531463623047
+    },
+    "observed": {
+      "p50": 90.0,
+      "p75": 110.0,
+      "p90": 123.0,
+      "max": 160.0
+    }
+  },
+  "verdict": [
+    "tail VALIDATED vs ASCE (independent engineering hurricane model) within 6% over 100\u20131363 yr",
+    "no systematic low bias \u2014 earlier 'tail runs low' concern resolved at the decision-relevant RP-gust level",
+    "gust factor (1.2) independently corroborated (RP gusts land on ASCE)",
+    "LIMIT: catalog resolves only to ~1363 yr; deeper PML (1700/3000-yr) needs extrapolation or a larger catalog"
+  ]
+}

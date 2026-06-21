@@ -1,0 +1,514 @@
+Plant Code,Plant Name,State,County,solar_mw,Latitude,Longitude,landfalls_100km
+65423,Everglades Solar Energy Center,FL,Miami Dade,74.5,25.54255,-80.55434,31
+61766,Miami Dade Solar Energy Center,FL,Miami Dade,74.5,25.64,-80.49,30
+59691,Gulf Coast Solar Center III,FL,Escambia,50.0,30.470351,-87.335193,23
+65867,Sparkleberry,FL,Escambia,74.5,30.76314,-87.4332,21
+59689,Gulf Coast Solar Center I,FL,Okaloosa,30.0,30.515448,-86.518407,20
+65947,Tres Bahias,TX,Calhoun,196.3,28.68851,-96.509833,19
+63842,"Trent River Solar, LLC",NC,Jones,78.7,34.9915,-77.2514,19
+65521,"Longbow Solar, LLC",TX,Brazoria,78.1,29.289809,-95.298609,19
+64146,Sandy Creek Solar Power Plant,FL,Bay,74.9,30.103137,-85.410393,19
+65171,Bay Ranch Solar Power Plant,FL,Bay,74.9,30.164754,-85.49179,19
+65501,Mule Creek Renewable Energy Center,FL,Bay,74.9,30.110543,-85.397607,19
+65036,Cotton Creek Solar Energy Center,FL,Escambia,74.5,30.841873,-87.343975,19
+65888,Kayak,FL,Okaloosa,74.5,30.415143,-86.423303,19
+59690,Gulf Coast Solar Center II,FL,Santa Rosa,40.0,30.430766,-86.895204,19
+65427,FPL Flowers Creek Solar Energy Center,FL,Calhoun,74.5,30.569958,-85.040244,18
+65433,Blackwater River Solar Energy Center,FL,Santa Rosa,74.5,30.64691,-86.93821,18
+65862,Big Juniper Solar,FL,Santa Rosa,74.5,30.63933,-86.92558,18
+59678,Innovative Solar 67,NC,Pender,33.3,34.623309,-78.005377,18
+62854,St. James Solar (LA),LA,St James,20.0,29.9734,-90.7335,18
+65040,Immokalee,FL,Collier,74.5,26.474576,-81.433471,17
+65424,First City Solar Energy Center,FL,Escambia,74.5,30.91993,-87.34002,17
+65429,FPL Shirer Branch Solar Energy Center,FL,Calhoun,74.5,30.3962,-85.279663,17
+65866,Canoe,FL,Okaloosa,74.5,30.68003,-86.78045,17
+65927,Fourmile Creek,FL,Calhoun,74.5,30.43989,-85.27589,17
+62678,Crooked Run,NC,Pender,70.1,34.67704,-77.977497,17
+65955,"Landrace Holdings, LLC",SC,Horry,55.0,33.723937,-79.091998,17
+64307,New Orleans Solar Station,LA,Orleans,20.0,30.015,-89.92,17
+64447,Brazoria West,TX,Brazoria,200.0,29.191,-95.663,16
+63273,Wagyu,TX,Brazoria,120.0,29.242304,-95.658144,16
+61024,Hammock Solar,FL,Hendry,74.5,26.692646,-81.324953,16
+65422,FPL Chipola River Solar Energy Center,FL,Calhoun,74.5,30.45463,-85.27853,16
+65592,FPL Saw Palmetto Solar Energy Center,FL,Bay,74.5,30.419835,-85.441493,16
+65593,FPL Cypress Pond Solar,FL,Washington,74.5,30.4213,-85.44103,16
+65911,Mitchell Creek,FL,Escambia,74.5,30.92851,-87.26414,16
+60149,"Innovative Solar 43, LLC",NC,Bladen,50.8,34.529956,-78.304811,16
+64133,"Old 300 Solar Center, LLC",TX,Fort Bend,430.0,29.33355,-95.82544,15
+62945,Fighting Jays Solar Project,TX,Fort Bend,227.5,29.358425,-95.746388,15
+66262,Cutlass Solar II,TX,Fort Bend,202.8,29.39,-95.78,15
+66046,Brazoria County Solar Project (Danciger),TX,Brazoria,200.0,29.1779,-95.7612,15
+65981,Second Division Solar,TX,Brazoria,100.0,29.170545,-95.741574,15
+62206,Hibiscus Solar Energy Center,FL,Palm Beach,74.5,26.7601,-80.3065,15
+66157,Red Tailed Hawk Solar LLC,TX,Wharton,350.0,29.159228,-96.141572,14
+65661,Nebula Solar,TX,Cameron,135.0,26.090103,-97.798453,14
+66310,Cutlass Solar 1 LLC,TX,Fort Bend,110.9,29.409669,-95.73405,14
+67159,Liberty County Solar Project,TX,Liberty,109.9,29.95888,-94.85048,14
+64145,Bay Trail Solar Power Plant,FL,Citrus,74.9,28.99999,-82.672244,14
+63110,Sabal Palm Solar Center,FL,Palm Beach,74.5,26.782655,-80.352619,14
+65878,Silver Palm,FL,Palm Beach,74.5,26.78768,-80.35192,14
+65662,Vancourt Solar Interconnections,TX,Cameron,45.0,26.090103,-97.798453,14
+64927,Aktina Solar,TX,Wharton,500.0,29.122,-96.276,13
+65173,Hardeetown Solar Power Plant,FL,Levy,74.9,29.48562,-82.843455,13
+65421,Chautauqua Solar Energy Center,FL,Walton,74.5,30.87576,-86.20813,13
+61701,Seabrook Solar,SC,Beaufort,72.5,32.56445,-80.742047,13
+63976,Bay Tree,NC,Bladen,70.1,34.70414,-78.393358,13
+63985,Fort Bend Solar LLC,TX,Fort Bend,240.0,29.560311,-95.98036,12
+68474,Peacock Energy Project,TX,San Patricio,150.0,28.000395,-97.387902,12
+64469,Wing,AL,Covington,80.0,31.007777,-86.59194,12
+61052,Loggerhead Solar Energy Center,FL,St Lucie,74.5,27.237778,-80.541389,12
+61768,Interstate Solar Energy Center,FL,St Lucie,74.5,27.5,-80.44,12
+62394,Sweetbay Solar Center,FL,Martin,74.5,27.060112,-80.474488,12
+65039,Sundew,FL,St Lucie,74.5,27.264113,-80.546851,12
+65420,Bluefield Preserve Solar,FL,St Lucie,74.5,27.24354,-80.67097,12
+65428,Pink Trial Solar Energy Center,FL,St Lucie,74.5,27.29783,-80.54214,12
+65865,Pineapple,FL,St Lucie,74.5,27.2551,-80.57123,12
+65869,White Tail,FL,Martin,74.5,27.07794,-80.37925,12
+65872,Monarch,FL,Martin,74.5,27.03074,-80.5248,12
+65874,Beautyberry,FL,Hendry,74.5,26.36044,-81.02654,12
+65910,Wild Quail,FL,Walton,74.5,30.89805,-86.25007,12
+60658,Moffett Solar Project,SC,Jasper,71.4,32.620653,-80.995994,12
+60540,Innovative Solar 31,NC,Bladen,35.0,34.539425,-78.755394,12
+66544,Moonshot,MS,Hancock,78.5,30.437172,-89.502896,11
+59993,Babcock Solar Energy Center Hybrid,FL,Charlotte,74.5,26.861592,-81.751011,11
+60061,Citrus Solar Energy Center Hybrid,FL,DeSoto,74.5,27.320919,-81.806863,11
+61020,Indian River Solar Center,FL,Indian River,74.5,27.573256,-80.578178,11
+61029,Blue Cypress Solar Energy Center,FL,Indian River,74.5,27.609456,-80.537189,11
+61050,Wildflower Solar Energy Center,FL,Desoto,74.5,27.316187,-81.783899,11
+61051,Barefoot Bay Solar Energy Center,FL,Brevard,74.5,27.865833,-80.521111,11
+62632,Cattle Ranch,FL,DeSoto,74.5,27.321884,-81.809077,11
+62634,Babcock Preserve,FL,Charlotte,74.5,26.857879,-81.759645,11
+62917,Rodeo Solar Center,FL,DeSoto,74.5,27.32063,-81.81024,11
+62919,Orange Blossom Solar Center,FL,Indian River,74.5,27.59686,-80.57071,11
+62921,Palm Bay Solar,FL,Brevard,74.5,27.8421,-80.631554,11
+62922,Lakeside Solar Center,FL,Okeechobee,74.5,27.21421,-80.74458,11
+62924,Pelican Solar Center,FL,St Lucie,74.5,27.522,-80.54726,11
+63754,Gulf Power Blue Indigo Energy,FL,Jackson,74.5,30.877262,-85.40065,11
+65038,Ghost Orchid Solar Energy Center,FL,Hendry,74.5,26.417212,-81.03531,11
+65042,Grove,FL,Indian River,74.5,27.580883,-80.652711,11
+65873,Turnpike,FL,Indian River,74.5,27.56702,-80.64496,11
+65879,Pecan Tree,FL,Walton,74.5,30.938167,-86.240111,11
+65920,Buttonwood,FL,St Lucie,74.5,27.550293,-80.671106,11
+65921,Honeybell,FL,Okeechobee,74.5,27.50809,-80.73638,11
+65925,Orchard,FL,St Lucie,74.5,27.55776,-80.5701,11
+65926,Hawthorne Creek,FL,DeSoto,74.5,27.08314,-81.84124,11
+56929,DeSoto Next Generation Solar Energy,FL,DeSoto,25.0,27.3232,-81.8019,11
+65034,Bernard Creek Solar,TX,Wharton,230.0,29.45527,-96.088253,10
+67284,Ganado Solar,TX,Jackson,150.5,29.109147,-96.528761,10
+62544,Wilkinson Solar LLC,NC,Beaufort,80.6,35.596814,-76.763849,10
+62543,Trenton Solar Power Plant,FL,Gilchrist,74.9,29.635051,-82.843085,10
+62491,Okeechobee Solar,FL,Okeechobee,74.5,27.630392,-80.794784,10
+62493,Southfork Solar,FL,Manatee,74.5,27.573193,-82.191421,10
+63978,Duette Solar Power Plant,FL,Manatee,74.5,27.585836,-82.061964,10
+64300,Fort Drum Energy Center,FL,Okeechobee,74.5,27.607892,-80.75812,10
+64301,Willow Solar Energy Center,FL,Manatee,74.5,27.448142,-82.080693,10
+65037,Sawgrass Solar Energy Center,FL,Hendry,74.5,26.381386,-81.053721,10
+65438,FPL Cavendish Solar Energy Center,FL,Okeechobee,74.5,27.627009,-80.804159,10
+65863,Three Creeks,FL,Manatee,74.5,27.57934,-82.26058,10
+65864,Sambucus,FL,Manatee,74.5,27.44844,-82.06377,10
+65868,Prairie Creek FL,FL,DeSoto,74.5,27.074158,-81.696566,10
+65877,Ibis,FL,Brevard,74.5,27.848073,-80.695504,10
+67207,Gilchrist County Solar,FL,Alachua,74.5,29.618349,-82.670179,10
+61664,Mountain View Solar (FL),FL,Pasco,54.6,28.39799,-82.22043,10
+63187,"FL Solar 4, LLC",FL,Leon,42.0,30.2354,-84.2233,10
+60582,CoTAL Solar Farm,FL,Leon,20.0,30.37926,-84.353938,10
+61982,Columbia Solar Power Plant,FL,Columbia,74.9,29.882644,-82.696145,9
+63517,Santa Fe Solar Power Plant,FL,Columbia,74.9,29.880408,-82.732589,9
+65170,Hildreth Solar Power Plant,FL,Suwannee,74.9,29.964842,-82.823199,9
+65172,High Springs Solar Power Plant,FL,Alachua,74.9,29.810018,-82.639837,9
+67049,County Line Renewable Energy Center,FL,Gilchrist,74.9,29.812218,-82.67597,9
+64757,Blue Springs,FL,Jackson,74.5,30.782897,-85.078686,9
+65041,Elder Branch,FL,Manatee,74.5,27.5966,-82.25272,9
+65430,Wild Azalea Solar Energy Center,FL,Gadsden,74.5,30.6758,-84.74033,9
+65432,Apalachee,FL,Jackson,74.5,30.76055,-85.06952,9
+65519,Bell Ridge Solar,FL,Gilchrist,74.5,29.718728,-82.710783,9
+65875,Woodyard,FL,Hendry,74.5,26.40932,-81.04845,9
+67205,Gadsden County Solar,FL,Gadsden,74.5,30.656542,-84.724394,9
+67206,Columbia County Solar,FL,Columbia,74.5,29.882422,-82.73425,9
+65683,Juniper Solar (FL),FL,Pasco,70.0,28.181569,-82.155331,9
+66129,Dover Solar and Battery Storage,FL,Hillsborough,25.0,27.955865,-82.201381,9
+61490,Estill Solar,SC,Hampton,20.0,32.763843,-81.242151,9
+61498,Hampton Solar 2,SC,Hampton,20.0,32.881,-81.136,9
+64657,Magnolia Solar,FL,Polk,74.5,27.917716,-82.048697,8
+61654,Balm Solar,FL,Hillsborough,74.4,27.76284,-82.23463,8
+58848,Warsaw Farm,NC,Duplin,65.0,35.005556,-78.125833,8
+65684,Laurel Oaks Solar,FL,Hillsborough,61.2,27.926882,-82.067668,8
+61693,Buckleberry Solar,NC,Lenoir,52.1,35.380683,-77.405992,8
+59669,Innovative Solar 54,NC,Lenoir,50.0,35.213697,-77.712408,8
+64641,Big Bend II Solar,FL,Hillsborough,45.8,27.781988,-82.390452,8
+59865,Fort Stewart Solar Facility,GA,Liberty,30.0,31.90474,-81.595373,8
+66921,English Creek Solar,FL,Hillsborough,23.0,27.945756,-82.067228,8
+63721,Cool Springs Solar (Hybrid),GA,Decatur,213.0,30.747916,-84.680492,7
+63271,Huntley,SC,Orangeburg,75.0,33.335583,-80.634174,7
+64533,Fort Green Solar Power Plant,FL,Hardee,74.9,27.641125,-81.941581,7
+66553,Winquepin Renewable Energy Center,FL,Madison,74.9,30.282497,-83.298234,7
+61667,Wimauma Solar and Battery Storage,FL,Hillsborough,74.8,27.730414,-82.263505,7
+60014,Manatee Solar Energy Center,FL,Manatee,74.5,27.607469,-82.355275,7
+61663,Lithia Solar,FL,Hillsborough,74.5,27.753272,-82.164656,7
+62750,Little Manatee River Solar,FL,Hillsborough,74.5,27.691262,-82.410575,7
+65908,Norton Creek,FL,Madison,74.5,30.390039,-83.343948,7
+61665,Payne Creek Solar,FL,Polk,70.3,27.664583,-81.964222,7
+61656,Grange Hall Solar,FL,Hillsborough,61.1,27.681278,-82.164656,7
+65687,Riverside Solar,FL,Hillsborough,55.2,27.68368,-82.47243,7
+61655,Bonnie Mine Solar,FL,Polk,37.5,27.89008,-81.98717,7
+66639,Falmouth Renewable Energy Center,FL,Suwannee,74.9,30.3436,-83.1562,6
+62631,Blue Heron Solar,FL,Hendry,74.5,26.701639,-81.129155,6
+65871,Caloosahatchee,FL,Hendry,74.5,26.75408,-81.18562,6
+65909,Hendry Isles,FL,Hendry,74.5,26.749144,-81.192089,6
+67203,Bullfrog Creek Solar,FL,Hillsborough,74.5,27.660584,-82.295627,6
+61653,Alafia Solar,FL,Polk,60.0,27.723197,-82.025608,6
+63495,Durrance,FL,Polk,60.0,27.78,-81.98,6
+61657,Lake Hancock Solar,FL,Polk,49.5,27.719139,-82.033889,6
+59518,Grandy PV 1,NC,Currituck,20.0,36.233611,-75.880833,6
+59530,Pasquotank,NC,Pasquotank,20.0,36.264722,-76.306111,6
+64169,Albemarle Beach Solar,NC,Washington,130.2,35.928188,-76.620452,5
+64683,"Oak Trail Solar, LLC",NC,Currituck,100.0,36.5044,-76.1887,5
+62828,TWE Bowman Solar Project,SC,Orangeburg,75.0,33.316159,-80.68244,5
+61807,Hamilton Solar Power Plant,FL,Hamilton,74.9,30.444324,-83.186935,5
+64631,Jamison Solar (FL),FL,Polk,74.5,27.806645,-81.955676,5
+67208,Harmony Florida Solar II,FL,Osceola,74.5,28.16701,-81.084167,5
+60611,Summit Farms Solar,NC,Currituck,62.4,36.4765,-76.136,5
+61813,"Ranchland Solar, LLC",NC,Currituck,60.0,36.472591,-76.154089,5
+59155,Shawboro PV1,NC,Currituck,20.0,36.433333,-76.087222,5
+64535,Camden Solar LLC,NC,Camden,20.0,36.30786,-76.144486,5
+62679,Palmetto Plains,SC,Orangeburg,75.0,33.340179,-80.697336,4
+63982,Charlie Creek Solar Power Plant,FL,Hardee,74.9,27.639778,-81.654367,4
+62490,Echo River Solar,FL,Suwannee,74.5,30.296207,-82.864333,4
+63109,Discovery Solar Center,FL,Brevard,74.5,28.528933,-80.6789,4
+63582,Harmony Solar (FL),FL,Osceola,74.5,28.155322,-81.108333,4
+60422,Morgan's Corner,NC,Pasquotank,20.0,36.421064,-76.364244,4
+67047,Decatur Solar,GA,Decatur,200.0,30.854893,-84.445427,3
+62584,Quitman Solar,GA,Brooks,150.0,30.849005,-83.643279,3
+64335,Quitman II Solar,GA,Brooks,150.0,30.86205,-83.65165,3
+66541,Chesapeake Solar Project,VA,Chesapeake City,132.0,36.685103,-76.29661,3
+61763,Sunshine Gateway Solar Energy Center,FL,Columbia,74.5,30.29,-82.75,3
+61767,Pioneer Trail Solar Energy Center,FL,Volusia,74.5,29.08,-81.1,3
+63583,Taylor Creek Solar,FL,Orange,74.5,28.503469,-81.048333,3
+67209,Storey Bend Solar,FL,Osceola,74.5,28.282565,-81.081447,3
+65323,Bedford Solar (Dominion),VA,Chesapeake City,70.0,36.7,-76.1647,3
+61666,Peace Creek Solar,FL,Polk,55.4,27.913306,-81.810111,3
+63084,Caden Energix Hickory LLC,VA,Chesapeake City,32.0,36.624113,-76.194266,3
+64135,Grassfield Solar,VA,Chesapeake City,20.0,36.65,-76.35,3
+61021,Horizon Solar Energy Center,FL,Putnam,74.5,29.665556,-82.058333,2
+62542,Debary Solar Power Plant,FL,Volusia,74.5,28.899548,-81.330856,2
+62914,Nassau Solar Center,FL,Nassau,74.5,30.50391,-81.88411,2
+67182,Tupelo Solar,FL,Putnam,74.5,29.603731,-81.527251,2
+67672,Cedar Trail,FL,Baker,74.5,30.339139,-82.192861,2
+61988,Citrus Ridge Solar,FL,Orange,52.0,28.40078,-81.61632,2
+61561,Bladen Solar,NC,Bladen,50.0,34.823522,-78.62345,2
+61646,LA3 West Baton Rouge Solar Facility,LA,West Baton Rouge,50.0,30.465105,-91.331855,2
+63128,Iris Solar LLC,LA,Washington,50.0,30.78184,-90.19536,2
+67071,Sunlight Road Solar,LA,Washington,50.0,30.781803,-90.217355,2
+62541,Lake Placid Solar Power Plant,FL,Highlands,45.0,27.331136,-81.364018,2
+65220,Pleasant Hill Solar,VA,Suffolk City,20.0,36.692197,-76.578558,2
+63518,Twin Rivers Solar Power Plant,FL,Hamilton,74.9,30.466428,-82.968718,1
+65292,Rice Creek,FL,Putnam,74.9,29.74118,-81.69886,1
+61022,Coral Farms Solar Energy Center,FL,Putnam,74.5,29.756944,-81.897222,1
+62633,Twin Lakes,FL,Putnam,74.5,29.612188,-81.844528,1
+62645,Northern Preserve Solar,FL,Baker,74.5,30.2473,-82.226907,1
+62915,Magnolia Springs Solar Center,FL,Clay,74.5,29.89857,-81.69333,1
+62916,Trailside Solar Center,FL,St Johns,74.5,29.774987,-81.427853,1
+62923,Union Springs Solar Center,FL,Union,74.5,29.97397,-82.30099,1
+62925,Egret Solar Center,FL,Baker,74.5,30.28251,-82.18378,1
+65431,Anhinga Solar Energy Center,FL,Clay,74.5,29.88213,-81.67618,1
+65594,FPL Etonia Creek,FL,Putnam,74.5,29.76723,-81.77749,1
+65882,Terrill Creek,FL,Clay,74.5,29.88143,-81.76258,1
+65907,Georges Lake,FL,Putnam,74.5,29.756975,-81.759128,1
+65924,Nature Trail,FL,Baker,74.5,30.272333,-82.156833,1
+63223,Brightside,TX,Bee,50.7,28.430988,-97.889555,1
+60552,Hattiesburg Solar Farm,MS,Forrest,50.0,31.275828,-89.301156,1
+59864,Kings Bay Solar Facility,GA,Camden,30.0,30.827627,-81.556238,1
+64233,Hecate Energy Frye Solar LLC,TX,Swisher,500.0,34.4067,-101.59661,0
+64347,Mockingbird Solar Center,TX,Lamar,471.0,33.39167,-95.42519,0
+63255,2W Permian Solar Project Hybrid,TX,Andrews,420.0,32.116388,-102.528333,0
+62561,"Roadrunner, LLC Hybrid",TX,Upton,400.0,31.219444,-102.19222,0
+65762,Waco Solar,TX,Limestone,400.0,31.710422,-96.818676,0
+66420,Five Wells Solar Center - Hybrid,TX,Bell,355.4,30.998647,-97.259017,0
+65644,Lumina II Solar Project,TX,Scurry,326.6,32.883528,-100.746389,0
+65645,Lumina Solar Project,TX,Scurry,326.6,32.901081,-100.982695,0
+64859,"IP Radian, LLC",TX,Brown,320.0,31.5481,-99.1872,0
+67006,Greasewood II LLC,TX,Pecos,306.0,31.10409,-102.60625,0
+63328,Juno Solar Project,TX,Borden,305.6,32.772889,-101.39102,0
+62755,Prospero Solar,TX,Andrews,300.0,32.287873,-102.840399,0
+63194,Delilah Solar Energy LLC,TX,Red River,300.0,33.284418,-95.163557,0
+65030,Oxbow Solar 1,LA,Pointe Coupee,300.0,30.667878,-91.391706,0
+65271,Noble Solar,TX,Denton,275.0,33.261505,-97.238057,0
+63320,Titan Solar Project,TX,Culberson,260.0,31.70038,-104.458136,0
+62483,Taygete Energy Project LLC,TX,Pecos,255.0,31.165245,-103.125868,0
+62804,Greasewood Solar,TX,Pecos,255.0,31.030996,-102.488209,0
+65654,Texas Solar Nova 1,TX,Kent,252.0,33.320637,-100.982201,0
+61346,RE Maplewood,TX,Pecos,250.0,30.976638,-102.257753,0
+61906,Phoebe Solar,TX,Winkler,250.0,31.843422,-102.868295,0
+61920,Galloway 1 Solar Farm,TX,Concho,250.0,31.435932,-99.796613,0
+63211,Samson Solar Energy,TX,Franklin,250.0,33.25102,-95.193426,0
+63840,Sparta Solar,TX,Bee,250.0,28.655277,-98.001388,0
+63883,Samson Solar Energy III LLC,TX,Lamar,250.0,33.426498,-95.357449,0
+64325,Prospero Solar II,TX,Andrews,250.0,32.275814,-102.844806,0
+65303,Sun Valley Solar Project,TX,Hill,250.0,31.86976,-97.01498,0
+65631,"Pisgah Ridge Solar, LLC",TX,Navarro,250.0,31.896737,-96.467327,0
+66821,Orion III Solar Project,TX,Milam,250.0,30.960219,-97.12452,0
+66941,Orion II Solar Project,TX,Milam,250.0,31.029028,-96.934783,0
+67127,"SR Toombs, LLC",GA,Montgomery,250.0,32.294555,-82.41625,0
+67424,Hopkins Energy LLC,TX,Hopkins,250.0,33.21732,-95.4621,0
+65937,"Porter Solar, LLC (TX)",TX,Denton,245.0,33.310446,-97.369773,0
+62013,Pleinmont Solar 2,VA,Spotsylvania,240.0,38.247123,-77.786223,0
+62249,Misae Solar,TX,Childress,240.0,34.380532,-100.099625,0
+66471,Eiffel Solar Project,TX,Lamar,240.0,33.599167,-95.525056,0
+65998,"True North Solar, LLC",TX,Falls,238.8,31.468564,-96.794168,0
+66801,"Fence Post Solar Hybrid Project, LLC",TX,Navarro,236.0,32.072844,-96.22393,0
+62462,Muscle Shoals,AL,Colbert,227.0,34.76973,-87.90454,0
+62845,ENGIE Long Draw Solar LLC,TX,Borden,225.0,32.741383,-101.621793,0
+63905,Azure Sky Solar,TX,Haskell,225.0,33.021601,-99.61463,0
+61696,Twiggs Solar,GA,Twiggs,204.0,32.604997,-83.491239,0
+64075,Taygete II Energy Project,TX,Pecos,203.8,31.186,-103.128,0
+64258,AP Sunray LLC,TX,Uvalde,203.5,29.291845,-99.612368,0
+61962,Holstein 1 Solar Farm,TX,Nolan,200.0,32.104125,-100.162375,0
+62141,Rambler,TX,Tom Green,200.0,31.517,-100.6,0
+64026,"ANSON Solar Center, LLC",TX,Jones,200.0,32.811041,-99.91749,0
+64538,Corazon Energy LLC,TX,Webb,200.0,27.634677,-99.258329,0
+65308,Horizon Solar,TX,Frio,200.0,28.9377,-99.10765,0
+65333,Shakes Solar,TX,Dimmit,200.0,28.44208,-99.75582,0
+65660,Texas Solar Nova 2,TX,Kent,200.0,33.32056,-100.981664,0
+66193,Oak Ridge Solar,LA,Richland,200.0,32.575,-91.7884,0
+66859,Orion I Solar Project,TX,Milam,200.0,30.996511,-97.001505,0
+63222,Impact Solar 1,TX,Lamar,198.5,33.467803,-95.370856,0
+63522,Hickory Park Solar Hybrid,GA,Mitchell,195.5,31.269676,-84.176321,0
+63329,Aragorn Solar Project,TX,Culberson,187.2,31.719983,-104.442292,0
+61368,Midway Solar - TX,TX,Pecos,182.0,30.995503,-102.223537,0
+60123,Castle Gap Solar Hybrid,TX,Upton,180.0,31.255,-102.272,0
+62675,Skipjack Solar Center,VA,Charles City,175.0,37.437106,-77.158736,0
+66239,Pearl River Solar Park LLC,MS,Scott,175.0,32.550998,-89.730141,0
+65793,"Concho Valley Solar, LLC",TX,Tom Green,172.8,31.214,-100.255,0
+61785,Camilla Solar Energy Project,GA,Mitchell,171.4,31.26955,-84.228721,0
+62014,Highlander Solar Energy Station 1,VA,Spotsylvania,165.0,38.247123,-77.786223,0
+64841,"SR DeSoto I, LLC",GA,Lee,165.0,31.886486,-84.021586,0
+67580,Markum Solar Farm,TX,Bosque,161.0,31.694792,-97.374883,0
+59994,RE Roserock,TX,Pecos,160.0,30.960209,-103.306662,0
+66137,Zier Solar,TX,Kinney,160.0,29.350992,-100.562028,0
+66324,BPL Files Solar,TX,Hill,157.5,32.18398,-97.07141,0
+67420,Cavalier Solar,VA,Isle of Wight,155.6,37.018,-76.7358,0
+60044,Buckthorn Westex,TX,Pecos,154.0,30.57552,-102.551292,0
+60581,Upton County Solar,TX,Upton,150.0,31.241808,-102.29027,0
+62933,Oberon IA,TX,Ector,150.0,31.703258,-102.701206,0
+63519,Crane Solar Project,TX,Crane,150.0,31.254361,-102.31165,0
+65291,Golden Triangle II,MS,Lowndes,150.0,33.4155,-88.6223,0
+65322,Fort Powhatan Solar,VA,Prince George,150.0,37.26,-77.08,0
+66954,Umbriel Solar,TX,Polk,150.0,30.668754,-94.783466,0
+66990,Washington County Solar,GA,Washington,150.0,32.989939,-82.71381,0
+67019,"Copperhead Solar, LLC",TX,McLennan,150.0,31.45,-96.86,0
+59897,Taylor County Solar,GA,Taylor,148.0,32.583056,-84.297222,0
+63892,Lily Solar Hybrid,TX,Kaufman,146.7,32.533273,-96.428985,0
+57659,East Blackland Solar Project 1,TX,Travis,144.0,30.4214,-97.4614,0
+66111,Elizabeth Solar Plant,LA,Allen,142.8,30.81981,-92.971755,0
+61985,Colonial Trail West,VA,Surry,142.4,37.138889,-76.902222,0
+65975,Starr Solar Ranch,TX,Starr,136.0,26.523359,-99.017108,0
+65976,Prairie Ronde Solar Farm,LA,St Landry,135.0,30.61,-92.17,0
+63764,Elm Branch Solar 1,TX,Ellis,134.7,32.23256,-96.706121,0
+64204,Elara Solar,TX,Frio,132.4,28.883196,-99.178605,0
+66133,"Bartonsville Energy Facility, LLC",VA,Frederick,130.0,39.088731,-78.239904,0
+61648,Robins Air Force Base Solar,GA,Bibb,128.0,32.681222,-83.616387,0
+63769,Briar Creek Solar 1,TX,Navarro,127.0,32.067483,-96.585136,0
+66314,Bookers Mill Solar,VA,Richmond,127.0,37.86,-76.56,0
+62772,Coniglio Solar,TX,Fannin,123.6,33.404486,-96.082472,0
+62375,"Dougherty County Solar, LLC",GA,Dougherty,120.0,31.512003,-84.044499,0
+65319,Maplewood Solar,VA,Pittsylvania,120.0,36.89,-79.32,0
+67161,Oak Solar,NC,Northampton,120.0,36.526492,-77.774039,0
+60436,East Pecos Solar,TX,Pecos,118.5,31.000883,-102.281744,0
+65225,"Waverly Solar, LLC",VA,Sussex,118.0,37.020784,-77.12265,0
+63351,Bluebell Solar II,TX,Sterling,115.0,31.888,-100.825,0
+63343,Galloway 2 Solar Farm,TX,Concho,110.0,31.446237,-99.902973,0
+63233,Emerald Grove,TX,Pecos,108.0,31.09331,-102.35964,0
+65376,SR Snipesville II,GA,Jeff Davis,107.0,31.708821,-82.715724,0
+66171,SR Snipesville III,GA,Jeff Davis,107.0,31.697152,-82.764546,0
+64838,"SR Clay, LLC",GA,Clay,106.0,31.544831,-84.900566,0
+59206,Alamo 6,TX,Pecos,105.0,30.993056,-102.270833,0
+59896,Butler Solar Project 103,GA,Taylor,104.0,32.561944,-84.275833,0
+62367,SR Arlington II,GA,Early,102.5,31.415531,-84.830714,0
+60372,Lamesa Solar,TX,Dawson,102.0,32.715611,-101.926522,0
+60064,"White Pine Solar, LLC",GA,Taylor,101.2,32.506017,-84.256976,0
+59205,OCI Alamo 5 LLC,TX,Uvalde,100.0,29.216667,-99.716111,0
+59207,OCI Alamo 7 LLC,TX,Haskell,100.0,33.04,-99.5525,0
+59665,Innovative Solar 37 LLC,NC,Anson,100.0,34.838297,-79.943889,0
+61422,"Southampton Solar, LLC",VA,Southampton,100.0,36.614,-77.166,0
+62415,West of the Pecos Solar,TX,Reeves,100.0,31.4308,-103.7289,0
+62448,Lapetus,TX,Andrews,100.0,32.460054,-102.672809,0
+62798,Fern Solar LLC,NC,Edgecombe,100.0,36.003272,-77.696443,0
+62814,Sadler Solar,VA,Greensville,100.0,36.6867,-77.558,0
+63765,Black Bear Solar 1,AL,Montgomery,100.0,32.196971,-86.327341,0
+64081,Sunflower County,MS,Sunflower,100.0,33.757767,-90.536465,0
+64191,SR Lumpkin,GA,Stewart,100.0,32.025,-84.7325,0
+64259,BPL Crown Solar LLC,TX,Falls,100.0,31.346717,-97.082774,0
+64260,BPL Sol Solar LLC,TX,Falls,100.0,31.346717,-97.082774,0
+66240,Ragsdale Solar LLC,MS,Madison,100.0,32.550998,-90.009684,0
+66369,"Wildflower Solar, LLC (MS)",MS,DeSoto,100.0,34.962,-90.184,0
+66410,Grizzly Ridge Solar,TX,Hamilton,100.0,31.738177,-98.213739,0
+66759,Delta's Edge Solar,MS,Carroll,100.0,33.5,-90.1,0
+66623,Harvest Gold Solar,MS,Sunflower,99.0,33.505,-90.636,0
+67104,Bayou Galion Solar Project,LA,Morehouse Parish,98.1,32.79754,-91.78413,0
+61986,Spring Grove I,VA,Surry,97.9,37.173916,-76.919245,0
+62730,Desper Solar,VA,Louisa,88.2,38.015735,-78.043131,0
+62165,Snipesville,GA,Jeff Davis,86.0,31.715814,-82.74946,0
+67421,Cavalier Solar A2,VA,Isle of Wight,84.4,37.018,-76.7358,0
+62505,G.S.E. One LLC,TX,Fannin,83.0,33.500378,-96.146489,0
+67171,Foxhound,VA,Halifax,83.0,36.875897,-78.741874,0
+59450,"Decatur Parkway Solar Project, LLC",GA,Decatur,80.0,30.991944,-84.633889,0
+59944,"Conetoe II Solar, LLC",NC,Edgecombe,80.0,35.822,-77.481,0
+60127,"Eastern Shore Solar, LLC",VA,Accomack,80.0,37.943895,-75.569556,0
+62340,"Aulander Holloman Solar, LLC",NC,Hertford,80.0,36.29116,-77.066561,0
+62768,Piney Creek Solar,VA,Halifax,80.0,36.818554,-78.771892,0
+62813,Grasshopper Solar,VA,Mecklenburg,80.0,36.85,-78.45,0
+63549,Water Strider Solar,VA,Halifax,80.0,37.016375,-79.027061,0
+63745,"Greensville County Solar Project, LLC",VA,Greensville,80.0,36.64,-77.57,0
+63797,Ellis Solar LLC,TX,Ellis,80.0,32.467194,-97.054333,0
+64019,Altavista Solar,VA,Campbell,80.0,37.148199,-79.347497,0
+64144,"Harts Mill Solar, LLC",NC,Edgecombe,80.0,35.9,-77.64,0
+64150,Lancaster Solar GA,GA,Randolph,80.0,31.766506,-84.797206,0
+66025,Blackwater Solar,GA,Ware,80.0,31.394022,-82.625047,0
+66173,SR Ailey,GA,Montgomery,80.0,32.193594,-82.538735,0
+66542,Bulldog Solar LLC,GA,Warren,80.0,33.371,-82.678,0
+67021,CPV Stagecoach Solar,GA,Macon,80.0,32.197779,-84.069313,0
+68774,Fountain Creek Solar,VA,Greensville,80.0,36.59,-77.67,0
+63076,Gutenberg Solar,NC,Northampton,79.9,36.486428,-77.534825,0
+60583,LaFayette Solar Farm,AL,Chambers,79.2,32.876313,-85.38821,0
+65106,"Phobos Solar, LLC",NC,Nash,78.8,35.882921,-78.154961,0
+59671,Innovative Solar 46,NC,Cumberland,78.5,34.918194,-78.94355,0
+66543,Cane Creek,MS,Clarke,78.5,31.976997,-88.887575,0
+60082,"White Oak Solar, LLC",GA,Burke,76.5,33.036789,-82.111292,0
+60058,"River Bend Solar, LLC (AL)",AL,Lauderdale,75.0,34.831511,-87.842204,0
+62012,Pleinmont Solar 1,VA,Spotsylvania,75.0,38.247123,-77.786223,0
+63808,"Allora Solar, LLC",SC,Lexington,75.0,33.899338,-81.400467,0
+63810,"Centerfield Cooper Solar, LLC",SC,Chesterfield,75.0,34.708762,-80.118838,0
+63813,"Gunsight Solar, LLC",SC,Lexington,75.0,33.761136,-81.066705,0
+66837,Alton Post Office Solar,VA,Halifax,75.0,36.568918,-79.032915,0
+66841,Foxglove Solar,VA,Frederick,75.0,39.073825,-78.280117,0
+60030,Pecan Solar,NC,Northampton,74.9,36.481008,-77.481164,0
+61011,Chestnut Solar,NC,Halifax,74.9,36.18,-77.712,0
+61790,"Shaw Creek Solar, LLC",SC,Aiken,74.9,33.674689,-81.754444,0
+66709,Beulah Solar,SC,Saluda,74.9,33.945207,-81.571162,0
+59589,Rutherford Farm,NC,Rutherford,74.8,35.257778,-81.830556,0
+61610,NC 102 Project LLC,NC,Cabarrus,74.8,35.2925,-80.4975,0
+66128,Lake Mabel Solar and Battery Storage,FL,Polk,74.5,27.9788,-81.61015,0
+66237,Misenheimer Solar LLC,NC,Stanly,74.4,35.478126,-80.300126,0
+62058,SR Terrell,GA,Terrell,74.0,31.871387,-84.361952,0
+66717,Eastover Solar,SC,Richland,73.6,33.918542,-80.6467,0
+63839,Midlands,SC,Calhoun,72.1,33.648979,-80.942818,0
+67023,Dileo Solar,TX,Hill,71.4,31.78,-97.51,0
+60539,Innovative Solar 42,NC,Bladen,71.0,34.847627,-78.877359,0
+65107,"Cabin Creek Solar, LLC",NC,Montgomery,70.2,35.33604,-79.741698,0
+63548,Lily Solar,SC,Allendale,70.0,33.094931,-81.434842,0
+64840,"SR Cedar Springs, LLC",GA,Early,70.0,31.2453,-85.086975,0
+65305,Powells Creek Solar - Hybrid,VA,Halifax,70.0,36.55467,-79.0286,0
+66026,Hobnail Solar,GA,Burke,70.0,33.262,-82.178,0
+62668,Maiden Creek Solar Power Plant,NC,Catawba,69.3,35.593,-81.167,0
+64151,SR Perry,GA,Houston,68.0,32.39597,-83.762901,0
+62235,Lone Star Solar,SC,Calhoun,66.0,33.648767,-80.639122,0
+66635,Caden Energix Axton LLC,VA,Henry,66.0,36.667889,-79.755013,0
+60380,"Shoe Creek Solar, LLC",NC,Scotland,65.0,34.84492,-79.38472,0
+62951,Hawtree Solar,NC,Warren,65.0,36.533,-78.105,0
+66172,SR DeSoto II,GA,Lee,65.0,31.87042,-84.03574,0
+66839,Crystal Hill Solar,VA,Halifax,64.7,36.839909,-78.938199,0
+66316,Madison Solar (VA),VA,Orange,62.5,38.28775,-77.840046,0
+63807,"Sugar Solar, LLC",NC,Yadkin,60.0,36.1607,-80.6574,0
+63909,Otter Creek Solar,VA,Mecklenburg,60.0,36.807131,-78.509769,0
+66825,SR DeSoto III,GA,Lee,60.0,31.868033,-84.007772,0
+62758,Meherrin Solar,VA,Greensville,59.6,36.59,-77.65,0
+62773,"BT Cooke Solar, LLC",TX,Cooke,59.0,33.5493,-97.1798,0
+62774,Kellam Solar,TX,Van Zandt,59.0,32.4744,-95.7156,0
+63350,OE_GA3,GA,Mitchell,57.5,31.196185,-84.147539,0
+67342,Carvers Creek Solar,VA,Gloucester,54.9,37.56189,-76.605373,0
+60383,Monroe Solar Facility,NC,Union,54.6,34.929945,-80.625615,0
+60554,Hazlehurst II,GA,Jeff Davis,52.5,31.819444,-82.602222,0
+62163,Meridian III,MS,Lauderdale,52.5,32.453955,-88.549484,0
+60303,Sumrall II Solar Farm,MS,Lamar,52.0,31.397089,-89.485884,0
+60306,Sumrall I Solar Farm,MS,Lamar,52.0,31.403531,-89.49764,0
+60063,"Live Oak Solar, LLC",GA,Candler,51.0,32.423798,-82.102824,0
+65307,Sunnybrook Solar Project - Hybrid,VA,Halifax,51.0,36.798717,-78.83961,0
+60623,Brantley Solar,NC,Nash,50.2,35.890485,-78.155153,0
+60624,Fox Creek Solar,NC,Franklin,50.2,36.126912,-78.273106,0
+60682,Pearl Solar,TX,Pecos,50.0,30.98784,-102.26831,0
+60989,SolaireHolman Solar Project,TX,Brewster,50.0,30.45512,-103.4747,0
+61512,"Bullock Solar, LLC",NC,Vance,50.0,36.475369,-78.315078,0
+61697,Lamesa II,TX,Dawson,50.0,32.713326,-101.885218,0
+62822,"Broad River Solar, LLC",NC,Cleveland,50.0,35.188,-81.751,0
+62959,Whitehorn Solar,VA,Pittsylvania,50.0,36.931378,-79.358743,0
+63811,"Lick Creek Solar, LLC",NC,Stokes,50.0,36.283056,-80.128265,0
+63827,Partin Solar,NC,Surry,50.0,36.26801,-80.821936,0
+64702,"Stanly Solar, LLC",NC,Stanly,50.0,35.289722,-80.235556,0
+67849,BT Signal Ranch,TX,Hunt,50.0,32.986,-96.085998,0
+62950,Bluestone Solar,VA,Mecklenburg,49.9,36.811533,-78.483909,0
+67024,Pitts Dudik Solar,TX,Hill,49.6,31.8932,-96.8751,0
+62377,Moody Air Force Base Solar,GA,Lowndes,49.5,30.9574,-83.2229,0
+63812,"Highest Power Solar, LLC",NC,Franklin,48.7,36.12,-78.25,0
+59778,Eden Solar LLC,NC,Richmond,47.7,35.148503,-79.636372,0
+64136,Sycamore Solar,VA,Pittsylvania,42.0,36.942634,-79.192804,0
+58537,OCI Alamo Solar I Hybrid,TX,Bexar,40.7,29.271667,-98.444722,0
+59164,Elm City Solar Facility,NC,Wilson,40.0,35.781111,-77.846944,0
+62057,Hazlehurst III,GA,Jeff Davis,40.0,31.832474,-82.602139,0
+66024,Bird Dog Solar,GA,Burke,40.0,33.126562,-81.999369,0
+66418,Sonny Solar LLC,GA,Elbert,40.0,34.052037,-82.722204,0
+58717,"OCI Alamo 4, LLC",TX,Kinney,39.6,29.33,-100.39,0
+61976,Peony Solar,SC,Orangeburg,39.0,33.502,-81.254,0
+66027,Wolfskin Solar,GA,Oglethorpe,38.0,33.881462,-83.246677,0
+66358,"Virginia Line Solar, LLC",NC,Warren,35.0,36.523774,-78.285361,0
+59666,Innovative Solar 47,NC,Robeson,33.8,34.801933,-79.332447,0
+67488,TAI Huntsville Solar Hybrid,AL,Madison,32.4,34.829551,-86.630351,0
+65219,"Caden Energix Endless Caverns, LLC",VA,Rockingham,31.4,38.613601,-78.677069,0
+59876,Marine Corps Logistics Base Solar,GA,Dougherty,31.0,31.560729,-84.093261,0
+59894,Pawpaw Solar Plant,GA,Taylor,30.5,32.572875,-84.256778,0
+58710,Barilla Solar,TX,Pecos,30.2,30.96,-103.35,0
+57699,Webberville Solar Project,TX,Travis,30.0,30.238492,-97.508812,0
+58628,Simon Solar Farm LLC,GA,Walton,30.0,33.678056,-83.675833,0
+59862,Fort Benning Solar Facility,AL,Russell,30.0,32.30404,-84.98993,0
+59863,Fort Gordon Solar Facility,GA,Richmond,30.0,33.386625,-82.140117,0
+60789,Bluebell Solar,TX,Sterling,30.0,31.87,-100.828,0
+62932,Oberon IB,TX,Ector,30.0,31.692358,-102.69743,0
+62669,Gaston Solar Power Plant,NC,Gaston,25.0,35.3224,-81.1343,0
+64158,Mechanicsville Solar,VA,Hanover,25.0,37.665975,-77.207725,0
+64211,Baxley,GA,Appling,25.0,31.877717,-82.333892,0
+66880,Hayhurst Texas Solar,TX,Culberson,24.8,31.815992,-104.085297,0
+63789,East Nash PV2,NC,Nash,23.4,35.955653,-78.093622,0
+59117,DD Fayetteville Solar NC LLC,NC,Bladen,23.1,34.834444,-78.843611,0
+62820,"Stony Knoll Solar, LLC",NC,Surry,22.6,36.288,-80.656,0
+62821,"Speedway Solar NC, LLC",NC,Cabarrus,22.6,35.218,-80.536,0
+59891,Butler Solar Farm 20,GA,Taylor,22.0,32.575542,-84.316547,0
+62594,Ruff Solar LLC,NC,Rutherford,22.0,35.32062,-81.7634,0
+57994,Apple Data Center PV,NC,Catawba,21.0,35.588135,-81.25198,0
+58623,Holstein Plant,NC,Scotland,20.0,34.774167,-79.340833,0
+58649,Montgomery Solar LLC,NC,Montgomery,20.0,35.344444,-79.768333,0
+58701,Apple Data Center - PV2,NC,Catawba,20.0,35.738889,-81.207778,0
+58844,"Dogwood Solar, LLC",NC,Halifax,20.0,36.125,-77.409167,0
+58943,Halifax (NC),NC,Halifax,20.0,36.441944,-77.711389,0
+59153,Watson Seed Farm PV1,NC,Nash,20.0,36.129722,-77.721389,0
+59449,Decatur County Solar Project,GA,Decatur,20.0,30.965,-84.626111,0
+59513,Meadows PV 1,NC,Martin,20.0,35.836944,-77.126944,0
+59527,Kelford (Duke),NC,Bertie,20.0,36.148056,-77.211944,0
+59535,SR Hazlehurst,GA,Jeff Davis,20.0,31.810278,-82.575,0
+59685,Remington Solar Facility,VA,Fauquier,20.0,38.548333,-77.776389,0
+59874,Richland Solar Center,GA,Twiggs,20.0,32.638034,-83.378924,0
+59951,Five Forks Solar,NC,Warren,20.0,36.515544,-78.033704,0
+60001,Vaughn Creek PV1,NC,Hertford,20.0,36.451012,-77.120595,0
+60319,Whitehouse Solar Farm,VA,Louisa,20.0,38.023,-77.972,0
+60637,Cork Oak Solar,NC,Halifax,20.0,36.371,-77.571,0
+60915,Correctional Solar LLC,VA,New Kent,20.0,37.471464,-76.844612,0
+60916,"Sussex Drive, LLC",VA,Sussex,20.0,36.940529,-77.41776,0
+60968,Scott-II Solar LLC,VA,Powhatan,20.0,37.526244,-77.944637,0
+61375,Hecate Energy Cherrydale LLC,VA,Northampton,20.0,37.37,-75.917171,0
+61406,Essex Solar Center,VA,Essex,20.0,37.834094,-76.799967,0
+61489,Cameron Solar,SC,Calhoun,20.0,33.574,-80.707,0
+61778,North 301 Solar,NC,Halifax,20.0,36.213,-77.624,0
+61973,Blackville Solar II,SC,Barnwell,20.0,33.344319,-81.261774,0
+62011,Richmond Spider Solar,VA,Spotsylvania,20.0,38.247123,-77.786223,0
+62436,SR Arlington I,GA,Early,20.0,31.402919,-84.836814,0
+63777,Pinson Solar Farm,SC,Spartanburg,20.0,34.72,-82.06,0
+63787,Pleasant Hill PV1,NC,Northampton,20.0,36.53115,-77.550375,0
+63814,SR Odom,GA,Colquitt,20.0,31.06987,-83.596183,0
+64012,"Energix Nokesville, LLC",VA,Prince William,20.0,38.672,-77.593,0
+64015,"Energix Buckingham, LLC",VA,Buckingham,20.0,37.5064,-78.381,0
+64086,Norge Solar Farm,VA,James City,20.0,37.365615,-76.775123,0
+64093,Montross Solar,VA,Westmoreland,20.0,38.077,-76.786,0
+64817,"Energix Leatherwood, LLC",VA,Henry,20.0,36.687071,-79.709472,0
+65022,Briel Solar Farm,VA,Henrico,20.0,37.52364,-77.26358,0
+65221,Watlington Solar,VA,Halifax,20.0,36.681547,-78.885955,0
+65314,Caden Energix Wytheville LLC,VA,Wythe,20.0,36.964279,-81.049858,0
+66999,Solidago Solar,VA,Isle of Wight,20.0,36.89,-76.71,0
+68775,Winterberry Solar,VA,Gloucester,20.0,37.36,-76.53,0

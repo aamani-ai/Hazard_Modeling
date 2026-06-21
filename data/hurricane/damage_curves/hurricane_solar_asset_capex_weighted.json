@@ -1,0 +1,48 @@
+{
+  "curve_id": "hurricane/solar__asset__capex_weighted",
+  "STATUS": "PROVISIONAL \u2014 medium-confidence library placeholders, to be replaced by a better curve set later (owner-directed; ATC-14)",
+  "hazard_type": "HURRICANE",
+  "asset_type": "solar",
+  "intensity_metric": "wind_speed_mph",
+  "intensity_measure": "3-second peak gust",
+  "intensity_unit": "mph",
+  "logistic_form": "DR(x) = L/(1+exp(-k*(x-x0)))",
+  "anchoring": "minus DR(0) so DR(0)=0",
+  "source": "jdocs/master_curve_index.json \u2014 HURRICANE_x_SOLAR group",
+  "headline_pv_curve": "pv_array_tracker_stow (x0 148) \u2014 assumes tracker stows; FPL-Ian-anchored",
+  "sensitivity_pv_curve": "pv_array_tracker_midtilt (x0 115) \u2014 stow FAILURE worst case",
+  "capex_weights": {
+    "PV_ARRAY": 0.35,
+    "MOUNTING": 0.15,
+    "SUBSTATION": 0.08,
+    "LOW_WIND_VULN_REMAINDER": 0.42
+  },
+  "weights_note": "approximate NREL-style; MOUNTING restored as primary wind subsystem (flood had zeroed it); inverter/electrical/civil \u2248 wind-immune \u2192 in the 0.42 remainder at DR=0",
+  "LIMITATION_dr_cap": "asset DR caps ~0.48 (wind-exposed capex share) \u2014 electrical/civil treated wind-immune (library gives no solar inverter/electrical wind curve), so catastrophic TOTAL loss is NOT represented. Revisit with the replacement curve set / a debris-driven remainder vulnerability.",
+  "curves_used": {
+    "pv_array_tracker_stow": {
+      "L": 0.85,
+      "k": 0.055,
+      "x0": 148,
+      "src": "empirical FPL Ian + proxy"
+    },
+    "pv_array_tracker_midtilt": {
+      "L": 0.95,
+      "k": 0.065,
+      "x0": 115,
+      "src": "stow-FAILURE worst case (n=2)"
+    },
+    "mounting_tracker_solar": {
+      "L": 0.8,
+      "k": 0.055,
+      "x0": 120,
+      "src": "eng-standard + proxy"
+    },
+    "substation_solar": {
+      "L": 0.8,
+      "k": 0.04,
+      "x0": 120,
+      "src": "HAZUS + NERC post-event"
+    }
+  }
+}

@@ -1,0 +1,52 @@
+{
+  "curve_id": "hurricane/wind_farm__turbine__capex_weighted",
+  "STATUS": "REUSED from convective_wind \u00d7 wind_farm M3 (turbine wind curve) \u2014 Low confidence, greenfield (AWN-26)",
+  "hazard_type": "HURRICANE",
+  "asset_type": "wind_farm",
+  "intensity_metric": "wind_speed_mph",
+  "intensity_measure": "3-second peak gust",
+  "intensity_unit": "mph",
+  "logistic_form": "DR_s(v) = 1/(1+exp(-k_s*(v_ms - x0_s)))  per subsystem; asset DR = \u03a3_s capex_s\u00b7DR_s",
+  "branch": "strong-wind (straight-line) fragility \u2014 hurricane sustained wind \u2248 feathered-survival overload (AWN-32)",
+  "capex_weights": {
+    "rotor_blades": 0.26,
+    "nacelle_drivetrain": 0.21,
+    "tower": 0.16,
+    "foundation": 0.12,
+    "substation": 0.09,
+    "electrical": 0.09,
+    "civil": 0.07
+  },
+  "aero_reach": [
+    "rotor_blades",
+    "nacelle_drivetrain",
+    "substation",
+    "electrical"
+  ],
+  "aero_capex_cap": 0.65,
+  "not_reached": [
+    "tower",
+    "foundation",
+    "civil"
+  ],
+  "fragility_strong_wind_ms": {
+    "rotor_blades": {
+      "x0_ms": 60,
+      "k": 0.3
+    },
+    "nacelle_drivetrain": {
+      "x0_ms": 66,
+      "k": 0.28
+    },
+    "substation": {
+      "x0_ms": 62,
+      "k": 0.28
+    },
+    "electrical": {
+      "x0_ms": 64,
+      "k": 0.28
+    }
+  },
+  "LIMITATION_dr_cap": "asset DR caps ~0.65 (aero capex share) \u2014 tower/foundation/civil treated not-reached by straight-line loading, so catastrophic TOWER-COLLAPSE total loss is NOT represented (the wind-farm analogue of hurricane\u00d7solar's DR cap). Revisit with a hurricane-specific turbine curve (tower failure at Cat-4/5) from infrasure-damage-curves.",
+  "source": "data/convective_wind/wind_m3_damage_manifest.json (strong_wind fragility + capex)"
+}

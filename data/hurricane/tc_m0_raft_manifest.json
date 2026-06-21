@@ -1,0 +1,34 @@
+{
+  "notebook": "hurricane/m0_input_data/01_raft_catalog",
+  "source": "RAFT North Atlantic synthetic TC catalog",
+  "zenodo_concept_doi": "10.5281/zenodo.10392723",
+  "file": "RAFT.NA.v20231016.nc",
+  "license": "CC-BY-4.0",
+  "n_storms": 40000,
+  "env_years": [
+    1979,
+    2018
+  ],
+  "n_env_years": 40,
+  "raw_genesis_rate_per_year": 1000.0,
+  "units": {
+    "vmax": "knots (1-min sustained)",
+    "rmax": "nautical_miles",
+    "mslp": "hPa"
+  },
+  "unit_conversions": {
+    "kt_to_mph": 1.150779,
+    "kt_to_ms": 0.514444,
+    "nmi_to_km": 1.852
+  },
+  "rainfall_in_this_file": false,
+  "rainfall_note": "TC rainfall is in separate RAFT_accum_rainfall_*.tar.gz (~16 GB) \u2014 deferred pluvial-TC slice (JD-TC-6)",
+  "key_findings": [
+    "vmax is KNOTS not m/s (\u00d71.150779 \u2192 mph) \u2014 live unit trap, ATC-8",
+    "raw ~1000 storms/env-year is a genesis oversample vs real ~14/yr \u2014 M1 must calibrate per-site rate to observed landfalls (ATC-9)",
+    "7283 major (\u2265Cat3) storms (18.2%)"
+  ],
+  "outputs": {
+    "summary_parquet": "data/hurricane/tc_m0_raft_summary.parquet"
+  }
+}

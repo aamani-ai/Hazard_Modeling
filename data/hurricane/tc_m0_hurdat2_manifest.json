@@ -1,0 +1,43 @@
+{
+  "notebook": "hurricane/m0_input_data/02_landfall_record",
+  "source": "NOAA NHC HURDAT2 Atlantic best-track",
+  "url": "https://www.nhc.noaa.gov/data/hurdat/hurdat2-1851-2023-051124.txt",
+  "license": "public domain (NOAA)",
+  "record_years": [
+    1851,
+    2023
+  ],
+  "n_storms_total": 1973,
+  "n_landfall_records": 1147,
+  "units": {
+    "max_wind": "knots (1-min sustained)"
+  },
+  "us_landfall_climatology": {
+    "conus_box": {
+      "lon": [
+        -98,
+        -67
+      ],
+      "lat": [
+        24,
+        47
+      ]
+    },
+    "hurricane_per_yr": 1.688,
+    "major_per_yr": 0.555,
+    "published_reference": {
+      "hurricane_per_yr": 1.7,
+      "major_per_yr": 0.46
+    }
+  },
+  "role": [
+    "rate anchor: calibrates RAFT's ~71x oversample to physical landfall frequency (ATC-9, applied in M1)",
+    "validation targets: observed landfall intensities for Holland field replay (JD-TC-7, M1)"
+  ],
+  "deferred": "STORM RP-grid cross-check \u2192 M1 (needs locked site + 1.1 GB download; validates our catalog RP)",
+  "outputs": {
+    "landfalls_parquet": "data/hurricane/tc_m0_hurdat2_landfalls.parquet",
+    "tracks_hu_parquet": "data/hurricane/tc_m0_hurdat2_tracks_hu.parquet"
+  },
+  "tracks_hu_note": "all \u226564 kt obs (not just landfalls) \u2192 M1 counts close passages within 100 km, matching RAFT's severity rulebook"
+}
