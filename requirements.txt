@@ -9,11 +9,14 @@ scipy
 # Data access (read the asset reference table + parquet dimension data)
 pyarrow
 duckdb
+openpyxl          # read the EIA-860 .xlsx fleet (flood/hurricane M0 site screens)
 
 # Hazard grids (MRMS MESH GRIB2 from AWS Open Data)
 xarray
 cfgrib
 eccodes
+h5netcdf          # read RAFT HDF5/NetCDF-4 TC catalog (hurricane M0) without the netCDF4 C lib
+h5py              # h5netcdf backend (binary wheel — no HDF5 C headers needed)
 
 # Wildfire hazard rasters (WRC 2.0 + FSim FLP1-6 GeoTIFFs — fetch, read, zonal-sample)
 rasterio          # read/write GeoTIFF, ArcGIS exportImage tiles, windowed reads
@@ -24,6 +27,12 @@ rasterstats       # zonal statistics within the asset-boundary polygon
 geopandas
 shapely
 # (pyproj is pulled in by geopandas — used for equal-area km² via EPSG:5070)
+
+# Pluvial ponding fraction f from 1 m lidar (flood/m1_catalog/pluvial — JD-FL-15)
+scikit-image      # morphological depression-fill (reconstruction) → closed-depression f
+tifffile          # read the clipped 1 m DEM GeoTIFF into numpy (rasterio failed to build in this env)
+# NOTE: also needs the GDAL command-line tools (gdalwarp / gdalbuildvrt) on PATH — present in the conda env;
+#       the lidar tile is read windowed via /vsicurl (no full download).
 
 # HTTP + config
 requests
