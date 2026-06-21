@@ -26,6 +26,7 @@ before M0.
 
 ## Related (don't duplicate — link)
 
+- The platform-level aggregation / double-counting doctrine promoted from wind: [`../aggregation/`](../aggregation/README.md).
 - The three coupling buckets, the platform-canonical source: [`../../../principles/hazard_asset_specificity.md`](../../../principles/hazard_asset_specificity.md) — and the original gpt deep-dive [`../gpt/03`](../gpt/03_coupling_types_hit_or_miss_field_intensity_site_conditioned.md).
 - The settled wind plans these graduate into: [`../../../plans/convective_wind/00_hazard_definition.md`](../../../plans/convective_wind/00_hazard_definition.md) (layer-0) · [`../../../plans/convective_wind/decisions.md`](../../../plans/convective_wind/decisions.md) (`DD-WN-*`) · [`../../../plans/convective_wind/00_intent.md`](../../../plans/convective_wind/00_intent.md).
 - The sibling wildfire discussion we mirror in spirit: [`../wildfire/README.md`](../wildfire/README.md).
