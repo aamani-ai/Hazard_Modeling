@@ -54,7 +54,7 @@
    "note": "appended for flood-coastal's wind+surge compound combine (JD-FL-16) \u2014 NOT a hurricane proving site; excluded from the hurricane headline (Everglades remains the example). Sourced from flood_coastal_m0_sites.json."
   },
   {
-   "role": "all-three (flood compound)",
+   "role": "cross-link (flood compound)",
    "name": "LA3 West Baton Rouge Solar Facility",
    "eia": 61646,
    "state": "LA",
@@ -64,6 +64,7 @@
    "solar_mw": 50.0,
    "landfalls_100km": 6,
    "footprint_r_m": 556,
+   "note": "appended for flood-coastal's wind+surge compound combine (JD-FL-16) — NOT a hurricane proving site; excluded from the hurricane headline (Everglades remains the example). It is the all-three FLOOD site (riverine+pluvial+coastal, JD-FL-17) in flood's own files; here in the hurricane namespace it is a cross-link rider, tagged 'cross-link' per the JD-FL-16 convention so the hurricane headline filter excludes it.",
    "tiv_usd": 74150000.0
   }
  ]

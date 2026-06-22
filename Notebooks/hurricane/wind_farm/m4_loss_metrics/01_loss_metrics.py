@@ -92,13 +92,17 @@ rng = np.random.default_rng(20260621)
 
 def simulate(fr, lam, n_years=N_YEARS):
     if lam <= 0 or len(fr) == 0:
-        return np.zeros(n_years)
+        return np.zeros(n_years), np.zeros(n_years)
     n_per_year = rng.poisson(lam, n_years)
     total = int(n_per_year.sum())
     draws = rng.choice(fr, size=total, replace=True)
+    year_id = np.repeat(np.arange(n_years), n_per_year)
     annual = np.zeros(n_years)
-    np.add.at(annual, np.repeat(np.arange(n_years), n_per_year), draws)
-    return np.minimum(annual, 1.0)
+    np.add.at(annual, year_id, draws)                          # AEP = annual aggregate (sum of a year's storms)
+    oep = np.zeros(n_years)
+    if total:
+        np.maximum.at(oep, year_id, draws)                     # OEP = the year's single largest storm (occurrence basis)
+    return np.minimum(annual, 1.0), np.minimum(oep, 1.0)
 
 
 def metrics_of(v):
@@ -107,8 +111,24 @@ def metrics_of(v):
             **{f"PML{T}": np.percentile(v, 100 * (1 - 1 / T)) for T in RPS}}
 
 
-annual = simulate(loss_fracs, LAM)
+def twin_metrics(aep, oep):                                    # house-standard metric set, native units (fraction of TIV)
+    var99 = np.percentile(aep, 99)
+    return {
+        "EAL":                  float(aep.mean()),
+        "VaR95 (AEP-PML20)":    float(np.quantile(aep, 0.95)),
+        "VaR99 (AEP-PML100)":   float(var99),                  # this IS PML100 — one entry, both names
+        "VaR99.6 (AEP-PML250)": float(np.quantile(aep, 0.996)),
+        "PML500 (AEP-99.8)":    float(np.quantile(aep, 0.998)),
+        "TVaR99":               float(aep[aep >= var99].mean()) if (aep >= var99).any() else 0.0,
+        "OEP-PML100":           float(np.quantile(oep, 0.99)),  # per-EVENT (largest single storm/yr), not per-year
+    }
+
+
+annual, oep = simulate(loss_fracs, LAM)
 m = metrics_of(annual)
+tw = twin_metrics(annual, oep)
+metrics_usd = {k: round(v * TIV, 2) for k, v in tw.items()}
+metrics_pct_of_tiv = {k: round(v * 100, 4) for k, v in tw.items()}
 eal_lo, eal_hi = m["EAL"] * (1 - FREQ_REL_UNC), m["EAL"] * (1 + FREQ_REL_UNC)
 print(f"zero-loss years: {(annual == 0).mean()*100:.2f}%  (λ small → most years see no qualifying storm)")
 
@@ -141,6 +161,12 @@ checks = {
     "EAL > 0 (material peril, however small)": m["EAL"] > 0,
     "single-event PML ≤ DR cap (~0.65); no total loss": m["PML500"] <= 0.66,
     "most years are loss-free (λ ≪ 1)": (annual == 0).mean() > 0.95,
+    "AEP ≥ OEP every year (annual total ≥ its largest single storm)": bool((annual + 1e-12 >= oep).all()),
+    "OEP-PML100 ≤ AEP-PML100 (occurrence ≤ aggregate)": tw["OEP-PML100"] <= tw["VaR99 (AEP-PML100)"] + 1e-12,
+    "twin-block unit consistency: usd/TIV*100 == pct_of_tiv (to rounding)":
+        all(abs(metrics_usd[k] / TIV * 100 - metrics_pct_of_tiv[k]) < 1e-3 for k in tw),
+    "PML500 ≥ PML250 ≥ PML100 ≥ EAL > 0 (twin-block monotone)":
+        tw["PML500 (AEP-99.8)"] >= tw["VaR99.6 (AEP-PML250)"] >= tw["VaR99 (AEP-PML100)"] >= tw["EAL"] > 0,
 }
 for k, v in checks.items():
     print(f"  {'✅' if v else '❌'}  {k}")
@@ -186,6 +212,10 @@ manifest = {
                             "EAL_with_freq_unc": [round(eal_lo * 100, 3), round(eal_hi * 100, 3)],
                             **{f"PML{T}": round(m[f"PML{T}"] * 100, 2) for T in RPS},
                             "VaR99": round(m["VaR99"] * 100, 2), "TVaR99": round(m["TVaR99"] * 100, 2)},
+    # house-standard twin blocks — identical keys, the block name carries the unit (parity with hail/wildfire/conv-wind)
+    "metrics_usd": metrics_usd,
+    "metrics_pct_of_tiv": metrics_pct_of_tiv,
+    "occurrence_basis_note": "OEP-PML100 = per-EVENT (largest single storm/yr); AEP metrics = annual aggregate (sum of a year's storms). λ≪1 → OEP≈AEP (rarely >1 storm/yr).",
     "zero_loss_year_fraction": round(float((annual == 0).mean()), 4),
     "caveats": [
         "wind is SMALL at Amazon — frequent storms below IEC turbine survival; tail = rare Cat-3 close passage",

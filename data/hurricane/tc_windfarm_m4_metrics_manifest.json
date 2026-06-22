@@ -19,6 +19,25 @@
     "VaR99": 0.02,
     "TVaR99": 1.22
   },
+  "metrics_usd": {
+    "EAL": 35829.43,
+    "VaR95 (AEP-PML20)": 0.0,
+    "VaR99 (AEP-PML100)": 63481.6,
+    "VaR99.6 (AEP-PML250)": 1222166.4,
+    "PML500 (AEP-99.8)": 4154259.2,
+    "TVaR99": 3548932.18,
+    "OEP-PML100": 63481.6
+  },
+  "metrics_pct_of_tiv": {
+    "EAL": 0.0123,
+    "VaR95 (AEP-PML20)": 0.0,
+    "VaR99 (AEP-PML100)": 0.0218,
+    "VaR99.6 (AEP-PML250)": 0.4197,
+    "PML500 (AEP-99.8)": 1.4266,
+    "TVaR99": 1.2187,
+    "OEP-PML100": 0.0218
+  },
+  "occurrence_basis_note": "OEP-PML100 = per-EVENT (largest single storm/yr); AEP metrics = annual aggregate (sum of a year's storms). \u03bb\u226a1 \u2192 OEP\u2248AEP (rarely >1 storm/yr).",
   "zero_loss_year_fraction": 0.9885,
   "caveats": [
     "wind is SMALL at Amazon \u2014 frequent storms below IEC turbine survival; tail = rare Cat-3 close passage",
