@@ -163,6 +163,83 @@
     ],
     "model_within_observed": true
   },
+  "metrics_usd": {
+    "Discovery Solar Center": {
+      "EAL": 372927.17,
+      "VaR95 (AEP-PML20)": 0.0,
+      "VaR99 (AEP-PML100)": 10327924.13,
+      "VaR99.6 (AEP-PML250)": 22867359.79,
+      "PML500 (AEP-99.8)": 42775283.62,
+      "TVaR99": 25515527.99,
+      "OEP-PML100": 10154095.99
+    },
+    "Elizabeth Solar Plant": {
+      "EAL": 344450.68,
+      "VaR95 (AEP-PML20)": 2861297.64,
+      "VaR99 (AEP-PML100)": 5495678.22,
+      "VaR99.6 (AEP-PML250)": 7478929.34,
+      "PML500 (AEP-99.8)": 9026595.87,
+      "TVaR99": 7682666.94,
+      "OEP-PML100": 5495678.22
+    },
+    "Hayhurst Texas Solar": {
+      "EAL": 11110.39,
+      "VaR95 (AEP-PML20)": 102979.52,
+      "VaR99 (AEP-PML100)": 102979.52,
+      "VaR99.6 (AEP-PML250)": 170067.16,
+      "PML500 (AEP-99.8)": 222999.32,
+      "TVaR99": 110296.52,
+      "OEP-PML100": 102979.52
+    },
+    "LA3 West Baton Rouge Solar Facility": {
+      "EAL": 564089.37,
+      "VaR95 (AEP-PML20)": 4741193.84,
+      "VaR99 (AEP-PML100)": 5192446.38,
+      "VaR99.6 (AEP-PML250)": 7464416.48,
+      "PML500 (AEP-99.8)": 9074986.02,
+      "TVaR99": 8503640.59,
+      "OEP-PML100": 4966884.47
+    }
+  },
+  "metrics_pct_of_tiv": {
+    "Discovery Solar Center": {
+      "EAL": 0.3375,
+      "VaR95 (AEP-PML20)": 0.0,
+      "VaR99 (AEP-PML100)": 9.3479,
+      "VaR99.6 (AEP-PML250)": 20.6975,
+      "PML500 (AEP-99.8)": 38.7164,
+      "TVaR99": 23.0944,
+      "OEP-PML100": 9.1906
+    },
+    "Elizabeth Solar Plant": {
+      "EAL": 0.1627,
+      "VaR95 (AEP-PML20)": 1.3511,
+      "VaR99 (AEP-PML100)": 2.5951,
+      "VaR99.6 (AEP-PML250)": 3.5316,
+      "PML500 (AEP-99.8)": 4.2624,
+      "TVaR99": 3.6278,
+      "OEP-PML100": 2.5951
+    },
+    "Hayhurst Texas Solar": {
+      "EAL": 0.0302,
+      "VaR95 (AEP-PML20)": 0.28,
+      "VaR99 (AEP-PML100)": 0.28,
+      "VaR99.6 (AEP-PML250)": 0.4624,
+      "PML500 (AEP-99.8)": 0.6063,
+      "TVaR99": 0.2999,
+      "OEP-PML100": 0.28
+    },
+    "LA3 West Baton Rouge Solar Facility": {
+      "EAL": 0.7607,
+      "VaR95 (AEP-PML20)": 6.3941,
+      "VaR99 (AEP-PML100)": 7.0026,
+      "VaR99.6 (AEP-PML250)": 10.0666,
+      "PML500 (AEP-99.8)": 12.2387,
+      "TVaR99": 11.4682,
+      "OEP-PML100": 6.6984
+    }
+  },
+  "occurrence_basis_note": "OEP-PML100 = per-EVENT occurrence basis; AEP metrics = annual aggregate. TOTAL occurrence set per year = {inland annual-max as ONE occurrence} \u222a {each coastal storm's compound loss}; OEP_total = max(inland, max coastal storm). AEP_total = inland + \u03a3 coastal storms. Inland-only sites \u2192 OEP == AEP (annual-max is one occurrence/yr).",
   "metrics": [
     {
       "name": "Elizabeth Solar Plant",

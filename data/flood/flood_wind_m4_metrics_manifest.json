@@ -150,6 +150,65 @@
     "residual uncertainty is CURVE-level (the Zone-A 1% bathtub + the greenfield M3 curve) + the in-hull substation pick; loss per-node (not areal); rotor/nacelle/tower immune.",
     "SUBSTATION RESOLVED (JD-FL-W7): the west-edge 138 kV node IS Green River's OWN collector (in-hull substation=generation; OSM/HIFLD) and it FLOODS (0.88 m @ 100-yr) \u2192 ~75% of EAL. The earlier 'Big Sky Wind' node was the adjacent farm's collector (a wrong-substation bug), now corrected."
   ],
+  "metrics_usd": {
+    "Amazon Wind Farm US East": {
+      "EAL": 201319.56,
+      "VaR95 (AEP-PML20)": 1120960.64,
+      "VaR99 (AEP-PML100)": 1367166.93,
+      "VaR99.6 (AEP-PML250)": 1919828.34,
+      "PML500 (AEP-99.8)": 4154436.83,
+      "TVaR99": 4548413.41,
+      "OEP-PML100": 1353041.04
+    },
+    "Green River": {
+      "EAL": 3468287.45,
+      "VaR95 (AEP-PML20)": 25211075.28,
+      "VaR99 (AEP-PML100)": 29618078.65,
+      "VaR99.6 (AEP-PML250)": 30546519.33,
+      "PML500 (AEP-99.8)": 31054744.17,
+      "TVaR99": 30512752.38,
+      "OEP-PML100": 29618078.65
+    },
+    "Shepherds Flat": {
+      "EAL": 0.0,
+      "VaR95 (AEP-PML20)": 0.0,
+      "VaR99 (AEP-PML100)": 0.0,
+      "VaR99.6 (AEP-PML250)": 0.0,
+      "PML500 (AEP-99.8)": 0.0,
+      "TVaR99": 0.0,
+      "OEP-PML100": 0.0
+    }
+  },
+  "metrics_pct_of_tiv": {
+    "Amazon Wind Farm US East": {
+      "EAL": 0.0691,
+      "VaR95 (AEP-PML20)": 0.3849,
+      "VaR99 (AEP-PML100)": 0.4695,
+      "VaR99.6 (AEP-PML250)": 0.6593,
+      "PML500 (AEP-99.8)": 1.4267,
+      "TVaR99": 1.562,
+      "OEP-PML100": 0.4646
+    },
+    "Green River": {
+      "EAL": 1.2757,
+      "VaR95 (AEP-PML20)": 9.2729,
+      "VaR99 (AEP-PML100)": 10.8938,
+      "VaR99.6 (AEP-PML250)": 11.2353,
+      "PML500 (AEP-99.8)": 11.4222,
+      "TVaR99": 11.2229,
+      "OEP-PML100": 10.8938
+    },
+    "Shepherds Flat": {
+      "EAL": 0.0,
+      "VaR95 (AEP-PML20)": 0.0,
+      "VaR99 (AEP-PML100)": 0.0,
+      "VaR99.6 (AEP-PML250)": 0.0,
+      "PML500 (AEP-99.8)": 0.0,
+      "TVaR99": 0.0,
+      "OEP-PML100": 0.0
+    }
+  },
+  "occurrence_basis_note": "OEP-PML100 = per-EVENT occurrence basis; AEP metrics = annual aggregate. TOTAL occurrence set per year = {inland annual-max as ONE occurrence} \u222a {each coastal storm's compound loss}; OEP_total = max(inland, max coastal storm). AEP_total = inland + \u03a3 coastal storms. Inland-only sites \u2192 OEP == AEP (annual-max is one occurrence/yr).",
   "metrics": [
     {
       "name": "Amazon Wind Farm US East",

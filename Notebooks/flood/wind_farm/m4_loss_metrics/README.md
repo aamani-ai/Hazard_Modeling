@@ -69,6 +69,16 @@ M3 conditional losses (RP + coastal per-storm) + per-node coastal SLOSH tables +
 event rate λ → `data/flood/flood_wind_m4_metrics_manifest.json` (EAL/VaR/PML/TVaR in $ and % of TIV + marginals +
 envelope + substation bracket + coastal compound + total) + `<slug>_flood_wind_m4_annual_vectors[_total].parquet`; the loss-metrics figure is shown inline.
 
+## Metric schema (house standard — parity with hail / wildfire / convective-wind)
+The manifest carries **two twin blocks with identical keys**, the block name carrying the unit: **`metrics_usd`** and
+**`metrics_pct_of_tiv`**, each keyed **per site** on the **TOTAL flood** (inland + coastal). Keys: `EAL` ·
+`VaR95 (AEP-PML20)` · `VaR99 (AEP-PML100)` (this *is* PML100) · `VaR99.6 (AEP-PML250)` · `PML500 (AEP-99.8)` · `TVaR99` ·
+`OEP-PML100`. **AEP** = annual aggregate; **OEP** = occurrence basis. For the mixed total the per-year occurrence set =
+*{inland annual-max as ONE occurrence}* ∪ *{each coastal storm's compound loss}*, so **OEP_total = max(inland, largest
+coastal storm)** while **AEP_total = inland + Σ coastal storms** (a second reduction of the same MC draw, no extra
+sampling). **Inland-only sites (Green River, Shepherds Flat) → OEP == AEP**; only Amazon (coastal) shows OEP-PML100 <
+AEP-PML100. Checks added: AEP ≥ OEP, OEP-PML100 ≤ AEP-PML100, TVaR99 ≥ VaR99, monotone + unit-consistency.
+
 ## Decisions & assumptions
 [JD-FL-7](../../../../docs/plans/flood/decisions.md) (annual-max MC) ·
 [JD-FL-11](../../../../docs/plans/flood/decisions.md) (co-sample + worse-source-wins + envelope) ·

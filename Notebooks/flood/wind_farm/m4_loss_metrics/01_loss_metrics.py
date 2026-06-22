@@ -123,6 +123,20 @@ def metrics_of(v):
             **{f"PML{T}": np.percentile(v, 100 * (1 - 1 / T)) for T in RPS}}
 
 
+def twin_metrics(aep, oep):   # house-standard metric set, native units (fraction of TIV) — emitted as $ and % twin blocks
+    var99 = np.percentile(aep, 99)
+    return {
+        "EAL":                  float(aep.mean()),
+        "VaR95 (AEP-PML20)":    float(np.quantile(aep, 0.95)),
+        "VaR99 (AEP-PML100)":   float(var99),                  # this IS PML100 — one entry, both names
+        "VaR99.6 (AEP-PML250)": float(np.quantile(aep, 0.996)),
+        "PML500 (AEP-99.8)":    float(np.quantile(aep, 0.998)),  # flood's existing 500-yr point
+        "TVaR99":               float(aep[aep >= var99].mean()) if (aep >= var99).any() else 0.0,
+        "OEP-PML100":           float(np.quantile(oep, 0.99)),  # per-EVENT (occurrence basis), not per-year
+    }
+
+
+tiv_by_site = {s["name"]: s["tiv_usd"] for _, s in sites.iterrows()}
 rows, vectors, marginal_eal = [], {}, {}
 for _, s in sites.iterrows():
     nm, tiv = s["name"], s["tiv_usd"]
@@ -203,7 +217,7 @@ def _sdr(depth_ft, L, k, x0):
 cman = json.loads((OUT / "flood_coastal_m1_catalog_manifest.json").read_text())
 coastal_wind_sites = [c for c in cman["sites"] if c["asset"] == "wind_farm" and c["exposed"]]
 wind_leg = pd.read_parquet(TC / "tc_windfarm_m3_damage.parquet")
-compound_metrics, coastal_vectors, compound_events = {}, {}, {}
+compound_metrics, coastal_vectors, coastal_oep_vectors, compound_events = {}, {}, {}, {}
 
 def cp_metrics(annual, tiv):
     return {"EAL_pct": annual.mean()/tiv*100, "PML100_pct": np.quantile(annual, 0.99)/tiv*100,
@@ -239,6 +253,10 @@ for cs in coastal_wind_sites:
     annual_of = lambda col: np.bincount(yr, weights=ev[col].values[idx], minlength=N)
     coa_annual = annual_of("compound_loss")
     coastal_vectors[nm] = coa_annual / TIV
+    oep_coa = np.zeros(N)                                             # OEP = largest single storm's compound loss per year
+    if n_ev:
+        np.maximum.at(oep_coa, yr, ev["compound_loss"].values[idx])
+    coastal_oep_vectors[nm] = oep_coa / TIV
     compound_metrics[nm] = {"lambda_per_yr": lam, "n_storms": int(len(ev)),
                             "wind_only":  cp_metrics(annual_of("wind_loss"),  TIV),
                             "surge_only": cp_metrics(annual_of("surge_loss"), TIV),
@@ -260,18 +278,29 @@ for cs in coastal_wind_sites:
 
 # %%
 total_metrics = {}
+total_aep, total_oep = {}, {}     # per-site TOTAL annual-aggregate + occurrence vectors (fraction of TIV)
 for nm in sites["name"]:
     inland = vectors[nm]; coa = coastal_vectors.get(nm, np.zeros(N))
     tot = inland + coa
+    coa_oep = coastal_oep_vectors.get(nm, np.zeros(N))
+    # TOTAL occurrence basis: year's occurrence set = {inland annual-max as ONE occurrence} ∪ {each coastal storm};
+    # OEP_total = max(inland_year, largest coastal storm that year). AEP_total = inland + Σ coastal storms.
+    tot_oep = np.maximum(inland, coa_oep)            # inland is annual-max (1 occurrence/yr) → its OEP == its AEP
     total_metrics[nm] = {"inland_eal_pct": inland.mean()*100, "coastal_eal_pct": coa.mean()*100,
                          "EAL_pct": tot.mean()*100, "PML100_pct": np.percentile(tot, 99)*100,
                          "PML250_pct": np.percentile(tot, 99.6)*100, "PML500_pct": np.percentile(tot, 99.8)*100}
     vectors[nm + "__total"] = tot
+    total_aep[nm] = tot; total_oep[nm] = tot_oep
+# house-standard twin blocks per site (TOTAL flood headline) — identical keys, the block name carries the unit
+twin = {nm: twin_metrics(total_aep[nm], total_oep[nm]) for nm in total_aep}
+metrics_usd = {nm: {k: round(v * tiv_by_site[nm], 2) for k, v in twin[nm].items()} for nm in twin}
+metrics_pct_of_tiv = {nm: {k: round(v * 100, 4) for k, v in twin[nm].items()} for nm in twin}
 print("\ntotal flood (inland + coastal), % of TIV:")
 for nm in sites["name"]:
     tm = total_metrics[nm]
     print(f"  {nm:24s} inland {tm['inland_eal_pct']:.3f} + coastal {tm['coastal_eal_pct']:.3f} = "
-          f"TOTAL EAL {tm['EAL_pct']:.3f}% · PML100 {tm['PML100_pct']:.2f}% · PML500 {tm['PML500_pct']:.2f}%")
+          f"TOTAL EAL {tm['EAL_pct']:.3f}% · PML100 {tm['PML100_pct']:.2f}% · PML500 {tm['PML500_pct']:.2f}% · "
+          f"OEP-PML100 {metrics_pct_of_tiv[nm]['OEP-PML100']:.2f}%")
 
 # %% [markdown]
 # ## 3 · Plots — loss-exceedance curves (sub-perils + combined) + simulated annual-loss exceedance
@@ -326,6 +355,18 @@ for nm, cm in compound_metrics.items():
     assert total_metrics[nm]["EAL_pct"] >= cm["compound"]["EAL_pct"] - 1e-9, "total ≥ coastal compound (inland adds)"
     print(f"✓ COASTAL COMPOUND {nm}: compound EAL {cm['compound']['EAL_pct']:.3f}% ≥ max(wind {cm['wind_only']['EAL_pct']:.3f}%, "
           f"surge {cm['surge_only']['EAL_pct']:.3f}%) — per-subsystem max(wind,surge) on the joined storm stream (JD-FL-12)")
+# twin-block / occurrence-basis checks (house standard) — across every TOTAL-flood site
+for nm in total_aep:
+    aep, oep, t, tiv = total_aep[nm], total_oep[nm], twin[nm], tiv_by_site[nm]
+    assert bool((aep + 1e-12 >= oep).all()), f"{nm}: AEP ≥ OEP must hold every year"
+    assert t["OEP-PML100"] <= t["VaR99 (AEP-PML100)"] + 1e-12, f"{nm}: OEP-PML100 ≤ AEP-PML100 (occurrence ≤ aggregate)"
+    if t["EAL"] > 0:
+        assert t["TVaR99"] >= t["VaR99 (AEP-PML100)"] - 1e-12, f"{nm}: TVaR99 ≥ VaR99 (tail-average past the quantile)"
+        assert t["PML500 (AEP-99.8)"] >= t["VaR99.6 (AEP-PML250)"] >= t["VaR99 (AEP-PML100)"] >= t["EAL"] > 0, f"{nm}: twin-block monotone"
+    assert all(abs(metrics_usd[nm][k] / tiv * 100 - metrics_pct_of_tiv[nm][k]) < 1e-3 for k in t), f"{nm}: usd/TIV*100 == pct (unit consistency)"
+    if nm not in coastal_vectors:   # inland-only sites: occurrence == aggregate (annual-max = 1 occurrence/yr)
+        assert abs(t["OEP-PML100"] - t["VaR99 (AEP-PML100)"]) < 1e-12, f"{nm}: inland-only → OEP == AEP"
+print("✓ twin-block + occurrence-basis checks pass (AEP≥OEP, OEP-PML100≤AEP-PML100, TVaR99≥VaR99, monotone, unit-consistent).")
 print("✓ M4 known-answer checks pass (riverine + pluvial + coastal compound + total).")
 
 # %% [markdown]
@@ -423,6 +464,12 @@ manifest = {
                 "COMBINE (JD-FL-11): comonotonic worse-wins; additive-capped is the recorded φ=0 upper envelope.",
                 "residual uncertainty is CURVE-level (the Zone-A 1% bathtub + the greenfield M3 curve) + the in-hull substation pick; loss per-node (not areal); rotor/nacelle/tower immune.",
                 "SUBSTATION RESOLVED (JD-FL-W7): the west-edge 138 kV node IS Green River's OWN collector (in-hull substation=generation; OSM/HIFLD) and it FLOODS (0.88 m @ 100-yr) → ~75% of EAL. The earlier 'Big Sky Wind' node was the adjacent farm's collector (a wrong-substation bug), now corrected."],
+    # house-standard twin blocks (per site, TOTAL flood) — identical keys, the block name carries the unit (parity w/ hail/wildfire/conv-wind)
+    "metrics_usd": metrics_usd,
+    "metrics_pct_of_tiv": metrics_pct_of_tiv,
+    "occurrence_basis_note": ("OEP-PML100 = per-EVENT occurrence basis; AEP metrics = annual aggregate. TOTAL occurrence set per year = "
+                              "{inland annual-max as ONE occurrence} ∪ {each coastal storm's compound loss}; OEP_total = max(inland, max coastal storm). "
+                              "AEP_total = inland + Σ coastal storms. Inland-only sites → OEP == AEP (annual-max is one occurrence/yr)."),
     "metrics": json.loads(M.round(4).to_json(orient="records")),
 }
 (OUT / "flood_wind_m4_metrics_manifest.json").write_text(json.dumps(manifest, indent=2))
