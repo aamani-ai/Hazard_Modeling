@@ -19,6 +19,25 @@
     "harsher_provisional_curve_EAL": 4.08,
     "harsher_provisional_curve_PML500": 66.2
   },
+  "metrics_usd": {
+    "EAL": 2459878.97,
+    "VaR95 (AEP-PML20)": 17925371.65,
+    "VaR99 (AEP-PML100)": 34715397.95,
+    "VaR99.6 (AEP-PML250)": 41327596.06,
+    "PML500 (AEP-99.8)": 45812732.29,
+    "TVaR99": 41207821.65,
+    "OEP-PML100": 31221664.8
+  },
+  "metrics_pct_of_tiv": {
+    "EAL": 2.2265,
+    "VaR95 (AEP-PML20)": 16.2245,
+    "VaR99 (AEP-PML100)": 31.4213,
+    "VaR99.6 (AEP-PML250)": 37.4061,
+    "PML500 (AEP-99.8)": 41.4657,
+    "TVaR99": 37.2977,
+    "OEP-PML100": 28.2591
+  },
+  "occurrence_basis_note": "OEP-PML100 = per-EVENT (largest single storm/yr); AEP metrics = annual aggregate (sum of a year's storms). For Everglades (\u03bb\u22480.6) OEP < AEP where a year carries >1 storm.",
   "baseline": "Hayhurst EAL = 0 (true-zero control, \u03bb=0)",
   "caveats": [
     "LOSS side is curve-limited (provisional ATC-14 curves) \u2014 the dominant uncertainty; hazard side is ASCE-validated",

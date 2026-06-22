@@ -81,9 +81,11 @@ print("repo root:", ROOT)
 
 # %%
 m3 = pd.read_parquet(DATA / "tc_m3_damage.parquet")
-# Exclude cross-link sites (e.g. Discovery, appended for flood-coastal's compound combine — JD-FL-16).
-# They ride the hurricane pipeline to supply a wind leg; they are NOT hurricane proving sites and must
-# stay out of the hurricane headline (Everglades + Hayhurst remain the example).
+# Exclude cross-link rider sites (Discovery, LA3 — appended for flood-coastal's compound combine, JD-FL-16).
+# They ride the hurricane pipeline to supply a wind leg; they are NOT hurricane proving sites and must stay
+# out of the hurricane headline (Everglades + Hayhurst remain the example). Per the JD-FL-16 convention every
+# rider carries a `cross-link …` role (LA3's all-three FLOOD identity lives in flood's own files; here it is a
+# cross-link rider), so a single startswith("cross-link") filter excludes them all — durable for future riders.
 m3 = m3[~m3["site_role"].astype(str).str.startswith("cross-link")].copy()
 summ = pd.read_parquet(DATA / "tc_m1_site_summary.parquet")     # carries lambda_per_yr per site
 summ = summ[~summ["role"].astype(str).str.startswith("cross-link")].copy()
@@ -105,18 +107,34 @@ rng = np.random.default_rng(20260620)
 
 def simulate(loss_fracs, lam_site, n_years=N_YEARS):
     if lam_site <= 0 or len(loss_fracs) == 0:
-        return np.zeros(n_years)
+        return np.zeros(n_years), np.zeros(n_years)
     n_per_year = rng.poisson(lam_site, n_years)
     total = int(n_per_year.sum())
     draws = rng.choice(loss_fracs, size=total, replace=True)
+    year_id = np.repeat(np.arange(n_years), n_per_year)
     annual = np.zeros(n_years)
-    np.add.at(annual, np.repeat(np.arange(n_years), n_per_year), draws)
-    return np.minimum(annual, 1.0)        # annual aggregate bounded at 100% of TIV (can't lose more than the asset)
+    np.add.at(annual, year_id, draws)     # AEP = annual aggregate (sum of a year's storms), bounded at 100% TIV below
+    oep = np.zeros(n_years)
+    if total:
+        np.maximum.at(oep, year_id, draws)   # OEP = the year's single largest storm (occurrence basis)
+    return np.minimum(annual, 1.0), np.minimum(oep, 1.0)   # bounded at 100% of TIV (can't lose more than the asset)
 
 def metrics_of(v):
     var99 = np.percentile(v, 99)
     return {"EAL": v.mean(), "VaR99": var99, "TVaR99": v[v >= var99].mean() if (v >= var99).any() else 0.0,
             **{f"PML{T}": np.percentile(v, 100 * (1 - 1 / T)) for T in RPS}}
+
+def twin_metrics(aep, oep):               # house-standard metric set, native units (fraction of TIV)
+    var99 = np.percentile(aep, 99)
+    return {
+        "EAL":                  float(aep.mean()),
+        "VaR95 (AEP-PML20)":    float(np.quantile(aep, 0.95)),
+        "VaR99 (AEP-PML100)":   float(var99),                  # this IS PML100 — one entry, both names
+        "VaR99.6 (AEP-PML250)": float(np.quantile(aep, 0.996)),
+        "PML500 (AEP-99.8)":    float(np.quantile(aep, 0.998)),
+        "TVaR99":               float(aep[aep >= var99].mean()) if (aep >= var99).any() else 0.0,
+        "OEP-PML100":           float(np.quantile(oep, 0.99)),  # per-EVENT (largest single storm/yr), not per-year
+    }
 
 # %% [markdown]
 # ## 3 · Run — both sites × both (provisional) curves → the loss table
@@ -124,13 +142,15 @@ def metrics_of(v):
 # %%
 rows = []
 ep_curves = {}
+oep_curves = {}
 for nm, s in sites.items():
     tiv = s["tiv_usd"]; lm = lam.get(nm, 0.0)
     g = m3[m3.site == nm]
     for label, col in [("stow (headline)", "conditional_DR"), ("stow-fail (sensitivity)", "conditional_DR_stowfail")]:
         fr = g[col].values
-        annual = simulate(fr, lm)
+        annual, oep = simulate(fr, lm)
         ep_curves[(nm, label)] = annual
+        oep_curves[(nm, label)] = oep
         m = metrics_of(annual)
         rows.append({"site": nm, "curve": label, "lambda": lm, "tiv_usd": tiv,
                      "EAL_pct": m["EAL"]*100, "EAL_usd": m["EAL"]*tiv,
@@ -176,8 +196,21 @@ print("  side is independently validated (ASCE); the LOSS side is the soft part.
 
 # %%
 ev = M[M.site == hi]
+# house-standard twin blocks for the headline (Everglades, tracker_stow) — fraction-of-TIV → $ and % of TIV
+hi_tiv = sites[hi]["tiv_usd"]
+tw = twin_metrics(ep_curves[(hi, "stow (headline)")], oep_curves[(hi, "stow (headline)")])
+metrics_usd = {k: round(v * hi_tiv, 2) for k, v in tw.items()}
+metrics_pct_of_tiv = {k: round(v * 100, 4) for k, v in tw.items()}
 checks = {
     "Hayhurst all-zero (true-zero control)": float(M[M.site != hi][["EAL_pct"]+[f"PML{T}_pct" for T in RPS]].abs().max().max()) == 0.0,
+    "AEP ≥ OEP every year (annual total ≥ its largest single storm)":
+        bool((ep_curves[(hi, "stow (headline)")] + 1e-12 >= oep_curves[(hi, "stow (headline)")]).all()),
+    "OEP-PML100 ≤ AEP-PML100 (occurrence ≤ aggregate)": tw["OEP-PML100"] <= tw["VaR99 (AEP-PML100)"] + 1e-12,
+    "TVaR99 ≥ VaR99 (tail-average past the quantile)": tw["TVaR99"] >= tw["VaR99 (AEP-PML100)"] - 1e-12,
+    "PML500 ≥ PML250 ≥ PML100 ≥ EAL > 0 (twin-block monotone)":
+        tw["PML500 (AEP-99.8)"] >= tw["VaR99.6 (AEP-PML250)"] >= tw["VaR99 (AEP-PML100)"] >= tw["EAL"] > 0,
+    "twin-block unit consistency: usd/TIV*100 == pct_of_tiv (to rounding)":
+        all(abs(metrics_usd[k] / hi_tiv * 100 - metrics_pct_of_tiv[k]) < 1e-3 for k in tw),
     "stow-fail ≥ stow on every metric (worse is worse)":
         bool((fail[["EAL_pct","PML100_pct","PML250_pct","PML500_pct"]].values >= stow[["EAL_pct","PML100_pct","PML250_pct","PML500_pct"]].values - 1e-6).all()),
     "PML monotonic in return period": bool((ev["PML500_pct"] >= ev["PML250_pct"]).all() and (ev["PML250_pct"] >= ev["PML100_pct"]).all()),
@@ -232,6 +265,10 @@ manifest = {
     },
     "recorded_sensitivity_not_headline": {"harsher_provisional_curve_EAL": round(fail.EAL_pct, 2),
                                           "harsher_provisional_curve_PML500": round(fail.PML500_pct, 1)},
+    # house-standard twin blocks (headline: Everglades, tracker_stow) — identical keys, block name carries the unit
+    "metrics_usd": metrics_usd,
+    "metrics_pct_of_tiv": metrics_pct_of_tiv,
+    "occurrence_basis_note": "OEP-PML100 = per-EVENT (largest single storm/yr); AEP metrics = annual aggregate (sum of a year's storms). For Everglades (λ≈0.6) OEP < AEP where a year carries >1 storm.",
     "baseline": "Hayhurst EAL = 0 (true-zero control, λ=0)",
     "caveats": [
         "LOSS side is curve-limited (provisional ATC-14 curves) — the dominant uncertainty; hazard side is ASCE-validated",
