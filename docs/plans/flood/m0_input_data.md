@@ -43,7 +43,7 @@ Execute → Feedback → Document.
 
 ## Detailed plan — two notebooks
 
-**`01_site_screen_and_geometry`** — *lock the high site + meet the assets.*
+**`01_solar_sites`** — *lock the high site + meet the assets.*
 1. Load the **national** `powerplants_enriched_v2`; filter utility-scale solar.
 2. **Flood-screen** every asset by a flood metric (FEMA SFHA membership / Fathom 100-yr depth at the footprint),
    targeting the **Lower-Mississippi alluvial plain** — pick the standout (wildfire-Matrix method). Report the top-N
@@ -53,7 +53,7 @@ Execute → Feedback → Document.
 4. **Known-answer check:** Hayhurst screens ~zero flood; the high site screens materially higher (the low-vs-high
    contrast, like wildfire's ~107× BP).
 
-**`02_depth_grids_and_dem`** — *meet the flood hazard at both sites.*
+**`01_solar_sites`** — *meet the flood hazard at both sites.*
 1. Fetch the **RP depth grids** (Fathom/FEMA) clipped to each site; tabulate available **return periods**,
    resolution, **datum/units**, CRS.
 2. Fetch the **3DEP DEM** at each site; record vertical datum + resolution.

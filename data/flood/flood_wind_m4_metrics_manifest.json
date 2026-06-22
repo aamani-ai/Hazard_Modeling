@@ -1,34 +1,193 @@
 {
   "peril": "flood",
-  "sub_peril": "riverine",
+  "sub_peril": [
+    "riverine",
+    "pluvial",
+    "coastal"
+  ],
   "event_family_id": null,
   "layer": "M4",
   "asset": "wind_farm",
-  "event_model": "annual-maximum MC sampling the loss-exceedance curve (JD-FL-7, reused from flood \u00d7 solar)",
+  "event_model": "INLAND (riverine+pluvial): annual-max MC, co-sampled comonotonic, worse-source-wins (JD-FL-7/11). COASTAL: compound-Poisson surge\u00d7hurricane-wind, per-subsystem max(wind,surge) on event_family_id (JD-FL-12). TOTAL = inland + coastal (independent streams).",
+  "coastal_compound": {
+    "Amazon Wind Farm US East": {
+      "lambda_per_yr": 0.0116,
+      "n_storms": 24,
+      "wind_only_eal_pct": 0.0118,
+      "surge_only_eal_pct": 0.0026,
+      "compound": {
+        "EAL_pct": 0.0132,
+        "PML100_pct": 0.0184,
+        "PML250_pct": 0.4197,
+        "PML500_pct": 1.4267
+      }
+    }
+  },
+  "total_flood": {
+    "Amazon Wind Farm US East": {
+      "inland_eal_pct": 0.0559,
+      "coastal_eal_pct": 0.0132,
+      "EAL_pct": 0.0691,
+      "PML100_pct": 0.4695,
+      "PML250_pct": 0.6593,
+      "PML500_pct": 1.4267
+    },
+    "Green River": {
+      "inland_eal_pct": 1.2757,
+      "coastal_eal_pct": 0.0,
+      "EAL_pct": 1.2757,
+      "PML100_pct": 10.8938,
+      "PML250_pct": 11.2353,
+      "PML500_pct": 11.4222
+    },
+    "Shepherds Flat": {
+      "inland_eal_pct": 0.0,
+      "coastal_eal_pct": 0.0,
+      "EAL_pct": 0.0,
+      "PML100_pct": 0.0,
+      "PML250_pct": 0.0,
+      "PML500_pct": 0.0
+    }
+  },
+  "wind_leg_source": "data/hurricane/tc_windfarm_m3_damage.parquet (hurricane \u00d7 wind-farm, per-storm per-subsystem DR, event_family_id join)",
+  "compound_combine": "per subsystem combined_DR = max(wind_DR, surge_DR); shared = electrical+substation, wind-only = rotor+nacelle, surge-only = foundation+civil (JD-FL-12)",
+  "_inland_event_model": "annual-max MC; sub-perils co-sampled comonotonic, combined worse-source-wins (JD-FL-7/JD-FL-11)",
+  "combine_rule": "HEADLINE = max(riverine, pluvial) at one annual AEP (\u03c6=1, shared-ground; Bates 2021); metrics on the JOINT per-year vector",
+  "combine_envelope_sensitivity": {
+    "Amazon Wind Farm US East": {
+      "headline_eal_pct": 0.056,
+      "additive_capped_eal_pct_UB": 0.093,
+      "note": "headline worse-wins (used downstream) \u2192 additive-capped upper bound (recorded only)"
+    },
+    "Green River": {
+      "headline_eal_pct": 1.276,
+      "additive_capped_eal_pct_UB": 1.276,
+      "note": "headline worse-wins (used downstream) \u2192 additive-capped upper bound (recorded only)"
+    },
+    "Shepherds Flat": {
+      "headline_eal_pct": 0.0,
+      "additive_capped_eal_pct_UB": 0.0,
+      "note": "headline worse-wins (used downstream) \u2192 additive-capped upper bound (recorded only)"
+    }
+  },
   "n_sim_years": 500000,
-  "onset_aep": 0.1,
+  "onset_aep": 0.2,
+  "rp_points_per_site": {
+    "Amazon Wind Farm US East \u00b7 pluvial": [
+      10,
+      25,
+      50,
+      100,
+      500
+    ],
+    "Amazon Wind Farm US East \u00b7 riverine": [
+      10,
+      25,
+      50,
+      100,
+      250,
+      500
+    ],
+    "Green River \u00b7 pluvial": [
+      10,
+      25,
+      50,
+      100,
+      500
+    ],
+    "Green River \u00b7 riverine": [
+      10,
+      25,
+      50,
+      100,
+      250,
+      500
+    ],
+    "Shepherds Flat \u00b7 pluvial": [
+      10,
+      25,
+      50,
+      100,
+      500
+    ],
+    "Shepherds Flat \u00b7 riverine": [
+      10,
+      25,
+      50,
+      100,
+      250,
+      500
+    ]
+  },
+  "marginal_eal_pct": {
+    "Amazon Wind Farm US East \u00b7 pluvial": 0.0372,
+    "Amazon Wind Farm US East \u00b7 riverine": 0.0559,
+    "Green River \u00b7 pluvial": 0.0,
+    "Green River \u00b7 riverine": 1.2757,
+    "Shepherds Flat \u00b7 pluvial": 0.0,
+    "Shepherds Flat \u00b7 riverine": 0.0
+  },
+  "substation_bracket": {
+    "full_eal_pct": 1.276,
+    "turbines_only_eal_pct": 0.311,
+    "substation_share_of_eal_pct": 76.0,
+    "note": "substation = Green River's OWN west-edge 138 kV collector (in-hull generation node, JD-FL-W7); it FLOODS (0.56-1.00 m) \u2192 collector-dominated headline. Floor = collector excluded. (Earlier 'Big Sky Wind' node was the adjacent farm's, dry.)"
+  },
   "metric_frame": "per-year loss vectors; PML_T = (1-1/T) percentile (DD-4)",
+  "external_validation": {
+    "source": "FEMA NRI Riverine Flooding (Lee County IL)",
+    "county_eal_rate_pct": 0.0964,
+    "our_eal_pct": 1.2757,
+    "ratio_to_county_avg": 13.2,
+    "nri_annual_freq": 0.929,
+    "verdict": "same order, a few\u00d7 above county avg (high-exposure site); freq \u2248 annual-max; pluvial negligible so combined\u2248riverine"
+  },
   "caveats": [
-    "EAL approximate (frequent region rests on the 10-yr onset anchor)",
-    "conditional losses rest on the extent-based bathtub depth (Zone A, no BFE/BLE) + greenfield curve",
-    "loss summed over flooded turbines + substation (per-node, not areal); rotor/nacelle/tower immune",
-    "substation/pad/hull/TIV assumptions carried from M0\u2013M3 (low-medium confidence)"
+    "RIVERINE: gauge-grounded RP curve (JD-FL-W5); PML@100/500 bathtub-anchored. EAL rests on real 10/25/50-yr gauge losses + the real FLOODING collector (JD-FL-W7; 0.56-1.00 m, ~75% of EAL).",
+    "PLUVIAL: Atlas-14 + SCS-CN + pad-gated ponding, with f+d_cap LIDAR-GROUNDED per node (JD-FL-15). For WIND it is NEGLIGIBLE: lidar d_cap < pads \u2192 floor = 0 at every node. Green River is WATER-LIMITED (\u03c1 up to ~490 \u226b 1) so the floor is a lower bound, but the no-drainage ceiling (Q \u2264 0.16 m) is still pad-shed and the valley substation is riverine-flooded 0.88 m \u2192 worse-wins makes pluvial immaterial; Rank-1 volume-pour deferred.",
+    "PLUVIAL baseline (Shepherds Flat, OR) has NO Atlas-14 coverage (PNW = Atlas 2) \u2192 set to 0 (low-rainfall dry control, not a true zero).",
+    "COMBINE (JD-FL-11): comonotonic worse-wins; additive-capped is the recorded \u03c6=0 upper envelope.",
+    "residual uncertainty is CURVE-level (the Zone-A 1% bathtub + the greenfield M3 curve) + the in-hull substation pick; loss per-node (not areal); rotor/nacelle/tower immune.",
+    "SUBSTATION RESOLVED (JD-FL-W7): the west-edge 138 kV node IS Green River's OWN collector (in-hull substation=generation; OSM/HIFLD) and it FLOODS (0.88 m @ 100-yr) \u2192 ~75% of EAL. The earlier 'Big Sky Wind' node was the adjacent farm's collector (a wrong-substation bug), now corrected."
   ],
   "metrics": [
+    {
+      "name": "Amazon Wind Farm US East",
+      "role": "all-three (coastal+riverine+pluvial)",
+      "tiv_usd": 291200000.0,
+      "EAL_pct": 0.0559,
+      "EAL_usd": 162745.6537,
+      "VaR99_pct": 0.4393,
+      "TVaR99_pct": 0.5019,
+      "PML100_pct": 0.4393,
+      "PML250_pct": 0.4882,
+      "PML500_pct": 0.5416,
+      "PML100_usd": 1279140.7061,
+      "PML250_usd": 1421525.7828,
+      "PML500_usd": 1577254.0916,
+      "EAL_pluvial_pct": 0.0372,
+      "EAL_riverine_pct": 0.0559,
+      "EAL_addUB_pct": 0.0931,
+      "PML500_addUB_pct": 0.7996
+    },
     {
       "name": "Green River",
       "role": "proving (high-flood)",
       "tiv_usd": 271880000.0,
-      "EAL_pct": 0.4486,
-      "EAL_usd": 1219782.5686,
-      "VaR99_pct": 11.1435,
-      "TVaR99_pct": 12.4666,
-      "PML100_pct": 11.1435,
-      "PML250_pct": 12.3434,
-      "PML500_pct": 13.2797,
-      "PML100_usd": 30296995.7819,
-      "PML250_usd": 33559166.2283,
-      "PML500_usd": 36104861.0009
+      "EAL_pct": 1.2757,
+      "EAL_usd": 3468287.4503,
+      "VaR99_pct": 10.8938,
+      "TVaR99_pct": 11.2229,
+      "PML100_pct": 10.8938,
+      "PML250_pct": 11.2353,
+      "PML500_pct": 11.4222,
+      "PML100_usd": 29618078.6538,
+      "PML250_usd": 30546519.3348,
+      "PML500_usd": 31054744.1701,
+      "EAL_pluvial_pct": 0.0,
+      "EAL_riverine_pct": 1.2757,
+      "EAL_addUB_pct": 1.2757,
+      "PML500_addUB_pct": 11.4222
     },
     {
       "name": "Shepherds Flat",
@@ -43,7 +202,11 @@
       "PML500_pct": 0.0,
       "PML100_usd": 0.0,
       "PML250_usd": 0.0,
-      "PML500_usd": 0.0
+      "PML500_usd": 0.0,
+      "EAL_pluvial_pct": 0.0,
+      "EAL_riverine_pct": 0.0,
+      "EAL_addUB_pct": 0.0,
+      "PML500_addUB_pct": 0.0
     }
   ]
 }

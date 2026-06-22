@@ -1,0 +1,80 @@
+{
+  "peril": "flood",
+  "sub_peril": "coastal",
+  "asset": "solar",
+  "layer": "M0",
+  "event_family_id": null,
+  "source": "flood/m0_input_data/01_solar_sites",
+  "screen": {
+    "population": "EIA-860 2024 operating solar fleet",
+    "region": "Gulf + Atlantic coastal states (TX LA MS AL FL GA SC NC VA)",
+    "metric": "surge onset hurricane category \u2014 NOAA Coastal Flood Hazard Composite (SLOSH-derived, by category)",
+    "depth_source": "NOAA_CFEM_composite",
+    "depth_source_swap": "US_SLOSH_MOM_Inundation_v4 raster (JD-FL-14) \u2014 continuous depth-in-feet per category",
+    "n_candidates": 513,
+    "n_surge_exposed": 16,
+    "min_mw": 20.0
+  },
+  "decisions": [
+    "JD-FL-13 (sites)",
+    "JD-FL-14 (SLOSH-only V1, source-tagged)",
+    "JD-FL-12 (wind+surge combine, M4)"
+  ],
+  "sites": [
+    {
+      "role": "baseline (low-surge)",
+      "name": "Hayhurst Texas Solar",
+      "eia": 66880,
+      "state": "TX",
+      "county": "Culberson",
+      "lat": 31.815992,
+      "lon": -104.085297,
+      "solar_mw": 24.8,
+      "onset_cat": null,
+      "surge_cats": [],
+      "surge_exposed": false,
+      "note": "structural zero \u2014 inland desert, no coastline; reused cross-peril baseline (JD-FL-13)",
+      "footprint_r_m": 391.8
+    },
+    {
+      "role": "proving (high-surge)",
+      "name": "Discovery Solar Center",
+      "eia": 63109,
+      "state": "FL",
+      "county": "Brevard",
+      "lat": 28.528933,
+      "lon": -80.6789,
+      "solar_mw": 74.5,
+      "onset_cat": 1,
+      "surge_cats": [
+        1,
+        2,
+        3
+      ],
+      "surge_exposed": true,
+      "geometry_source": "osm_plant_polygon",
+      "boundary_wkt": "POLYGON((-80.6766267 28.5407562, -80.6766396 28.5370814, -80.674605 28.5370759, -80.6737247 28.5381418, -80.674631 28.5387194, -80.6753739 28.5397285, -80.6753678 28.5407215, -80.6708366 28.5407003, -80.6708569 28.5373609, -80.672743 28.5373697, -80.6727743 28.5322192, -80.673545 28.5324781, -80.6746698 28.5333871, -80.6752137 28.5332785, -80.6745305 28.5325882, -80.673902 28.5323669, -80.6739424 28.5285104, -80.6737407 28.5283295, -80.6716006 28.5283131, -80.6716191 28.5264434, -80.6847389 28.5265437, -80.6847227 28.5281781, -80.6835783 28.5281695, -80.6835643 28.5296004, -80.6808583 28.52958, -80.6808524 28.5301876, -80.6804656 28.5301847, -80.6804446 28.5324127, -80.6795014 28.5327959, -80.6795063 28.5350915, -80.6808995 28.5360897, -80.6816837 28.5356149, -80.6816938 28.5346443, -80.6806093 28.5346356, -80.6806219 28.5334353, -80.6844702 28.5334663, -80.6844624 28.5342052, -80.6840075 28.5346087, -80.6845425 28.5350742, -80.6845499 28.5358721, -80.6831865 28.5358818, -80.6831991 28.5372472, -80.6799693 28.5372703, -80.6791376 28.5385842, -80.6783416 28.5391063, -80.6783358 28.5407608, -80.6766267 28.5407562))",
+      "footprint_r_m": 679.0,
+      "note": "Atlantic coast (Cape Canaveral); in hurricane catalog footprint \u2192 exercises JD-FL-12 combine"
+    },
+    {
+      "role": "proving (all-three)",
+      "name": "LA3 West Baton Rouge Solar Facility",
+      "eia": 61646,
+      "state": "LA",
+      "county": "West Baton Rouge",
+      "lat": 30.465105,
+      "lon": -91.331855,
+      "solar_mw": 50.0,
+      "onset_cat": 3,
+      "surge_cats": [
+        3
+      ],
+      "surge_exposed": true,
+      "geometry_source": "osm_plant_polygon",
+      "boundary_wkt": "POLYGON((-91.3141215 30.4688371, -91.3162512 30.4689134, -91.3189924 30.4689966, -91.3222164 30.4690058, -91.3221788 30.4761074, -91.3141376 30.4760658, -91.3141215 30.4718586, -91.3141215 30.4688371))",
+      "footprint_r_m": 556,
+      "note": "JD-FL-17 all-three solar site \u2014 Gulf surge up the Mississippi; pairs with riverine+pluvial at the SAME site"
+    }
+  ]
+}

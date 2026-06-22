@@ -2,14 +2,25 @@
 
 > **Status: flood × solar AND flood × wind built end-to-end (M0→M4) ✅.** **Solar** — Elizabeth Solar (LA, high) +
 > Hayhurst (TX, dry), now **riverine + pluvial**: FEMA BLE depth (riverine, +JD-FL-8 regression densification of lower
-> RPs) **and** NOAA Atlas 14 → SCS-CN sheet-ponding (pluvial, screening-grade) → site-conditioned coupling →
+> RPs) **and** NOAA Atlas 14 → SCS-CN ponding with **`f` grounded from 1 m lidar** (JD-FL-15) → site-conditioned coupling →
 > `infrasure-damage-curves` depth-damage → annual-max MC, sub-perils **co-sampled + worse-source-wins** (JD-FL-11) →
-> **combined EAL 0.27% (envelope 0.27–0.42) / PML500 7.9% TIV** (headline pluvial-dominated; riverine-only EAL 0.155%). **Wind (V2,
-> [m_wind_farm.md](m_wind_farm.md))** — **Green River IL** (~60% turbines in SFHA) + Shepherds Flat (mapped-dry):
-> per-turbine **extent-based bathtub** depth (Zone A, no BFE/BLE) → per-node coupling → **greenfield** flood×wind
-> curve → annual-max MC → **EAL 0.45% / PML500 13% TIV** (substation-concentrated). Two wind findings: **TX wind is
-> flood-immune** (0/2,976 turbines wet) and **wind flood is capped per-turbine**. Every layer known-answer-checked.
-> Decisions: [`decisions.md`](decisions.md) (JD-FL-1…8, JD-FL-W1…4). **Next:** a production folder architecture.
+> **combined EAL 0.15% / PML500 4.5% TIV, riverine-dominated** (grounding `f` collapsed pluvial ~90× and flipped the headline; pluvial now a minor terrain-grounded contributor). **Wind (V2,
+> [m_wind_farm.md](m_wind_farm.md))** — **Green River IL** (~60% turbines in SFHA) + Shepherds Flat (mapped-dry), now
+> **riverine + pluvial** (parity with solar, JD-FL-W6): per-turbine **extent-based bathtub** depth (Zone A, no
+> BFE/BLE) with **gauge-grounded RP rises** (USGS LP3, JD-FL-W5) **and** per-node **pad-gated** Atlas-14 ponding
+> (pluvial) → per-node coupling → **greenfield** flood×wind curve → annual-max MC, sub-perils worse-source-wins
+> (JD-FL-11) → **combined EAL 1.27% / PML500 11.4% TIV** — driven by the farm's **own collector substation**, which
+> sits in the river valley and **floods** (~75% of EAL); **turbines-only floor** (collector excluded) = EAL 0.31% /
+> PML500 3.2% (the with-vs-without bracket). Substation = the farm's **OWN in-hull `substation=generation` collector**
+> found generically (JD-FL-W7, portfolio-scalable) — correcting an earlier nearest-to-centroid bug that grabbed the
+> *adjacent Big Sky Wind farm's* dry collector; **validated vs FEMA NRI** (~13× county avg). Three wind findings:
+> **wind mostly avoids floodplains** (median project ~0% SFHA), **wind flood is capped per-turbine** (~28% even when
+> fully inundated, so the turbine floor is small — but the valley-bottom **collector substation carries the loss**), and
+> **pluvial is even smaller than riverine for wind** (raised pads shed the rain → pluvial marginal EAL 0.0007%, the
+> asset contrast to solar's pluvial-dominated headline). (A `00_screening_sweep`
+> reproducibility check corrected an earlier
+> overstatement — TX is *not* flood-immune; Lane City TX ~42% — Green River is just the most exposed.) Every layer
+> known-answer-checked. Decisions: [`decisions.md`](decisions.md) (JD-FL-1…11, JD-FL-W1…6). **Next:** production folders.
 
 Same approach as hail, wildfire, and wind: take **one peril** and build the whole pipeline **end-to-end in
 notebooks**, step by step, each cell legible (description → code → output → plots → tables), every basic verified
@@ -29,12 +40,12 @@ against a known answer. The notebooks will live in [`../../../Notebooks/flood/`]
 
 | Phase | M-step | What we build | Notebook(s) | Status |
 |------:|--------|---------------|-------------|--------|
-| 1. Input data | M0 (raw evidence) | Meet the flood evidence for two solar sites: FEMA NFHL zones, RP depth grids, USGS gauges, 3DEP DEM. Field-dictionary every layer (value · meaning · datum · units). Decide riverine + pluvial scope. | `m0_input_data/01_site_screen_and_geometry` ✅ · `02_depth_grids_and_dem` ✅ | **01 + 02 built** (public data: screen + geometry/BLE refinement → **Elizabeth Solar LA** high site, **real OSM polygons** both sites; DEM + FEMA zone-map. [m0 plan](m0_input_data.md)) |
+| 1. Input data | M0 (raw evidence) | Meet the flood evidence for two solar sites: FEMA NFHL zones, RP depth grids, USGS gauges, 3DEP DEM. Field-dictionary every layer (value · meaning · datum · units). Decide riverine + pluvial scope. | `m0_input_data/01_solar_sites` ✅ · `01_solar_sites` ✅ | **01 + 02 built** (public data: screen + geometry/BLE refinement → **Elizabeth Solar LA** high site, **real OSM polygons** both sites; DEM + FEMA zone-map. [m0 plan](m0_input_data.md)) |
 | 2. Catalog ✅ | M0 → M1 | **Sub-peril fork** (JD-FL-10): **riverine** = FEMA BLE 100/500-yr depth + 10-yr extent over the real polygon, **+ JD-FL-8 regression densification** (NLDI→NSS→rating) of the 10/25/50-yr depths; **pluvial** = NOAA Atlas 14 → SCS-CN → sheet ponding (JD-FL-9, screening-grade). | `m1_catalog/riverine/01_catalog` ✅ · `m1_catalog/pluvial/01_catalog` ✅ | **built** ([m1 plan](m1_catalog.md)) |
 | 3. Solar coupling ✅ | M1 → M2 | **Site-conditioned** (bucket 3), thin (BLE pre-coupled depth in M1). Emits the contract M3 reads: `exposure_fraction` × `conditional_depth` per RP; height-conditioning deferred to M3. No Minkowski. | `solar/m2_coupling/01_coupling` ✅ | **built** ([m2 plan](m2_coupling.md)) |
 | 4. Solar damage ✅ | M2 → M3 | **Depth-damage** = canonical **`infrasure-damage-curves` RIVERINE_FLOOD × solar** (the library all perils use), capex-weighted + anchored; `x0` encodes the height inversion (inverter drowns @ 0.75 ft, panels survive). `conditional_loss = exposure × Asset_DR × TIV`. Elizabeth 4.4% TIV @ 500-yr. | `solar/m3_damage/01_damage` ✅ | **built** ([m3 plan](m3_damage.md)) |
 | 5. Solar loss & metrics ✅ | M3 → M4 | **Annual-maximum MC** → EAL / VaR / PML / TVaR, **% of TIV**. Sub-perils **co-sampled comonotonic + worse-source-wins** (JD-FL-11, research-backed) → one combined headline + recorded additive-capped envelope; marginals kept. **Elizabeth combined EAL 0.27% (env 0.27–0.42) / PML500 7.9% TIV** (pluvial-dominated). External-validated vs USGS high-water marks (§4b). | `solar/m4_loss_metrics/01_loss_metrics` ✅ | **built** ([m4 plan](m4_loss_metrics.md)) |
-| 6. Wind cell (V2) ✅ | M0–M4 | **Built end-to-end.** High **Green River IL** (~60% turbines in SFHA) + baseline **Shepherds Flat** (mapped-dry). Two findings: **TX wind is flood-immune** (0/2,976 turbines wet → high site pivots to Midwest river-valley wind) and **wind flood is capped per-turbine but substation-concentrated**. Depth = extent-based bathtub off 3DEP (Zone A, no BFE/BLE); M3 = **greenfield** flood×wind curve. **Green River EAL 0.45% / PML500 13% TIV.** | `wind_farm/…` ([plan](m_wind_farm.md)) | **built** (JD-FL-W1…4) |
+| 6. Wind cell (V2) ✅ | M0–M4 | **Built end-to-end.** High **Green River IL** (~60% turbines in SFHA, the most-exposed of either fleet) + baseline **Shepherds Flat** (mapped-dry). Findings: **wind mostly avoids floodplains** (median ~0% SFHA — minor peril) but a minority don't (also **Lane City TX ~42%**); **wind flood is capped per-turbine** (~28% even fully inundated). Depth = extent-based bathtub off 3DEP + **gauge-grounded RP rises** (USGS LP3, JD-FL-W5); M3 = **greenfield** flood×wind curve; **FEMA-NRI-validated**; `00_screening_sweep` makes it reproducible (and corrected an earlier "TX-immune" overstatement); substation = the farm's **OWN in-hull `substation=generation` collector** (JD-FL-W7, portfolio-scalable) — it sits in the river valley and **FLOODS** (~75% of EAL). **Green River EAL 1.27% / PML500 11.4% TIV** (turbines-only floor 0.31% / 3.2% as the bracket; the collector dominates). *(Corrected: the earlier "dry collector → EAL 0.31%" had mistakenly used the adjacent Big Sky Wind farm's substation.)* | `wind_farm/…` ([plan](m_wind_farm.md)) | **built** (JD-FL-W1…7) |
 
 ## Settled framing (seeded by the A-series — see [`decisions.md`](decisions.md) + [`01_references.md`](01_references.md))
 

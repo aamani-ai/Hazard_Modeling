@@ -1,0 +1,92 @@
+{
+  "peril": "flood",
+  "sub_peril": "coastal",
+  "asset": "solar",
+  "layer": "M4",
+  "source": "flood/solar/m4_loss_metrics/02_coastal_compound",
+  "combine": "per-subsystem: max(wind_DR,surge_DR) on shared (PV_ARRAY+SUBSTATION) = headline; add (capped) = upper band; single-peril subsystems genuinely additive (JD-FL-12 exact)",
+  "decisions": [
+    "JD-FL-12 (per-subsystem combine)",
+    "JD-FL-15 (surge \u03bb)",
+    "JD-FL-16 (wind leg = hurricane)"
+  ],
+  "site": "Discovery Solar Center",
+  "tiv_usd": 110483500,
+  "lambda_wind_per_yr": 0.0983,
+  "lambda_surge_per_yr": 0.0289,
+  "shared_subsystems": [
+    "PV_ARRAY",
+    "SUBSTATION"
+  ],
+  "canonical_tiv_split": {
+    "PV_ARRAY": 0.33,
+    "MOUNTING": 0.13,
+    "SUBSTATION": 0.075,
+    "INVERTER": 0.08,
+    "ELECTRICAL": 0.1,
+    "CIVIL_INFRA": 0.08,
+    "SCADA": 0.03,
+    "BOS_REMAIN": 0.175
+  },
+  "storm_stream": {
+    "wind_storms": 280,
+    "with_surge": 117
+  },
+  "metrics_pct_tiv": {
+    "wind_only": {
+      "EAL_usd": 949382,
+      "EAL_pct": 0.859,
+      "PML100_pct": 17.55,
+      "PML250_pct": 22.85,
+      "PML500_pct": 26.73
+    },
+    "surge_only_strm": {
+      "EAL_usd": 520331,
+      "EAL_pct": 0.471,
+      "PML100_pct": 13.96,
+      "PML250_pct": 32.03,
+      "PML500_pct": 55.06
+    },
+    "compound_head": {
+      "EAL_usd": 1269375,
+      "EAL_pct": 1.149,
+      "PML100_pct": 23.84,
+      "PML250_pct": 39.65,
+      "PML500_pct": 62.94
+    },
+    "compound_upper": {
+      "EAL_usd": 1416967,
+      "EAL_pct": 1.283,
+      "PML100_pct": 29.5,
+      "PML250_pct": 51.79,
+      "PML500_pct": 66.7
+    },
+    "surge_standalone": {
+      "EAL_usd": 363629,
+      "EAL_pct": 0.329,
+      "PML100_pct": 13.96,
+      "PML250_pct": 32.03,
+      "PML500_pct": 32.03
+    }
+  },
+  "headline": {
+    "EAL_usd": 1269375,
+    "EAL_pct": 1.149,
+    "PML100_pct": 23.84,
+    "PML250_pct": 39.65,
+    "PML500_pct": 62.94
+  },
+  "upper_band": {
+    "EAL_usd": 1416967,
+    "EAL_pct": 1.283,
+    "PML100_pct": 29.5,
+    "PML250_pct": 51.79,
+    "PML500_pct": 66.7
+  },
+  "caveats": [
+    "wind curve PROVISIONAL (ATC-14 tracker-stow); stow-fail is a further band (not run here)",
+    "surge depth = SLOSH MOM worst-case envelope (screening-grade, JD-FL-14)",
+    "shared-subsystem max-vs-add band confined to PV_ARRAY+SUBSTATION (~40% TIV)",
+    "compound uses the wind storm stream (\u03bb_wind); surge implied rate > standalone \u03bb_surge (anchor radii differ)"
+  ]
+}

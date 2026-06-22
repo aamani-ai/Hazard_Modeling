@@ -1,0 +1,128 @@
+{
+  "peril": "flood",
+  "sub_peril": "riverine",
+  "event_family_id": null,
+  "layer": "M0",
+  "deferred": {
+    "depth_at_RP": "Fathom RP grids (hazard side; JD-FL-2, external-data-gated)",
+    "real_footprint": "enriched-registry polygon (asset side; both sites on circle fallback now)"
+  },
+  "field_dictionary": [
+    {
+      "field": "ground_elevation",
+      "meaning": "3DEP DEM, sampled over footprint",
+      "units": "metres",
+      "datum/ref": "NAVD88 (vertical)",
+      "source": "USGS 3DEP ImageServer getSamples"
+    },
+    {
+      "field": "footprint",
+      "meaning": "asset boundary (or circle fallback)",
+      "units": "km\u00b2 / polygon",
+      "datum/ref": "EPSG:4326 (area via 5070)",
+      "source": "enriched\u2192OSM\u2192circle seam"
+    },
+    {
+      "field": "fld_zone",
+      "meaning": "FEMA SFHA flood zone (A/AE/X/\u2026)",
+      "units": "categorical",
+      "datum/ref": "NFHL",
+      "source": "FEMA NFHL layer 28"
+    },
+    {
+      "field": "static_bfe",
+      "meaning": "Base Flood Elevation (if determined)",
+      "units": "feet",
+      "datum/ref": "NAVD88",
+      "source": "FEMA NFHL (null in Zone A)"
+    },
+    {
+      "field": "depth_at_RP",
+      "meaning": "flood depth at return period \u2014 DEFERRED",
+      "units": "metres",
+      "datum/ref": "above ground",
+      "source": "Fathom RP grids (JD-FL-2, external-data-gated)"
+    }
+  ],
+  "sites": [
+    {
+      "role": "baseline (low-flood)",
+      "name": "Hayhurst Texas Solar",
+      "eia": 66880,
+      "state": "TX",
+      "county": "Culberson",
+      "lat": 31.815992,
+      "lon": -104.085297,
+      "solar_mw": 24.8,
+      "zone": "NONE",
+      "in_sfha": false,
+      "sfha_in_buffer": false,
+      "footprint_r_m": 392,
+      "geometry_source": "osm",
+      "footprint_km2": 0.735,
+      "boundary_wkt": "POLYGON ((-104.0950645 31.8176074, -104.0950015 31.815951, -104.0957638 31.8159199, -104.0957414 31.8153032, -104.0945299 31.8153395, -104.0944974 31.814481, -104.093977 31.8140889, -104.0912145 31.8141666, -104.0911942 31.8135102, -104.0900945 31.8133099, -104.087641 31.8133738, -104.0876125 31.8128314, -104.086279 31.8125775, -104.0843398 31.8126327, -104.0843459 31.8129488, -104.0807703 31.8130249, -104.0807886 31.8133911, -104.0808699 31.8133876, -104.080959 31.813555, -104.0810915 31.8138039, -104.0811299 31.8148096, -104.081262 31.8182734, -104.0813293 31.8200359, -104.0845471 31.8199444, -104.0852748 31.8189322, -104.0852037 31.817908, -104.0950645 31.8176074))",
+      "elev_min_m": 963.2,
+      "elev_mean_m": 969.99,
+      "elev_max_m": 981.01,
+      "elev_relief_m": 17.81,
+      "elev_std_m": 3.83,
+      "dem_n": 585,
+      "fld_zone": "NONE",
+      "zone_subty": null,
+      "static_bfe": null
+    },
+    {
+      "role": "proving (high-flood)",
+      "name": "Elizabeth Solar Plant",
+      "eia": 66111,
+      "state": "LA",
+      "county": "Allen",
+      "lat": 30.81981,
+      "lon": -92.971755,
+      "solar_mw": 142.8,
+      "zone": "X",
+      "in_sfha": false,
+      "sfha_in_buffer": true,
+      "footprint_r_m": 940,
+      "geometry_source": "osm",
+      "footprint_km2": 3.911,
+      "boundary_wkt": "POLYGON ((-92.9601046 30.8033746, -92.9594958 30.8042661, -92.9557782 30.8043122, -92.9555744 30.8139485, -92.9561698 30.8143931, -92.9572561 30.8143839, -92.9586589 30.8149345, -92.9602629 30.8151487, -92.9619098 30.815614, -92.965166 30.8180557, -92.9701173 30.8181479, -92.970973 30.8201173, -92.9734218 30.8203315, -92.9769302 30.8163143, -92.9771876 30.798852, -92.9600349 30.7990433, -92.9600671 30.8009255, -92.960228 30.801232, -92.9600725 30.8015084, -92.9601046 30.8033746))",
+      "elev_min_m": 35.54,
+      "elev_mean_m": 42.79,
+      "elev_max_m": 51.08,
+      "elev_relief_m": 15.53,
+      "elev_std_m": 3.68,
+      "dem_n": 806,
+      "fld_zone": "X",
+      "zone_subty": "AREA OF MINIMAL FLOOD HAZARD",
+      "static_bfe": null
+    },
+    {
+      "role": "all-three (coastal+riverine+pluvial)",
+      "name": "LA3 West Baton Rouge Solar Facility",
+      "eia": 61646,
+      "state": "LA",
+      "county": "West Baton Rouge",
+      "lat": 30.465105,
+      "lon": -91.331855,
+      "solar_mw": 50.0,
+      "zone": "A",
+      "in_sfha": true,
+      "sfha_in_buffer": true,
+      "footprint_r_m": 556,
+      "geometry_source": "osm_plant_polygon",
+      "footprint_km2": 0.613,
+      "boundary_wkt": "POLYGON((-91.3141215 30.4688371, -91.3162512 30.4689134, -91.3189924 30.4689966, -91.3222164 30.4690058, -91.3221788 30.4761074, -91.3141376 30.4760658, -91.3141215 30.4718586, -91.3141215 30.4688371))",
+      "elev_min_m": null,
+      "elev_mean_m": null,
+      "elev_max_m": null,
+      "elev_relief_m": null,
+      "elev_std_m": null,
+      "dem_n": null,
+      "fld_zone": "A",
+      "zone_subty": null,
+      "static_bfe": null,
+      "note": "ble_image riverine (BLE Lower Grand) \u2014 elev stats not needed (BLE depth is above-ground); coastal+pluvial too"
+    }
+  ]
+}

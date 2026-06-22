@@ -12,204 +12,189 @@
 # ---
 
 # %% [markdown]
-# # Flood → Solar · M1 catalog — depth-at-return-period
+# # Flood · Riverine `[R]` — M1 catalog: the asset-independent flood-depth field (all sites)
 #
-# **Peril:** Flood (riverine) · **Layer:** M1 (catalog / frequency) · sub-peril `riverine`
+# **Magnitude metric:** riverine flood **depth (ft above ground)** indexed by annual return period (10–500-yr) — the
+# inundation depth the M3 damage curve consumes.
 #
-# **Goal:** turn the M0 sites into the **flood event catalog** — a **depth-at-return-period** profile at each asset,
-# the object M2 (coupling) → M3 (damage) → M4 (loss) consume. Built as a **sub-peril-keyed manifest** with a reserved
-# `event_family_id` (JD-FL-4), so pluvial/coastal slot in later.
+# **Data source:** FEMA **Base Level Engineering (BLE)** depth grids where a study exists (`ble_image`); FEMA **NFHL**
+# Special Flood Hazard Area + USGS **3DEP** elevation where only the flood zone is mapped (`sfha_bathtub`); USGS
+# **NLDI→NSS** regression and **NWIS** peak-flow gauges for the flow-frequency `Q(T)` that anchors the lower RPs.
 #
-# **Method = FEMA BLE ([JD-FL-6](../../../docs/plans/flood/decisions.md)).** The depth-source research + a BLE probe
-# superseded the single-gauge route. The national production spine is **StreamStats (discharge-at-RP) → NOAA OWP HAND
-# (→ depth)**, but **FEMA BLE is preferred where it exists — and it exists for the high site** (Elizabeth Solar,
-# Allen Parish LA, "Data Available"). So we **sample the BLE depth grids over each footprint** (the **real OSM
-# polygon** where we have one): layer 12 = **1% (100-yr) depth**, layer
-# 16 = **0.2% (500-yr) depth** (feet above ground). BLE depth is *already depth-above-ground*, so no datum step.
+# **What this notebook does:** builds the riverine **hazard field** for every flood site (solar + wind farm) in one
+# pass, picking the method per site from its data availability ([JD-FL-6](../../../docs/plans/flood/decisions.md)):
 #
-# > **Honest limits (carried):** BLE gives only the **100-yr + 500-yr** depths (the tail points), not the full
-# > 10/50/100/500 curve — lower RPs come from StreamStats+HAND / interpolation (the seam below). HAND is the
-# > scalable national fallback for no-BLE / ungauged sites. Single-gauge Bulletin 17C = validation only.
-# >
-# > Plan: [`m1_catalog.md`](../../../docs/plans/flood/m1_catalog.md) · BLE service:
-# > `txgeo.usgs.gov/arcgis/rest/services/FEMA_EBFE/EBFE/MapServer`.
+# | method | when | field emitted | `Q(T)` source |
+# |---|---|---|---|
+# | **`ble_image`** | a FEMA BLE depth grid covers the site | native-resolution depth raster ([JD-FL-18](../../../docs/plans/flood/decisions.md)) | USGS NLDI→NSS regression ([JD-FL-8](../../../docs/plans/flood/decisions.md)) |
+# | **`sfha_bathtub`** | only SFHA Zone A is mapped (no BLE grid) | 1% flood-area polygon + boundary water-surface contour off 3DEP ([JD-FL-W4](../../../docs/plans/flood/decisions.md)) | per-site USGS gauge Log-Pearson III ([JD-FL-W5](../../../docs/plans/flood/decisions.md)) |
+# | **`dry`** | site outside the SFHA | — | — |
+#
+# The field is **asset-independent** — sampling it at the solar footprint (areal) or each wind turbine (per-node) is
+# M2's job. Emits one method-tagged field manifest; large flood-area polygons are written to gitignored `raw/` and
+# referenced by path.
 
 # %%
-import itertools, json, math, re
+import csv, json, math, hashlib, re
 from pathlib import Path
-import numpy as np
-import pandas as pd
-import pyproj
-import requests
+from io import BytesIO
+import numpy as np, pandas as pd, requests
+import matplotlib.image as mpimg
+from requests.adapters import HTTPAdapter
+from urllib3.util.retry import Retry
+from scipy.stats import norm
 from shapely import wkt
 from shapely.geometry import shape
-from shapely.ops import transform
+from shapely.ops import transform, unary_union
+import pyproj
 
 ROOT = Path.cwd()
 while ROOT != ROOT.parent and not (ROOT / "AGENTS.md").exists():
     ROOT = ROOT.parent
 OUT = ROOT / "data" / "flood"
-
-# --- tiny HTTP file-cache: memoize JSON responses → deterministic, flaky-endpoint-robust re-runs ---
-import hashlib
+RAW = OUT / "raw"; (RAW / "ble_field").mkdir(parents=True, exist_ok=True)
 _CACHE = OUT / "raw" / "http_cache"; _CACHE.mkdir(parents=True, exist_ok=True)
-def cget(url, params=None, post=False, timeout=40):
-    key = hashlib.md5((("P" if post else "G") + url + json.dumps(params, sort_keys=True, default=str)).encode()).hexdigest()
-    f = _CACHE / (key + ".json")
-    if f.exists():
-        return json.loads(f.read_text())
-    r = requests.post(url, data=params, timeout=timeout) if post else requests.get(url, params=params, timeout=timeout)
-    j = r.json(); f.write_text(json.dumps(j)); return j
-# ---------------------------------------------------------------------------------------------------
-
-sites = pd.DataFrame(json.loads((OUT / "flood_m0_sites.json").read_text())["sites"])
-# real footprint geometry (+ source) comes from 02's dem-context manifest — sample depth over the actual polygon
-_geo = {s["eia"]: s for s in json.loads((OUT / "flood_m0_dem_context.json").read_text())["sites"]}
-sites["geometry_source"] = sites["eia"].map(lambda e: _geo.get(e, {}).get("geometry_source", "circle"))
-sites["boundary_wkt"] = sites["eia"].map(lambda e: _geo.get(e, {}).get("boundary_wkt"))
 FT_M = 0.3048
-print("sites (from M0):")
-print(sites[["role", "name", "eia", "state", "zone", "footprint_r_m", "geometry_source"]].to_string(index=False))
+SESS = requests.Session()
+SESS.mount("https://", HTTPAdapter(max_retries=Retry(total=5, backoff_factor=0.8, status_forcelist=[429, 500, 502, 503, 504])))
+SESS.headers.update({"User-Agent": "infrasure-hazard-modeling/0.1 (flood riverine M1 field)"})
+
+def cget(url, params=None, timeout=60):
+    key = hashlib.md5(("G" + url + json.dumps(params, sort_keys=True, default=str)).encode()).hexdigest()
+    f = _CACHE / (key + ".json")
+    if f.exists(): return json.loads(f.read_text())
+    j = requests.get(url, params=params, timeout=timeout).json(); f.write_text(json.dumps(j)); return j
+def cpost_json(url, payload, timeout=90):
+    key = hashlib.md5(("J" + url + json.dumps(payload, sort_keys=True)).encode()).hexdigest()
+    f = _CACHE / (key + ".json")
+    if f.exists(): return json.loads(f.read_text())
+    j = requests.post(url, json=payload, timeout=timeout).json(); f.write_text(json.dumps(j)); return j
+
+def _slug(name): return name.lower().replace(" ", "_").replace(".", "").replace("(", "").replace(")", "").replace(",", "")
 
 # %% [markdown]
-# ## 1 · Sample the FEMA BLE depth grids over each footprint
+# ## 0 · Normalise ALL flood sites and select each site's method from its data availability
 #
-# For each site we sample a grid of points across the footprint circle and read the BLE depth (ft) at each — at the
-# 1% (100-yr) and 0.2% (500-yr) events. From the sample we get the **inundated fraction** (how much of the plant
-# floods), the **mean depth of inundated cells**, and the **footprint-average depth** (fraction × mean — the single
-# number that already blends "how much floods" with "how deep", which M2 will use). NoData/dry → depth 0.
+# BLE-eligible = the site carries a footprint polygon (`boundary_wkt` in the solar M0 DEM context) over BLE-covered
+# terrain. SFHA-bathtub = a wind site mapped in Zone A (`m0_sfha.frac_sfha ≥ 2%`). Else dry. (The split is by site
+# evidence, not asset — it just happens that today's BLE sites are solar and the Zone-A sites are wind.)
+
+# %%
+SITES = []
+_solar = json.loads((OUT / "flood_solar_m0_sites.json").read_text())["sites"]
+_geo = {s["eia"]: s for s in json.loads((OUT / "flood_solar_m0_dem_context.json").read_text())["sites"]}
+for s in _solar:
+    bwkt = _geo.get(s["eia"], {}).get("boundary_wkt")
+    SITES.append({"asset": "solar", "slug": _slug(s["name"]), "name": s["name"], "role": s["role"],
+                  "lat": s["lat"], "lon": s["lon"], "eia": int(s["eia"]),
+                  "method": "ble_image" if isinstance(bwkt, str) else "dry", "boundary_wkt": bwkt})
+for s in json.loads((OUT / "flood_wind_m0_sites.json").read_text())["sites"]:
+    frac = s["m0_sfha"]["frac_sfha"]
+    SITES.append({"asset": "wind_farm", "slug": s["slug"], "name": s["name"], "role": s["role"],
+                  "lat": s["lat"], "lon": s["lon"], "sub_lat": s["sub_lat"], "sub_lon": s["sub_lon"],
+                  "method": "sfha_bathtub" if frac >= 0.02 else "dry", "frac_sfha": frac})
+for s in SITES:
+    print(f"  {s['asset']:9s} {s['name']:22s} → {s['method']}")
+
+# %% [markdown]
+# ## 1 · `ble_image` field — full-resolution BLE depth raster per site/RP (JD-FL-18)
+#
+# The BLE service has no value-raster endpoint, so we `export` the depth layer over the footprint bbox at native
+# resolution and decode the 6 legend colour-bands → a depth-ft grid. **This grid IS the field** (saved to
+# `raw/ble_field/`, gitignored); M2 masks it to the asset.
 
 # %%
 BLE = "https://txgeo.usgs.gov/arcgis/rest/services/FEMA_EBFE/EBFE/MapServer"
-DEPTH_LAYER = {100: 12, 500: 16}   # BLE depth-image layers: 1% (100-yr), 0.2% (500-yr)
-EXTENT_10PCT_LAYER = 7             # 10% (10-yr) estimated flood EXTENT — extent only, no depth grid
+DEPTH_LAYER = {100: 12, 500: 16}; EXTENT_10PCT_LAYER = 7
+BAND_RGB = np.array([[0.745,0.91,1.0],[0.451,0.698,1.0],[0.298,0.902,0.0],[1.0,1.0,0.0],[1.0,0.667,0.0],[0.902,0.0,0.0]])
+BAND_MID_FT = np.array([0.5, 1.5, 2.5, 3.5, 4.5, 5.5])
 
+def fetch_depth_field(eia, geom, layer, W=700):
+    """Export the BLE depth layer over the footprint bbox at native resolution → (depth-ft grid, extent_4326).
+    NoData/dry → 0. This IS the asset-independent field; M2 masks it to the asset (JD-FL-19)."""
+    out = RAW / "ble_field" / f"{eia}_L{layer}.npz"
+    if out.exists():
+        d = np.load(out); return d["depth_ft"], d["extent"]
+    mnx, mny, mxx, mxy = geom.bounds
+    asp = (mxy - mny) / (mxx - mnx); H = int(W * asp)
+    p = {"bbox": f"{mnx},{mny},{mxx},{mxy}", "bboxSR": 4326, "imageSR": 4326, "layers": f"show:{layer}",
+         "size": f"{W},{H}", "format": "png", "transparent": "true", "f": "json"}
+    j = requests.get(BLE + "/export", params=p, timeout=60).json(); ext = j["extent"]
+    img = mpimg.imread(BytesIO(requests.get(j["href"], timeout=60).content))
+    rgb, alpha = img[..., :3], img[..., 3]
+    wet = alpha > 0.5
+    depth_ft = np.zeros(rgb.shape[:2], dtype="float32")
+    if wet.any():
+        dist = np.linalg.norm(rgb[wet][:, None, :] - BAND_RGB[None, :, :], axis=2)
+        depth_ft[wet] = BAND_MID_FT[dist.argmin(1)]
+    extent = np.array([ext["xmin"], ext["ymin"], ext["xmax"], ext["ymax"]], dtype="float64")
+    np.savez_compressed(out, depth_ft=depth_ft, extent=extent)
+    return depth_ft, extent
 
-def ble_status(lat, lon):
-    p = {"geometry": f"{lon},{lat}", "geometryType": "esriGeometryPoint", "sr": 4326, "layers": "all:0",
-         "tolerance": 2, "mapExtent": f"{lon-.03},{lat-.03},{lon+.03},{lat+.03}", "imageDisplay": "600,600,96",
-         "returnGeometry": "false", "f": "json"}
-    try:
-        for x in cget(BLE + "/identify", p).get("results", []):
-            a = x.get("attributes", {})
-            return a.get("StatusText"), a.get("Name")
-    except Exception:
-        pass
-    return None, None
-
-
-def depth_at(lat, lon, layer):
-    d = 0.004
-    p = {"geometry": f"{lon},{lat}", "geometryType": "esriGeometryPoint", "sr": 4326, "layers": f"all:{layer}",
-         "tolerance": 1, "mapExtent": f"{lon-d},{lat-d},{lon+d},{lat+d}", "imageDisplay": "400,400,96",
-         "returnGeometry": "false", "f": "json"}
-    try:
-        for x in cget(BLE + "/identify", p).get("results", []):
-            a = x.get("attributes", {})
-            v = a.get("Service Pixel Value") or a.get("Pixel Value")
-            if v not in (None, "NoData", ""):
-                return float(v)
-    except Exception:
-        pass
-    return 0.0   # NoData / outside floodplain = dry
-
-
-def in_extent(lat, lon, layer):
-    """Is the point inside a BLE flood-extent polygon? (extent layers carry no depth — used for the 10-yr onset.)"""
-    d = 0.004
-    p = {"geometry": f"{lon},{lat}", "geometryType": "esriGeometryPoint", "sr": 4326, "layers": f"all:{layer}",
-         "tolerance": 1, "mapExtent": f"{lon-d},{lat-d},{lon+d},{lat+d}", "imageDisplay": "400,400,96",
-         "returnGeometry": "false", "f": "json"}
-    try:
-        return len(cget(BLE + "/identify", p).get("results", [])) > 0
-    except Exception:
-        return False
-
-
-def footprint_points(s, n=5):
-    """Sample a grid over the footprint. Use the real OSM/enriched polygon where we have one
-    (keep grid cells inside it); else fall back to the capacity-radius circle."""
-    geom = wkt.loads(s["boundary_wkt"]) if isinstance(s["boundary_wkt"], str) else None
-    if geom is not None and geom.geom_type in ("Polygon", "MultiPolygon"):
-        from shapely.geometry import Point
-        mnx, mny, mxx, mxy = geom.bounds
-        xs = np.linspace(mnx, mxx, 2 * n + 1); ys = np.linspace(mny, mxy, 2 * n + 1)
-        pts = [(y, x) for x in xs for y in ys if geom.contains(Point(x, y))]
-        if pts:
-            return pts, "polygon"
-    lat, lon, r_m = s["lat"], s["lon"], s["footprint_r_m"]   # circle fallback
-    pts = []
-    for i, j in itertools.product(range(-n, n + 1), repeat=2):
-        if i * i + j * j <= n * n:
-            dla = (i / n) * (r_m / 111_320.0)
-            dlo = (j / n) * (r_m / (111_320.0 * math.cos(math.radians(lat))))
-            pts.append((lat + dla, lon + dlo))
-    return pts, "circle"
-
-
-rows = []
-for _, s in sites.iterrows():
-    status, area = ble_status(s["lat"], s["lon"])
-    pts, sampled_on = footprint_points(s)
-    rec = {"eia": s["eia"], "name": s["name"], "role": s["role"], "ble_status": status, "ble_area": area,
-           "sampled_on": sampled_on, "n_points": len(pts)}
-    for rp, layer in DEPTH_LAYER.items():
-        depths = np.array([depth_at(la, lo, layer) for la, lo in pts])
-        wet = depths[depths > 0]
-        frac = len(wet) / len(depths)
-        rec[f"rp{rp}_inund_frac"] = round(frac, 3)
-        rec[f"rp{rp}_depth_wet_m"] = round(wet.mean() * FT_M, 3) if len(wet) else 0.0
-        rec[f"rp{rp}_depth_max_m"] = round(depths.max() * FT_M, 3)
-        rec[f"rp{rp}_depth_fp_m"] = round(depths.mean() * FT_M, 3)   # footprint-average (incl. dry)
-    # 10-yr (10%) EXTENT — real inundated fraction (no depth grid → onset depth assumed in M4)
-    rec["rp10_inund_frac"] = round(float(np.mean([in_extent(la, lo, EXTENT_10PCT_LAYER) for la, lo in pts])), 3)
-    rows.append(rec)
-    print(f"  {s['name']:28s} BLE={status} ({sampled_on}, {len(pts)}pts) | "
-          f"10yr {rec['rp10_inund_frac']*100:.0f}% (extent) | "
-          f"100yr {rec['rp100_inund_frac']*100:.0f}% @ {rec['rp100_depth_wet_m']:.2f}m | "
-          f"500yr {rec['rp500_inund_frac']*100:.0f}% @ {rec['rp500_depth_wet_m']:.2f}m")
-cat = pd.DataFrame(rows)
+def fetch_extent_field(eia, geom, layer, W=700):
+    """Export the 10% (10-yr) flood-EXTENT layer over the footprint bbox → a 0/1 wet mask (no depth grid exists)."""
+    out = RAW / "ble_field" / f"{eia}_L{layer}_ext.npz"
+    if out.exists():
+        d = np.load(out); return d["extent"]
+    mnx, mny, mxx, mxy = geom.bounds; asp = (mxy - mny) / (mxx - mnx); H = int(W * asp)
+    p = {"bbox": f"{mnx},{mny},{mxx},{mxy}", "bboxSR": 4326, "imageSR": 4326, "layers": f"show:{layer}",
+         "size": f"{W},{H}", "format": "png", "transparent": "true", "f": "json"}
+    j = requests.get(BLE + "/export", params=p, timeout=60).json(); ext = j["extent"]
+    img = mpimg.imread(BytesIO(requests.get(j["href"], timeout=60).content))
+    mask = (img[..., 3] > 0.5).astype("uint8")
+    extent = np.array([ext["xmin"], ext["ymin"], ext["xmax"], ext["ymax"]], dtype="float64")
+    np.savez_compressed(out, mask=mask, extent=extent); return extent
 
 # %% [markdown]
-# ## 1b · Densify the lower return periods — regression flow-frequency + a BLE-anchored rating ([JD-FL-8](../../../docs/plans/flood/decisions.md))
-#
-# BLE gives only the **100-yr + 500-yr tail**. EAL is driven by the *frequent* floods, so the lower-RP depths must not
-# be a flat guess. We pull a real **flow-frequency curve** `Q(T)` at the proving site's reach (USGS **NLDI** snap →
-# upstream **drainage area** → **NSS** regional regression, LA Coastal Plain **SIR 2024-5031**) and fit a **power-law
-# rating** `depth = d₁₀₀·(Q/Q₁₀₀)^p` whose exponent `p` is pinned by **both real BLE depths** (d₁₀₀, d₅₀₀). Evaluating
-# it at the lower-RP discharges gives **measurement-anchored depths at 10/25/50-yr** — replacing the assumed onset
-# depth M4 used to carry. The inundated *fraction* at the new RPs is interpolated in log-RP between the **real BLE
-# extent anchors** (10/100-yr). **Robustness:** the depths are near-invariant to the slope parameter (`p` absorbs it),
-# so the result rests on the two BLE anchors + the flow *shape*, not on basin parameters. **Baseline (Hayhurst)** keeps
-# its tail-only (100/500-yr) curve — its 10-yr BLE extent is 0 (a true dry control), so there is no frequent flood to
-# densify, and it sits in a different NSS region.
+# ## 2 · `sfha_bathtub` field — 1% flood-area polygon + boundary WSE contour off 3DEP (JD-FL-W4)
 
 # %%
-def cpost_json(url, payload, timeout=90):   # JSON-body POST sibling of cget (form POST) — same file cache
-    key = hashlib.md5(("J" + url + json.dumps(payload, sort_keys=True)).encode()).hexdigest()
-    f = _CACHE / (key + ".json")
-    if f.exists():
-        return json.loads(f.read_text())
-    j = requests.post(url, json=payload, timeout=timeout).json(); f.write_text(json.dumps(j)); return j
+NFHL = "https://hazards.fema.gov/arcgis/rest/services/public/NFHL/MapServer/28/query"
+EPQS = "https://epqs.nationalmap.gov/v1/json"
+SFHA_WHERE = "FLD_ZONE IN ('A','AE','AH','AO','AR','A99','V','VE')"
 
+def epqs(lat, lon):
+    try:
+        return float(SESS.get(EPQS, params={"x": lon, "y": lat, "units": "Meters", "wkid": 4326}, timeout=20).json()["value"])
+    except Exception:
+        return None
 
-NLDI = "https://api.water.usgs.gov/nldi/linked-data"
-NSS = "https://streamstats.usgs.gov/nssservices"
-AEP2RP = {50: 2, 20: 5, 10: 10, 4: 25, 2: 50, 1: 100}   # NSS PK{AEP}AEP code → return period
-SLOPE_FT_MI = 5.0          # flat coastal-plain headwater (CSL10_85); depths are near-invariant to it (p absorbs it)
-DENSE_RP = [10, 25, 50]    # lower RPs to add (10-yr depth now measured-anchored, not assumed)
+def flood_area(minx, miny, maxx, maxy, where, pad=0.012):
+    env = f"{minx-pad},{miny-pad},{maxx+pad},{maxy+pad}"
+    p = {"geometry": env, "geometryType": "esriGeometryEnvelope", "inSR": 4326, "outSR": 4326,
+         "spatialRel": "esriSpatialRelIntersects", "where": where, "outFields": "FLD_ZONE",
+         "returnGeometry": "true", "f": "geojson"}
+    fs = SESS.get(NFHL, params=p, timeout=90).json().get("features", [])
+    geoms = [shape(f["geometry"]) for f in fs if f.get("geometry")]
+    return unary_union(geoms) if geoms else None
 
+def boundary_samples(area, n=80, cache=None):
+    """Elevations along the flood-area boundary (the local 1% water-surface contour). Cached."""
+    if cache and cache.exists():
+        d = json.loads(cache.read_text()); return np.array(d["xy"]), np.array(d["z"])
+    bnd = area.boundary
+    pts = [bnd.interpolate(t, normalized=True) for t in np.linspace(0, 1, n, endpoint=False)]
+    xy = np.array([(p.x, p.y) for p in pts]); z = np.array([epqs(p.y, p.x) for p in pts], dtype=float)
+    ok = np.isfinite(z); xy, z = xy[ok], z[ok]
+    if cache: cache.write_text(json.dumps({"xy": xy.tolist(), "z": z.tolist()}))
+    return xy, z
 
+# %% [markdown]
+# ## 3 · Build the field per site (dispatch on method) + the matching `Q(T)` hydrology
+#
+# `ble_image` → BLE rasters + NLDI→NSS flow-frequency (JD-FL-8); `sfha_bathtub` → flood-area + WSE contour + gauge
+# Log-Pearson III (JD-FL-W5). Both `Q(T)` are asset-independent (M2 turns them into densified RPs / ΔWSE).
+
+# %%
+# -- ble_image hydrology: USGS NLDI → NSS regression (drives the proving solar site's lower-RP densification) --
+NLDI = "https://api.water.usgs.gov/nldi/linked-data"; NSS = "https://streamstats.usgs.gov/nssservices"
+AEP2RP = {50: 2, 20: 5, 10: 10, 4: 25, 2: 50, 1: 100}; SLOPE_FT_MI = 5.0
 def reach_drainage_area_mi2(lat, lon):
-    """USGS NLDI: snap to the nearest NHDPlus reach, return (comid, upstream drainage area in mi²)."""
     comid = cget(f"{NLDI}/comid/position", {"coords": f"POINT({lon} {lat})", "f": "json"})["features"][0]["properties"]["comid"]
     basin = cget(f"{NLDI}/comid/{comid}/basin", {"f": "json"})["features"][0]["geometry"]
-    proj = pyproj.Transformer.from_crs("EPSG:4326", "EPSG:5070", always_xy=True).transform   # CONUS Albers equal-area
+    proj = pyproj.Transformer.from_crs("EPSG:4326", "EPSG:5070", always_xy=True).transform
     return comid, transform(proj, shape(basin)).area / 1e6 * 0.386102
-
-
 def nss_q_curve(da_mi2, slope_ft_mi, region="GC1889"):
-    """USGS NSS: solve the LA Coastal Plain SIR 2024-5031 peak-flow regression → Q (cfs) at the 2…100-yr floods."""
     sc = cget(f"{NSS}/scenarios", {"regions": "LA", "statisticgroup": 2, "regressionregions": region})
     for p in sc[0]["regressionRegions"][0]["parameters"]:
         p["value"] = da_mi2 if p["code"] == "DRNAREA" else slope_ft_mi
@@ -217,136 +202,104 @@ def nss_q_curve(da_mi2, slope_ft_mi, region="GC1889"):
     Q = {}
     for x in res:
         m = re.search(r"PK([\d.]+)AEP", x.get("code", "") or "")
-        if m and float(m.group(1)) in AEP2RP:
-            Q[AEP2RP[float(m.group(1))]] = x["value"]
+        if m and float(m.group(1)) in AEP2RP: Q[AEP2RP[float(m.group(1))]] = x["value"]
     return Q
 
+# -- sfha_bathtub hydrology: USGS gauge peak-flow Log-Pearson III, PER SITE --
+# Each bathtub site uses its OWN nearest peak-flow gauge (hand-picked here, notebook-level; production auto-discovery
+# deferred — see decisions.md). NOT a single hardcoded gauge: a 2nd bathtub site must not inherit the 1st's hydrology.
+RPS_GAUGE = [10, 25, 50, 100, 250, 500]
+GAUGE_BY_SITE = {
+    "green_river_il":       "05447000",     # USGS Green River at Amboy, IL
+    "amazon_wind_us_east":  "0204382800",   # USGS Pasquotank River near South Mills, NC (Albemarle tributary, ~14 km)
+}
+def gauge_QT(site, rps):
+    cache = RAW / f"gauge_QT_{site}.json"
+    if cache.exists():
+        d = json.loads(cache.read_text()); return {int(k): v for k, v in d["Q"].items()}, d["n"], d["skew"]
+    txt = SESS.get("https://nwis.waterdata.usgs.gov/nwis/peak",
+                   params={"site_no": site, "agency_cd": "USGS", "format": "rdb"}, timeout=60).text
+    lines = [l for l in txt.splitlines() if l and not l.startswith("#")]
+    rows = list(csv.reader([lines[0]] + lines[2:], delimiter="\t"))
+    df = pd.DataFrame([dict(zip(rows[0], r)) for r in rows[1:]])
+    pk = pd.to_numeric(df["peak_va"], errors="coerce").dropna().values
+    x = np.log10(pk[pk > 0]); m, sd = x.mean(), x.std(ddof=1); n = len(x)
+    g = (n / ((n - 1) * (n - 2))) * np.sum(((x - m) / sd) ** 3)
+    def Kwh(p):
+        z = norm.ppf(1 - p)
+        return z if g == 0 else (2 / g) * (((z - g / 6) * (g / 6) + 1) ** 3 - 1)
+    Q = {int(t): float(10 ** (m + Kwh(1 / t) * sd)) for t in rps}
+    cache.write_text(json.dumps({"Q": Q, "n": int(n), "skew": float(g)})); return Q, int(n), float(g)
 
-dense = {}            # name -> [{rp_years, inund_frac, depth_wet_m}, ...]  (added lower-RP rows)
-flow_freq = {}        # name -> provenance (comid, drainage area, Q-curve, rating exponent) for the manifest
-prov_name = sites[sites.role.str.contains("proving")]["name"].iloc[0]
-ps = sites[sites.name == prov_name].iloc[0]
-pc = cat[cat.name == prov_name].iloc[0]
-comid, da_mi2 = reach_drainage_area_mi2(ps["lat"], ps["lon"])
-Q = nss_q_curve(da_mi2, SLOPE_FT_MI)
-# extrapolate Q500 from the regression tail (log-log slope 50→100-yr) — the rating's upper anchor discharge
-b_tail = (math.log(Q[100]) - math.log(Q[50])) / (math.log(100) - math.log(50))
-Q500 = math.exp(math.log(Q[100]) + b_tail * (math.log(500) - math.log(100)))
-d100, d500 = pc["rp100_depth_wet_m"], pc["rp500_depth_wet_m"]   # real BLE wet depths (the two rating anchors)
-f10, f100 = pc["rp10_inund_frac"], pc["rp100_inund_frac"]
-p_exp = math.log(d500 / d100) / math.log(Q500 / Q[100])         # rating exponent pinned by BOTH BLE depths
-rating_depth = lambda rp: d100 * (Q[rp] / Q[100]) ** p_exp
-frac_log = lambda rp: f10 + (f100 - f10) * (math.log(rp) - math.log(10)) / (math.log(100) - math.log(10))
-dense[prov_name] = [{"rp_years": rp, "inund_frac": round(f10 if rp == 10 else frac_log(rp), 3),
-                     "depth_wet_m": round(rating_depth(rp), 3)} for rp in DENSE_RP]
-flow_freq[prov_name] = {"comid": int(comid), "drainage_area_mi2": round(da_mi2, 2), "slope_ft_mi": SLOPE_FT_MI,
-                        "regression": "USGS NSS — LA Coastal Plain SIR 2024-5031 (GC1889)", "Q_cfs": {int(k): round(v) for k, v in Q.items()},
-                        "Q500_cfs_extrap": round(Q500), "rating": "depth = d100*(Q/Q100)^p", "rating_exponent_p": round(p_exp, 3)}
-print(f"flow-frequency densification — {prov_name}: comid {comid}, DA {da_mi2:.2f} mi²")
-print(f"  Q(cfs): " + " ".join(f"{rp}yr={round(Q[rp])}" for rp in sorted(Q)) + f"  (Q500≈{Q500:.0f})  rating p={p_exp:.3f}")
-print(f"  densified depths (m): " + " ".join(f"{d['rp_years']}yr={d['depth_wet_m']} (frac {d['inund_frac']})" for d in dense[prov_name]))
-print(f"  → 10-yr depth {dense[prov_name][0]['depth_wet_m']/FT_M:.2f} ft (was assumed 0.5 ft in M4)")
-
-# %% [markdown]
-# ## 2 · The depth-at-return-period profile
-#
-# The catalog object per asset: the two BLE return periods (100-yr, 500-yr), each with inundated fraction +
-# footprint-average depth. Hayhurst (desert, not in any BLE floodplain) is the **true-zero low baseline**.
-
-# %%
-prof = []
-for _, r in cat.iterrows():
-    rp_rows = [{"rp_years": rp, "inund_frac": r[f"rp{rp}_inund_frac"], "depth_wet_m": r[f"rp{rp}_depth_wet_m"],
-                "depth_max_m": r[f"rp{rp}_depth_max_m"]} for rp in (100, 500)]
-    rp_rows += [{**d, "depth_max_m": d["depth_wet_m"]} for d in dense.get(r["name"], [])]   # JD-FL-8 densified rows
-    for rr in sorted(rp_rows, key=lambda z: z["rp_years"]):
-        prof.append({"name": r["name"], "role": r["role"], "rp_years": rr["rp_years"], "aep": round(1 / rr["rp_years"], 4),
-                     "inund_frac": rr["inund_frac"], "depth_fp_m": round(rr["inund_frac"] * rr["depth_wet_m"], 3),
-                     "depth_wet_m": rr["depth_wet_m"], "depth_max_m": rr["depth_max_m"]})
-profile = pd.DataFrame(prof)
-print(profile.to_string(index=False))
-
-# %% [markdown]
-# ## 3 · Plot the depth-frequency curve
-
-# %%
-import matplotlib.pyplot as plt
-
-fig, ax = plt.subplots(figsize=(8, 5))
-for nm, g in profile.groupby("name"):
-    g = g.sort_values("rp_years")
-    ax.plot(g["rp_years"], g["depth_fp_m"], "o-", label=f"{nm} (footprint-avg)")
-    ax.plot(g["rp_years"], g["depth_wet_m"], "s--", alpha=0.5, label=f"{nm} (inundated-cell mean)")
-ax.set_xscale("log"); ax.set_xticks([10, 25, 50, 100, 500]); ax.set_xticklabels(["10-yr", "25", "50", "100-yr", "500-yr"])
-ax.set_xlabel("return period"); ax.set_ylabel("flood depth (m)")
-ax.set_title("Flood depth-at-return-period (BLE tail + regression-densified lower RPs) — flood × solar M1")
-ax.legend(fontsize=8); ax.grid(alpha=0.3)
-fig.tight_layout(); fig.savefig(OUT / "flood_m1_depth_frequency.png", dpi=120, bbox_inches="tight")
-plt.show()
-print("wrote:", OUT / "flood_m1_depth_frequency.png")
-
-# %% [markdown]
-# ## 4 · Known-answer checks (basics-spot-on)
-#
-# - **Elizabeth (high)** — in a BLE floodplain (real OSM polygon sampled): depth + inundated fraction **rise** from
-#   100-yr → 500-yr, depths shallow (alluvial plain), nothing absurd (< ~5 m).
-# - **Hayhurst** — desert: **negligible** flood (BLE center reads NoData; at most a mapped wash clips the footprint),
-#   far below the high site — the low-baseline control.
-
-# %%
-bay = cat[cat.eia == 66111].iloc[0]   # Elizabeth Solar (high) — real polygon
-hay = cat[cat.eia == 66880].iloc[0]
-assert bay["rp500_inund_frac"] >= bay["rp100_inund_frac"] > 0, "high site: inundation should grow 100→500yr"
-assert bay["rp500_depth_max_m"] < 5.0, "depths implausibly deep for a flat floodplain"
-assert hay["rp500_depth_fp_m"] < 0.15 and hay["rp500_inund_frac"] < bay["rp500_inund_frac"], "Hayhurst should be ~dry vs the high site"
-print(f"✓ {bay['name']}: 100yr {bay['rp100_inund_frac']*100:.0f}% inundated, 500yr {bay['rp500_inund_frac']*100:.0f}% — grows, shallow (sampled on {bay['sampled_on']})")
-print(f"✓ Hayhurst: footprint-avg {hay['rp500_depth_fp_m']:.3f} m at 500yr — negligible (low-baseline control)")
-# JD-FL-8 densification: the regression-anchored lower-RP depths must sit BELOW the BLE 100-yr anchor and rise with RP
-dp = profile[profile.name == prov_name].sort_values("rp_years")
-dwet = dp["depth_wet_m"].to_numpy()
-assert np.all(np.diff(dwet) >= 0), "densified depth-at-RP must be monotone increasing"
-assert dp[dp.rp_years < 100]["depth_wet_m"].max() <= d100 + 1e-9, "lower-RP depths must stay below the 100-yr BLE anchor"
-assert 0 < dense[prov_name][0]["depth_wet_m"] < d100, "10-yr densified depth must be positive and below 100-yr"
-print(f"✓ densification (JD-FL-8): {prov_name} depths monotone {np.round(dwet,3).tolist()} m, lower RPs ≤ BLE 100-yr ({d100} m)")
-print("✓ all known-answer checks pass.")
+field, flow_frequency, gauges = [], {}, {}
+for s in SITES:
+    rec = {"asset": s["asset"], "slug": s["slug"], "name": s["name"], "role": s["role"], "method": s["method"]}
+    if s["method"] == "ble_image":
+        geom = wkt.loads(s["boundary_wkt"]); rec["eia"] = s["eia"]; rec["rasters"] = {}
+        for rp, layer in DEPTH_LAYER.items():
+            depth_ft, extent = fetch_depth_field(s["eia"], geom, layer)
+            rec["rasters"][str(rp)] = {"path": str((RAW / "ble_field" / f"{s['eia']}_L{layer}.npz").relative_to(ROOT)),
+                                       "extent_4326": extent.tolist(), "shape": list(depth_ft.shape),
+                                       "px_m": round((extent[2]-extent[0]) * 111000 / depth_ft.shape[1], 1)}
+        ext10 = fetch_extent_field(s["eia"], geom, EXTENT_10PCT_LAYER)
+        rec["rasters"]["10ext"] = {"path": str((RAW / "ble_field" / f"{s['eia']}_L{EXTENT_10PCT_LAYER}_ext.npz").relative_to(ROOT)),
+                                   "extent_4326": ext10.tolist(), "kind": "10pct flood-extent mask (no depth)"}
+        print(f"  {s['name']:22s} ble_image field @ ~{rec['rasters']['100']['px_m']:.0f} m/px (+10yr extent)")
+        if "proving" in s["role"] or "all-three" in s["role"]:   # proving + all-three BLE sites get NSS densification (JD-FL-8)
+            comid, da_mi2 = reach_drainage_area_mi2(s["lat"], s["lon"])
+            Q = nss_q_curve(da_mi2, SLOPE_FT_MI)
+            b_tail = (math.log(Q[100]) - math.log(Q[50])) / (math.log(100) - math.log(50))
+            Q500 = math.exp(math.log(Q[100]) + b_tail * (math.log(500) - math.log(100)))
+            flow_frequency[s["name"]] = {"comid": int(comid), "drainage_area_mi2": round(da_mi2, 2), "slope_ft_mi": SLOPE_FT_MI,
+                                         "regression": "USGS NSS — LA Coastal Plain SIR 2024-5031 (GC1889)",
+                                         "Q_cfs": {int(k): round(v) for k, v in Q.items()}, "Q500_cfs_extrap": round(Q500)}
+            print(f"     flow-frequency: comid {comid}, DA {da_mi2:.1f} mi^2 | Q100={round(Q[100])} Q500~{round(Q500)} cfs")
+    elif s["method"] == "sfha_bathtub":
+        tb = pd.read_parquet(OUT / f"{s['slug']}_flood_wind_m0_geometry.parquet")
+        minx, miny = tb["lon"].min(), tb["lat"].min(); maxx, maxy = tb["lon"].max(), tb["lat"].max()
+        area = flood_area(min(minx, s["sub_lon"]), min(miny, s["sub_lat"]), max(maxx, s["sub_lon"]), max(maxy, s["sub_lat"]), SFHA_WHERE)
+        bxy, bz = boundary_samples(area, cache=RAW / f"bnd_{s['slug']}_rp100.json")
+        rec["frac_sfha"] = s["frac_sfha"]
+        # de-inline the (large) SFHA polygon → gitignored raw/, store a PATH (mirrors the ble_image raster pattern;
+        # keeps the tracked manifest lightweight — NC Zone A alone is ~10 MB of WKT). M2 loads it from the path.
+        fa_dir = RAW / "flood_area"; fa_dir.mkdir(parents=True, exist_ok=True)
+        fa_path = fa_dir / f"{s['slug']}.wkt"; fa_path.write_text(area.wkt)
+        rec["flood_area_path"] = str(fa_path.relative_to(ROOT))
+        rec["wse_contour"] = {"xy": bxy.tolist(), "z": bz.tolist()}
+        gsite = GAUGE_BY_SITE.get(s["slug"])                 # this site's OWN gauge (per-site, JD-FL-19 fix)
+        if gsite is None:
+            raise KeyError(f"no gauge mapped for bathtub site {s['slug']} — add it to GAUGE_BY_SITE")
+        QT, GN, GSKEW = gauge_QT(gsite, RPS_GAUGE)
+        gblock = {"site": gsite, "n_peaks": GN, "log_skew": round(GSKEW, 3),
+                  "Q_cfs": {int(k): round(v) for k, v in QT.items()}, "rating_exp_b": 0.6}
+        gauges[s["slug"]] = gblock; rec["gauge"] = gblock    # per-site — M2 reads rec["gauge"], not one global block
+        print(f"  {s['name']:22s} sfha_bathtub field ({s['frac_sfha']*100:.0f}% SFHA) | gauge {gsite}: {GN}-yr peaks, "
+              f"log-skew {GSKEW:.2f}, Q100={int(QT[100])} Q500={int(QT[500])} cfs")
+    else:                                                    # dry baseline
+        rec["frac_sfha"] = s.get("frac_sfha", 0.0); rec["flood_area_path"] = None; rec["wse_contour"] = None
+        print(f"  {s['name']:22s} DRY baseline")
+    field.append(rec)
 
 # %% [markdown]
-# ## 5 · Persist the catalog manifest (engine contract — JD-FL-4 hooks)
+# ## 4 · Emit the shared field manifest (one `field` list, method-tagged; both `Q(T)` provenances)
 
 # %%
 manifest = {
     "peril": "flood", "sub_peril": "riverine", "event_family_id": None, "layer": "M1",
-    "depth_source": {
-        "method": "FEMA BLE depth grids (100/500-yr tail) + regression flow-frequency rating (lower RPs)",
-        "service": "txgeo.usgs.gov/arcgis/rest/services/FEMA_EBFE/EBFE/MapServer (layers 12,16,7)",
-        "return_periods_yr": [10, 25, 50, 100, 500],
-        "units": "metres above ground (BLE native feet × 0.3048)",
-        "lower_rp_densification": "JD-FL-8 — USGS NLDI drainage area → NSS regional regression Q(T) → power-law rating "
-                                  "depth=d100·(Q/Q100)^p anchored to both BLE depths; proving site only (baseline is a dry control)",
-        "national_fallback": "USGS StreamStats discharge-at-RP → NOAA OWP HAND depth (no-BLE / ungauged sites)",
-        "decision": "JD-FL-6 / JD-FL-8",
-    },
-    "flow_frequency": flow_freq,
-    "caveats": [
-        "BLE provides only 1% (100-yr) + 0.2% (500-yr) depth; lower RPs (10/25/50-yr) densified via regression flow-frequency + a BLE-anchored rating (JD-FL-8).",
-        "rating exponent pinned by both BLE depths; depths near-invariant to the assumed channel slope (sensitivity in M4).",
-        "baseline site (Hayhurst) keeps the tail-only curve — its 10-yr BLE extent is 0 (true dry control).",
-        "single-gauge Bulletin 17C retained as local validation only (does not scale).",
-    ],
-    "event_model_bridge": "settled — JD-FL-7 annual-maximum MC over the (now denser) RP loss curve.",
-    "sites": json.loads(cat.to_json(orient="records")),
-    "profile": json.loads(profile.to_json(orient="records")),
+    "kind": "shared asset-independent field, ALL sites, method-per-site (Path 2 / JD-FL-19) — footprint/per-node coupling is M2's job",
+    "methods": {"ble_image": "FEMA BLE depth grids as full-resolution image (JD-FL-18); Q(T) from NLDI→NSS (JD-FL-8)",
+                "sfha_bathtub": "1% flood area + boundary WSE contour off 3DEP (JD-FL-W4); Q(T) from gauge Log-Pearson III (JD-FL-W5)",
+                "dry": "site not in SFHA → no riverine field"},
+    "ble": {"service": "txgeo.usgs.gov/.../FEMA_EBFE/EBFE/MapServer (layers 12,16,7)",
+            "depth_bands_ft": BAND_MID_FT.tolist(), "return_periods_tail_yr": [100, 500]},
+    "flow_frequency": flow_frequency,                       # ble_image sites — solar M2 reads this
+    "gauges": gauges,                                        # sfha_bathtub sites — PER SITE (slug → gauge); each field row also carries rec["gauge"]
+    "field": field,
+    "caveats": ["Method is by site data availability, not asset (JD-FL-6). No footprint/per-node reduction here (M2's job, JD-FL-19).",
+                "ble_image: depth is BANDED (6 classes, JD-FL-18); BLE tail only (100/500-yr), lower RPs densified in M2 (JD-FL-8).",
+                "sfha_bathtub: Zone A has no engineered depth; ΔWSE(T) from gauge applied in M2 (JD-FL-W5)."],
 }
-(OUT / "flood_m1_catalog_manifest.json").write_text(json.dumps(manifest, indent=2))
-print("wrote:", OUT / "flood_m1_catalog_manifest.json")
-
-# %% [markdown]
-# ## Findings & what's next
-#
-# - **Real depth-at-return-period catalog, from FEMA BLE:** the high site (Elizabeth) floods over a **growing
-#   fraction** of its **real-polygon** footprint (100-yr → 500-yr) at **shallow** depth; Hayhurst is the dry baseline.
-# - The catalog carries the **JD-FL-4 hooks** (`sub_peril`, reserved `event_family_id`) and an honest caveat ledger.
-# - **Open call surfaced for M4:** the **event-model bridge** — how this RP-depth profile feeds the shared
-#   compound-Poisson MC (a 2-point BLE curve needs an occurrence/severity mapping). Settle before M4.
-# - **Next — M2 (coupling):** site-conditioned — turn `(inundated fraction, depth)` into the asset's exposure ×
-#   depth that M3's depth-damage curve reads (A21: `depth_at_asset = WSE − ground`; here BLE already gives depth).
+(OUT / "flood_riverine_m1_catalog_manifest.json").write_text(json.dumps(manifest, indent=2))
+print("\nwrote:", OUT / "flood_riverine_m1_catalog_manifest.json",
+      f"({len(field)} site fields — {sum(f['method']=='ble_image' for f in field)} ble, "
+      f"{sum(f['method']=='sfha_bathtub' for f in field)} bathtub, {sum(f['method']=='dry' for f in field)} dry)")

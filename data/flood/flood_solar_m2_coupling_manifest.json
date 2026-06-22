@@ -1,0 +1,681 @@
+{
+  "peril": "flood",
+  "sub_peril": [
+    "riverine",
+    "pluvial",
+    "coastal"
+  ],
+  "event_family_id": null,
+  "layer": "M2",
+  "coupling_type": "site_conditioned (bucket 3) \u2014 Path 2 (JD-FL-19). UNIFIED M2 (JD-FL-17, LA3 all-three site): riverine = areal sampling of the M1 depth field at full resolution (JD-FL-18), pluvial = lidar ponding over the runoff field (RP frame); coastal = areal SLOSH surge per storm (event frame).",
+  "contract": {
+    "exposure_fraction": "areal inundated fraction of footprint (field masked to polygon)",
+    "conditional_depth_m": "inundated-cell mean depth GIVEN flooded",
+    "deferred_to_M3": "per-subsystem height conditioning + fragility"
+  },
+  "rp_rows": [
+    {
+      "sub_peril": "riverine",
+      "name": "Hayhurst Texas Solar",
+      "role": "baseline (low-flood)",
+      "rp_years": 100,
+      "aep": 0.01,
+      "exposure_fraction": 0.087,
+      "conditional_depth_m": 0.159,
+      "depth_max_m": 0.457,
+      "coupling_type": "site_conditioned"
+    },
+    {
+      "sub_peril": "riverine",
+      "name": "Hayhurst Texas Solar",
+      "role": "baseline (low-flood)",
+      "rp_years": 500,
+      "aep": 0.002,
+      "exposure_fraction": 0.15,
+      "conditional_depth_m": 0.183,
+      "depth_max_m": 0.762,
+      "coupling_type": "site_conditioned"
+    },
+    {
+      "sub_peril": "riverine",
+      "name": "Elizabeth Solar Plant",
+      "role": "proving (high-flood)",
+      "rp_years": 100,
+      "aep": 0.01,
+      "exposure_fraction": 0.177,
+      "conditional_depth_m": 0.433,
+      "depth_max_m": 1.372,
+      "coupling_type": "site_conditioned"
+    },
+    {
+      "sub_peril": "riverine",
+      "name": "Elizabeth Solar Plant",
+      "role": "proving (high-flood)",
+      "rp_years": 500,
+      "aep": 0.002,
+      "exposure_fraction": 0.218,
+      "conditional_depth_m": 0.532,
+      "depth_max_m": 1.676,
+      "coupling_type": "site_conditioned"
+    },
+    {
+      "sub_peril": "riverine",
+      "name": "LA3 West Baton Rouge Solar Facility",
+      "role": "all-three (coastal+riverine+pluvial)",
+      "rp_years": 100,
+      "aep": 0.01,
+      "exposure_fraction": 0.509,
+      "conditional_depth_m": 0.355,
+      "depth_max_m": 1.676,
+      "coupling_type": "site_conditioned"
+    },
+    {
+      "sub_peril": "riverine",
+      "name": "LA3 West Baton Rouge Solar Facility",
+      "role": "all-three (coastal+riverine+pluvial)",
+      "rp_years": 500,
+      "aep": 0.002,
+      "exposure_fraction": 0.953,
+      "conditional_depth_m": 0.335,
+      "depth_max_m": 1.676,
+      "coupling_type": "site_conditioned"
+    },
+    {
+      "sub_peril": "riverine",
+      "name": "Elizabeth Solar Plant",
+      "role": "proving (high-flood)",
+      "rp_years": 10,
+      "aep": 0.1,
+      "exposure_fraction": 0.102,
+      "conditional_depth_m": 0.307,
+      "depth_max_m": 0.307,
+      "coupling_type": "site_conditioned"
+    },
+    {
+      "sub_peril": "riverine",
+      "name": "Elizabeth Solar Plant",
+      "role": "proving (high-flood)",
+      "rp_years": 25,
+      "aep": 0.04,
+      "exposure_fraction": 0.132,
+      "conditional_depth_m": 0.359,
+      "depth_max_m": 0.359,
+      "coupling_type": "site_conditioned"
+    },
+    {
+      "sub_peril": "riverine",
+      "name": "Elizabeth Solar Plant",
+      "role": "proving (high-flood)",
+      "rp_years": 50,
+      "aep": 0.02,
+      "exposure_fraction": 0.154,
+      "conditional_depth_m": 0.396,
+      "depth_max_m": 0.396,
+      "coupling_type": "site_conditioned"
+    },
+    {
+      "sub_peril": "riverine",
+      "name": "LA3 West Baton Rouge Solar Facility",
+      "role": "proving (high-flood)",
+      "rp_years": 10,
+      "aep": 0.1,
+      "exposure_fraction": 0.521,
+      "conditional_depth_m": 0.391,
+      "depth_max_m": 0.391,
+      "coupling_type": "site_conditioned"
+    },
+    {
+      "sub_peril": "riverine",
+      "name": "LA3 West Baton Rouge Solar Facility",
+      "role": "proving (high-flood)",
+      "rp_years": 25,
+      "aep": 0.04,
+      "exposure_fraction": 0.516,
+      "conditional_depth_m": 0.374,
+      "depth_max_m": 0.374,
+      "coupling_type": "site_conditioned"
+    },
+    {
+      "sub_peril": "riverine",
+      "name": "LA3 West Baton Rouge Solar Facility",
+      "role": "proving (high-flood)",
+      "rp_years": 50,
+      "aep": 0.02,
+      "exposure_fraction": 0.513,
+      "conditional_depth_m": 0.364,
+      "depth_max_m": 0.364,
+      "coupling_type": "site_conditioned"
+    },
+    {
+      "sub_peril": "pluvial",
+      "name": "Hayhurst Texas Solar",
+      "role": "baseline (low-flood)",
+      "rp_years": 10,
+      "aep": 0.1,
+      "exposure_fraction": 0.005,
+      "conditional_depth_m": 0.286,
+      "depth_max_m": 0.286,
+      "coupling_type": "site_conditioned"
+    },
+    {
+      "sub_peril": "pluvial",
+      "name": "Hayhurst Texas Solar",
+      "role": "baseline (low-flood)",
+      "rp_years": 25,
+      "aep": 0.04,
+      "exposure_fraction": 0.005,
+      "conditional_depth_m": 0.286,
+      "depth_max_m": 0.286,
+      "coupling_type": "site_conditioned"
+    },
+    {
+      "sub_peril": "pluvial",
+      "name": "Hayhurst Texas Solar",
+      "role": "baseline (low-flood)",
+      "rp_years": 50,
+      "aep": 0.02,
+      "exposure_fraction": 0.005,
+      "conditional_depth_m": 0.286,
+      "depth_max_m": 0.286,
+      "coupling_type": "site_conditioned"
+    },
+    {
+      "sub_peril": "pluvial",
+      "name": "Hayhurst Texas Solar",
+      "role": "baseline (low-flood)",
+      "rp_years": 100,
+      "aep": 0.01,
+      "exposure_fraction": 0.005,
+      "conditional_depth_m": 0.286,
+      "depth_max_m": 0.286,
+      "coupling_type": "site_conditioned"
+    },
+    {
+      "sub_peril": "pluvial",
+      "name": "Hayhurst Texas Solar",
+      "role": "baseline (low-flood)",
+      "rp_years": 500,
+      "aep": 0.002,
+      "exposure_fraction": 0.005,
+      "conditional_depth_m": 0.286,
+      "depth_max_m": 0.286,
+      "coupling_type": "site_conditioned"
+    },
+    {
+      "sub_peril": "pluvial",
+      "name": "Elizabeth Solar Plant",
+      "role": "proving (high-flood)",
+      "rp_years": 10,
+      "aep": 0.1,
+      "exposure_fraction": 0.016,
+      "conditional_depth_m": 0.099,
+      "depth_max_m": 0.099,
+      "coupling_type": "site_conditioned"
+    },
+    {
+      "sub_peril": "pluvial",
+      "name": "Elizabeth Solar Plant",
+      "role": "proving (high-flood)",
+      "rp_years": 25,
+      "aep": 0.04,
+      "exposure_fraction": 0.016,
+      "conditional_depth_m": 0.099,
+      "depth_max_m": 0.099,
+      "coupling_type": "site_conditioned"
+    },
+    {
+      "sub_peril": "pluvial",
+      "name": "Elizabeth Solar Plant",
+      "role": "proving (high-flood)",
+      "rp_years": 50,
+      "aep": 0.02,
+      "exposure_fraction": 0.016,
+      "conditional_depth_m": 0.099,
+      "depth_max_m": 0.099,
+      "coupling_type": "site_conditioned"
+    },
+    {
+      "sub_peril": "pluvial",
+      "name": "Elizabeth Solar Plant",
+      "role": "proving (high-flood)",
+      "rp_years": 100,
+      "aep": 0.01,
+      "exposure_fraction": 0.016,
+      "conditional_depth_m": 0.099,
+      "depth_max_m": 0.099,
+      "coupling_type": "site_conditioned"
+    },
+    {
+      "sub_peril": "pluvial",
+      "name": "Elizabeth Solar Plant",
+      "role": "proving (high-flood)",
+      "rp_years": 500,
+      "aep": 0.002,
+      "exposure_fraction": 0.016,
+      "conditional_depth_m": 0.099,
+      "depth_max_m": 0.099,
+      "coupling_type": "site_conditioned"
+    },
+    {
+      "sub_peril": "pluvial",
+      "name": "LA3 West Baton Rouge Solar Facility",
+      "role": "all-three (coastal+riverine+pluvial)",
+      "rp_years": 10,
+      "aep": 0.1,
+      "exposure_fraction": 0.026,
+      "conditional_depth_m": 0.33,
+      "depth_max_m": 0.33,
+      "coupling_type": "site_conditioned"
+    },
+    {
+      "sub_peril": "pluvial",
+      "name": "LA3 West Baton Rouge Solar Facility",
+      "role": "all-three (coastal+riverine+pluvial)",
+      "rp_years": 25,
+      "aep": 0.04,
+      "exposure_fraction": 0.026,
+      "conditional_depth_m": 0.33,
+      "depth_max_m": 0.33,
+      "coupling_type": "site_conditioned"
+    },
+    {
+      "sub_peril": "pluvial",
+      "name": "LA3 West Baton Rouge Solar Facility",
+      "role": "all-three (coastal+riverine+pluvial)",
+      "rp_years": 50,
+      "aep": 0.02,
+      "exposure_fraction": 0.026,
+      "conditional_depth_m": 0.33,
+      "depth_max_m": 0.33,
+      "coupling_type": "site_conditioned"
+    },
+    {
+      "sub_peril": "pluvial",
+      "name": "LA3 West Baton Rouge Solar Facility",
+      "role": "all-three (coastal+riverine+pluvial)",
+      "rp_years": 100,
+      "aep": 0.01,
+      "exposure_fraction": 0.026,
+      "conditional_depth_m": 0.33,
+      "depth_max_m": 0.33,
+      "coupling_type": "site_conditioned"
+    },
+    {
+      "sub_peril": "pluvial",
+      "name": "LA3 West Baton Rouge Solar Facility",
+      "role": "all-three (coastal+riverine+pluvial)",
+      "rp_years": 500,
+      "aep": 0.002,
+      "exposure_fraction": 0.026,
+      "conditional_depth_m": 0.33,
+      "depth_max_m": 0.33,
+      "coupling_type": "site_conditioned"
+    }
+  ],
+  "coastal_sites": [
+    {
+      "name": "Discovery Solar Center",
+      "slug": "discovery_solar_center",
+      "n_storms": 117,
+      "slosh_depth_by_cat_ft": {
+        "1": {
+          "mean_ft": 0.08,
+          "inund_frac": 0.136,
+          "max_ft": 1.5
+        },
+        "2": {
+          "mean_ft": 1.29,
+          "inund_frac": 0.943,
+          "max_ft": 3.5
+        },
+        "3": {
+          "mean_ft": 2.39,
+          "inund_frac": 0.999,
+          "max_ft": 4.5
+        },
+        "4": {
+          "mean_ft": 7.52,
+          "inund_frac": 0.999,
+          "max_ft": 9.5
+        },
+        "5": {
+          "mean_ft": 12.4,
+          "inund_frac": 0.999,
+          "max_ft": 14.5
+        }
+      }
+    },
+    {
+      "name": "LA3 West Baton Rouge Solar Facility",
+      "slug": "la3_west_baton_rouge_solar_facility",
+      "n_storms": 11,
+      "slosh_depth_by_cat_ft": {
+        "1": {
+          "mean_ft": 0.0,
+          "inund_frac": 0.0,
+          "max_ft": 0.0
+        },
+        "2": {
+          "mean_ft": 0.84,
+          "inund_frac": 0.888,
+          "max_ft": 2.5
+        },
+        "3": {
+          "mean_ft": 7.87,
+          "inund_frac": 1.0,
+          "max_ft": 9.5
+        },
+        "4": {
+          "mean_ft": 12.97,
+          "inund_frac": 1.0,
+          "max_ft": 14.5
+        },
+        "5": {
+          "mean_ft": 14.49,
+          "inund_frac": 1.0,
+          "max_ft": 16.5
+        }
+      }
+    }
+  ],
+  "coastal_depth_source": "SLOSH_MOM_US_v2_HighTide",
+  "rows": [
+    {
+      "sub_peril": "riverine",
+      "name": "Hayhurst Texas Solar",
+      "role": "baseline (low-flood)",
+      "rp_years": 100,
+      "aep": 0.01,
+      "exposure_fraction": 0.087,
+      "conditional_depth_m": 0.159,
+      "depth_max_m": 0.457,
+      "coupling_type": "site_conditioned"
+    },
+    {
+      "sub_peril": "riverine",
+      "name": "Hayhurst Texas Solar",
+      "role": "baseline (low-flood)",
+      "rp_years": 500,
+      "aep": 0.002,
+      "exposure_fraction": 0.15,
+      "conditional_depth_m": 0.183,
+      "depth_max_m": 0.762,
+      "coupling_type": "site_conditioned"
+    },
+    {
+      "sub_peril": "riverine",
+      "name": "Elizabeth Solar Plant",
+      "role": "proving (high-flood)",
+      "rp_years": 100,
+      "aep": 0.01,
+      "exposure_fraction": 0.177,
+      "conditional_depth_m": 0.433,
+      "depth_max_m": 1.372,
+      "coupling_type": "site_conditioned"
+    },
+    {
+      "sub_peril": "riverine",
+      "name": "Elizabeth Solar Plant",
+      "role": "proving (high-flood)",
+      "rp_years": 500,
+      "aep": 0.002,
+      "exposure_fraction": 0.218,
+      "conditional_depth_m": 0.532,
+      "depth_max_m": 1.676,
+      "coupling_type": "site_conditioned"
+    },
+    {
+      "sub_peril": "riverine",
+      "name": "LA3 West Baton Rouge Solar Facility",
+      "role": "all-three (coastal+riverine+pluvial)",
+      "rp_years": 100,
+      "aep": 0.01,
+      "exposure_fraction": 0.509,
+      "conditional_depth_m": 0.355,
+      "depth_max_m": 1.676,
+      "coupling_type": "site_conditioned"
+    },
+    {
+      "sub_peril": "riverine",
+      "name": "LA3 West Baton Rouge Solar Facility",
+      "role": "all-three (coastal+riverine+pluvial)",
+      "rp_years": 500,
+      "aep": 0.002,
+      "exposure_fraction": 0.953,
+      "conditional_depth_m": 0.335,
+      "depth_max_m": 1.676,
+      "coupling_type": "site_conditioned"
+    },
+    {
+      "sub_peril": "riverine",
+      "name": "Elizabeth Solar Plant",
+      "role": "proving (high-flood)",
+      "rp_years": 10,
+      "aep": 0.1,
+      "exposure_fraction": 0.102,
+      "conditional_depth_m": 0.307,
+      "depth_max_m": 0.307,
+      "coupling_type": "site_conditioned"
+    },
+    {
+      "sub_peril": "riverine",
+      "name": "Elizabeth Solar Plant",
+      "role": "proving (high-flood)",
+      "rp_years": 25,
+      "aep": 0.04,
+      "exposure_fraction": 0.132,
+      "conditional_depth_m": 0.359,
+      "depth_max_m": 0.359,
+      "coupling_type": "site_conditioned"
+    },
+    {
+      "sub_peril": "riverine",
+      "name": "Elizabeth Solar Plant",
+      "role": "proving (high-flood)",
+      "rp_years": 50,
+      "aep": 0.02,
+      "exposure_fraction": 0.154,
+      "conditional_depth_m": 0.396,
+      "depth_max_m": 0.396,
+      "coupling_type": "site_conditioned"
+    },
+    {
+      "sub_peril": "riverine",
+      "name": "LA3 West Baton Rouge Solar Facility",
+      "role": "proving (high-flood)",
+      "rp_years": 10,
+      "aep": 0.1,
+      "exposure_fraction": 0.521,
+      "conditional_depth_m": 0.391,
+      "depth_max_m": 0.391,
+      "coupling_type": "site_conditioned"
+    },
+    {
+      "sub_peril": "riverine",
+      "name": "LA3 West Baton Rouge Solar Facility",
+      "role": "proving (high-flood)",
+      "rp_years": 25,
+      "aep": 0.04,
+      "exposure_fraction": 0.516,
+      "conditional_depth_m": 0.374,
+      "depth_max_m": 0.374,
+      "coupling_type": "site_conditioned"
+    },
+    {
+      "sub_peril": "riverine",
+      "name": "LA3 West Baton Rouge Solar Facility",
+      "role": "proving (high-flood)",
+      "rp_years": 50,
+      "aep": 0.02,
+      "exposure_fraction": 0.513,
+      "conditional_depth_m": 0.364,
+      "depth_max_m": 0.364,
+      "coupling_type": "site_conditioned"
+    },
+    {
+      "sub_peril": "pluvial",
+      "name": "Hayhurst Texas Solar",
+      "role": "baseline (low-flood)",
+      "rp_years": 10,
+      "aep": 0.1,
+      "exposure_fraction": 0.005,
+      "conditional_depth_m": 0.286,
+      "depth_max_m": 0.286,
+      "coupling_type": "site_conditioned"
+    },
+    {
+      "sub_peril": "pluvial",
+      "name": "Hayhurst Texas Solar",
+      "role": "baseline (low-flood)",
+      "rp_years": 25,
+      "aep": 0.04,
+      "exposure_fraction": 0.005,
+      "conditional_depth_m": 0.286,
+      "depth_max_m": 0.286,
+      "coupling_type": "site_conditioned"
+    },
+    {
+      "sub_peril": "pluvial",
+      "name": "Hayhurst Texas Solar",
+      "role": "baseline (low-flood)",
+      "rp_years": 50,
+      "aep": 0.02,
+      "exposure_fraction": 0.005,
+      "conditional_depth_m": 0.286,
+      "depth_max_m": 0.286,
+      "coupling_type": "site_conditioned"
+    },
+    {
+      "sub_peril": "pluvial",
+      "name": "Hayhurst Texas Solar",
+      "role": "baseline (low-flood)",
+      "rp_years": 100,
+      "aep": 0.01,
+      "exposure_fraction": 0.005,
+      "conditional_depth_m": 0.286,
+      "depth_max_m": 0.286,
+      "coupling_type": "site_conditioned"
+    },
+    {
+      "sub_peril": "pluvial",
+      "name": "Hayhurst Texas Solar",
+      "role": "baseline (low-flood)",
+      "rp_years": 500,
+      "aep": 0.002,
+      "exposure_fraction": 0.005,
+      "conditional_depth_m": 0.286,
+      "depth_max_m": 0.286,
+      "coupling_type": "site_conditioned"
+    },
+    {
+      "sub_peril": "pluvial",
+      "name": "Elizabeth Solar Plant",
+      "role": "proving (high-flood)",
+      "rp_years": 10,
+      "aep": 0.1,
+      "exposure_fraction": 0.016,
+      "conditional_depth_m": 0.099,
+      "depth_max_m": 0.099,
+      "coupling_type": "site_conditioned"
+    },
+    {
+      "sub_peril": "pluvial",
+      "name": "Elizabeth Solar Plant",
+      "role": "proving (high-flood)",
+      "rp_years": 25,
+      "aep": 0.04,
+      "exposure_fraction": 0.016,
+      "conditional_depth_m": 0.099,
+      "depth_max_m": 0.099,
+      "coupling_type": "site_conditioned"
+    },
+    {
+      "sub_peril": "pluvial",
+      "name": "Elizabeth Solar Plant",
+      "role": "proving (high-flood)",
+      "rp_years": 50,
+      "aep": 0.02,
+      "exposure_fraction": 0.016,
+      "conditional_depth_m": 0.099,
+      "depth_max_m": 0.099,
+      "coupling_type": "site_conditioned"
+    },
+    {
+      "sub_peril": "pluvial",
+      "name": "Elizabeth Solar Plant",
+      "role": "proving (high-flood)",
+      "rp_years": 100,
+      "aep": 0.01,
+      "exposure_fraction": 0.016,
+      "conditional_depth_m": 0.099,
+      "depth_max_m": 0.099,
+      "coupling_type": "site_conditioned"
+    },
+    {
+      "sub_peril": "pluvial",
+      "name": "Elizabeth Solar Plant",
+      "role": "proving (high-flood)",
+      "rp_years": 500,
+      "aep": 0.002,
+      "exposure_fraction": 0.016,
+      "conditional_depth_m": 0.099,
+      "depth_max_m": 0.099,
+      "coupling_type": "site_conditioned"
+    },
+    {
+      "sub_peril": "pluvial",
+      "name": "LA3 West Baton Rouge Solar Facility",
+      "role": "all-three (coastal+riverine+pluvial)",
+      "rp_years": 10,
+      "aep": 0.1,
+      "exposure_fraction": 0.026,
+      "conditional_depth_m": 0.33,
+      "depth_max_m": 0.33,
+      "coupling_type": "site_conditioned"
+    },
+    {
+      "sub_peril": "pluvial",
+      "name": "LA3 West Baton Rouge Solar Facility",
+      "role": "all-three (coastal+riverine+pluvial)",
+      "rp_years": 25,
+      "aep": 0.04,
+      "exposure_fraction": 0.026,
+      "conditional_depth_m": 0.33,
+      "depth_max_m": 0.33,
+      "coupling_type": "site_conditioned"
+    },
+    {
+      "sub_peril": "pluvial",
+      "name": "LA3 West Baton Rouge Solar Facility",
+      "role": "all-three (coastal+riverine+pluvial)",
+      "rp_years": 50,
+      "aep": 0.02,
+      "exposure_fraction": 0.026,
+      "conditional_depth_m": 0.33,
+      "depth_max_m": 0.33,
+      "coupling_type": "site_conditioned"
+    },
+    {
+      "sub_peril": "pluvial",
+      "name": "LA3 West Baton Rouge Solar Facility",
+      "role": "all-three (coastal+riverine+pluvial)",
+      "rp_years": 100,
+      "aep": 0.01,
+      "exposure_fraction": 0.026,
+      "conditional_depth_m": 0.33,
+      "depth_max_m": 0.33,
+      "coupling_type": "site_conditioned"
+    },
+    {
+      "sub_peril": "pluvial",
+      "name": "LA3 West Baton Rouge Solar Facility",
+      "role": "all-three (coastal+riverine+pluvial)",
+      "rp_years": 500,
+      "aep": 0.002,
+      "exposure_fraction": 0.026,
+      "conditional_depth_m": 0.33,
+      "depth_max_m": 0.33,
+      "coupling_type": "site_conditioned"
+    }
+  ]
+}

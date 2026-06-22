@@ -1,0 +1,72 @@
+{
+  "peril": "flood",
+  "asset": "wind_farm",
+  "layer": "M0",
+  "source": "m0_input_data/02_wind_sites",
+  "purpose": "reproducible evidence for site selection (JD-FL-W2 corrected / W3)",
+  "method": {
+    "turbines": "USWTDB bbox",
+    "exposure": "FEMA NFHL SFHA membership per turbine (sampled)",
+    "sample_per_project": 12,
+    "min_turbines": 8,
+    "false_zero_check": "BLE depth at the most-exposed turbines (txgeo EBFE)"
+  },
+  "durable_finding": "wind avoids floodplains \u2014 median SFHA fraction ~0% in both TX and the Midwest",
+  "correction": "'TX wind is flood-immune (0/2976 wet)' was a BLE-DEPTH false zero (exposed TX sites are Zone A with no BLE coverage). By SFHA membership TX has exposed riverine wind (Lane City, Colorado R., ~42%). Green River IL is the high site as the MOST exposed, not because TX is immune.",
+  "texas": {
+    "region_bbox": [
+      -98.7,
+      25.8,
+      -94.0,
+      31.5
+    ],
+    "n_projects": 42,
+    "median_frac_sfha": 0.0,
+    "max_frac_sfha": 0.417,
+    "max_project": "Lane City Wind"
+  },
+  "midwest": {
+    "region_bbox": [
+      -96.5,
+      38.5,
+      -88.0,
+      43.8
+    ],
+    "n_projects": 187,
+    "winner": "Green River",
+    "winner_frac_sfha": 0.667,
+    "top5": [
+      {
+        "project": "Green River",
+        "state": "IL",
+        "frac_sfha": 0.667
+      },
+      {
+        "project": "30 MW Iowa DG Portfolio",
+        "state": "IA",
+        "frac_sfha": 0.1
+      },
+      {
+        "project": "Barton",
+        "state": "IA",
+        "frac_sfha": 0.083
+      },
+      {
+        "project": "Beaver Creek",
+        "state": "IA",
+        "frac_sfha": 0.083
+      },
+      {
+        "project": "Beaver Creek II",
+        "state": "IA",
+        "frac_sfha": 0.083
+      }
+    ]
+  },
+  "false_zero_demo": {
+    "tx_top_in_sfha": 3,
+    "tx_top_ble_wet": 0,
+    "midwest_top_in_sfha": 3,
+    "midwest_top_ble_wet": 0
+  }
+}

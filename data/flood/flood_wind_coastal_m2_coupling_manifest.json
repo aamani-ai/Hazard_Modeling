@@ -1,0 +1,26 @@
+{
+  "peril": "flood",
+  "sub_peril": "coastal",
+  "asset": "wind_farm",
+  "layer": "M2",
+  "coupling_type": "event-based PER-NODE sampling of the SLOSH field (Path 2, JD-FL-19) \u2014 the wind analogue of solar's coastal M2",
+  "depth_source": "SLOSH_MOM_US_v2_HighTide",
+  "pads_m": {
+    "turbine": 0.3,
+    "substation": 0.15
+  },
+  "nodes_flooded_by_cat": {
+    "1": 0,
+    "2": 0,
+    "3": 65,
+    "4": 104,
+    "5": 105
+  },
+  "lambda_per_yr": 0.0116,
+  "n_storms": 24,
+  "site": {
+    "name": "Amazon Wind Farm US East",
+    "slug": "amazon_wind_us_east"
+  },
+  "note": "per-node depth = max(SLOSH_ft\u00b70.3048 \u2212 pad, 0); 0/255 = dry"
+}

@@ -56,7 +56,7 @@
   },
   "metadata": {
     "source_repo": "infrasure-damage-curves (Divi-patel/infrasure-damage-curves)",
-    "component_curves": "research/FLOOD_x_SOLAR.md via master_curve_index.json (RIVERINE_FLOOD \u00d7 solar, priority 4)",
+    "component_curves": "infrasure-damage-curves (RIVERINE_FLOOD \u00d7 solar) (RIVERINE_FLOOD \u00d7 solar, priority 4)",
     "capex_weights": "NREL solar BoS (vendored from hail_solar_asset_capex_weighted.json) \u2014 peril-independent",
     "confidence": "medium; x0 encodes component elevation (the flood inversion); duration unmodeled (Gen-1)",
     "pv_variant": "single-axis horizontal stow (x0 2.5 ft); flood-stow (x0 7 ft) = mitigation lever"

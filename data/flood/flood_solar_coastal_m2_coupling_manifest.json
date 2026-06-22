@@ -1,0 +1,41 @@
+{
+  "peril": "flood",
+  "sub_peril": "coastal",
+  "asset": "solar",
+  "layer": "M2",
+  "coupling_type": "event-based footprint sampling of the SLOSH field (Path 2, JD-FL-19) \u2014 the coastal M2 that was missing",
+  "depth_source": "SLOSH_MOM_US_v2_HighTide",
+  "slosh_depth_by_cat_ft": {
+    "1": {
+      "mean_ft": 0.08,
+      "inund_frac": 0.136,
+      "max_ft": 1.5
+    },
+    "2": {
+      "mean_ft": 1.29,
+      "inund_frac": 0.943,
+      "max_ft": 3.5
+    },
+    "3": {
+      "mean_ft": 2.39,
+      "inund_frac": 0.999,
+      "max_ft": 4.5
+    },
+    "4": {
+      "mean_ft": 7.52,
+      "inund_frac": 0.999,
+      "max_ft": 9.5
+    },
+    "5": {
+      "mean_ft": 12.4,
+      "inund_frac": 0.999,
+      "max_ft": 14.5
+    }
+  },
+  "lambda_per_yr": 0.0289,
+  "n_storms": 117,
+  "high_site": {
+    "name": "Discovery Solar Center",
+    "eia": 63109
+  }
+}

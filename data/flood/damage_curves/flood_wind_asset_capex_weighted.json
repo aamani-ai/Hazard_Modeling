@@ -1,7 +1,13 @@
 {
   "curve_id": "flood/wind__asset__capex_weighted",
-  "hazard_type": "RIVERINE_FLOOD",
+  "hazard_type": "FLOOD",
   "asset_type": "wind",
+  "applies_to_sub_perils": [
+    "riverine",
+    "pluvial",
+    "coastal"
+  ],
+  "note": "source-agnostic \u2014 inundation depth \u2192 damage (river, sky, or sea)",
   "status": "GREENFIELD (no flood\u00d7wind curve in infrasure-damage-curves) \u2014 graduates to the library later",
   "confidence": "low-medium",
   "intensity_metric": "flood_depth_ft",

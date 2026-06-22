@@ -16,22 +16,23 @@ EAL / VaR / PML / TVaR (% of TIV + dollars), on the shared metric frame.* Per-ph
 - **Seam:** M1 emits a variable-length, source-tagged RP→loss profile; `loss_at_aep` is generic → densifying (more
   RP points) is a one-place change.
 
-## Result (built — `solar/m4_loss_metrics/01_loss_metrics`) — **combined riverine + pluvial** (JD-FL-11)
+## Result (built — `solar/m4_loss_metrics/01_loss_metrics`) — **combined riverine + pluvial** (JD-FL-11), **`f` lidar-grounded** (JD-FL-15)
 Headline = **worse-source-wins** (co-sampled comonotonic); single-valued like every peril → Total-Loss-combinable.
-| site | EAL (headline) | VaR99 | PML100 | PML500 | TVaR99 | EAL envelope (worse-wins→additive UB) |
+| site | EAL (headline) | VaR99 | PML100 | PML500 | TVaR99 | EAL envelope |
 |---|---|---|---|---|---|---|
-| **Elizabeth** (high) | **0.27% TIV** | 2.62% | 4.45% | **7.92%** | 6.60% | 0.27% – 0.42% |
-| Hayhurst (low) | 0.06% | 0.13% | 0.97% | 1.78% | 1.46% | 0.06% – 0.08% |
+| **Elizabeth** (high) | **0.15% TIV** | 2.62% | 2.62% | **4.46%** | 3.76% | 0.15 – 0.16% |
+| Hayhurst (low) | 0.02% | 0.13% | 0.13% | 0.62% | 0.16% | 0.02 – 0.02% |
 
-**Marginals** (% TIV EAL): Elizabeth riverine **0.15** + pluvial **0.27**; Hayhurst riverine 0.02 + pluvial 0.06.
-**Combine frame check ✓** PML@T reproduces the *worse* sub-peril's Lₜ by construction (max-combine).
-**Densification (JD-FL-8) ✓** riverine 10-yr depth ≈ **0.97 ft** (regression rating); riverine EAL 0.13%→0.155%.
+**Marginals** (% TIV EAL): Elizabeth riverine **0.15** + pluvial **0.003**; Hayhurst riverine 0.02 + pluvial 0.004.
+**Combine frame check ✓** PML@T reproduces the *worse* sub-peril's Lₜ (= riverine here, BLE-anchored).
+**Densification (JD-FL-8) ✓** riverine 10-yr depth ≈ **0.97 ft**; riverine EAL 0.13%→0.155%.
 
-> **⚠️ The headline is pluvial-dominated.** Pluvial > riverine at every RP here (driven by the screening-grade
-> ponding-fraction `f=0.4` — [AFL-P2](assumptions.md)), so worse-wins makes the combined ≈ pluvial and **masks the
-> well-anchored riverine**. The headline is therefore **screening-grade** until pluvial gains a depth anchor; the
-> marginals are reported so the solid riverine number stays visible. "Pluvial dominates" is a *model* statement
-> (sensitive to `f`), not a robust fact.
+> **Headline is RIVERINE-dominated, validated** ([JD-FL-15](decisions.md)). Grounding the pluvial ponding fraction
+> `f` from **1 m lidar** (Elizabeth `f`: 0.40 guess → **0.016 measured**) collapsed pluvial EAL ~90× (0.27%→0.003%) and
+> **flipped the headline from pluvial- to riverine-dominated** — the well-anchored, HWM-validated riverine layer now
+> drives it; PML back to the BLE-anchored 2.62/4.46%; the combine envelope tightens to ~nil (it was an `f` artifact).
+> *"Pluvial dominates" was a model artifact of the 0.40 guess.* Pluvial is now a minor, terrain-grounded contributor
+> (screening-grade *floor* — settled depth, lower-bound; the Rank-1 volume-pour is the agreed upgrade for pluvial-heavy sites).
 
 ## External validation (sanity-check ✅)
 - **Observed flood depths (USGS high-water marks, §4b — runs in the notebook):** 21 USGS-surveyed marks near the

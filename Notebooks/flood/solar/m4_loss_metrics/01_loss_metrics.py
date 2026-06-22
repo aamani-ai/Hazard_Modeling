@@ -12,24 +12,32 @@
 # ---
 
 # %% [markdown]
-# # Flood → Solar · M4 loss & metrics
+# # Flood · Solar — M4 loss & metrics: annual loss distribution + EAL/PML/VaR (all three sub-perils)
 #
-# **Peril:** Flood (riverine) · **Asset:** Solar · **Layer:** M4 (loss & metrics) · sub-peril `riverine`
+# **Peril:** Flood · **Asset:** Solar · **Layer:** M4 · sub-perils `riverine` + `pluvial` + `coastal` · the solar M4
+# combines all three (per JD-FL-17; **LA3 West Baton Rouge** is the all-three solar site, the wind analogue is Amazon).
 #
-# **Goal:** turn the M3 conditional losses into the **annual loss distribution** → **EAL / VaR / PML / TVaR** (% of
-# TIV + dollars), the same metric frame hail/wildfire/wind report (DD-4).
+# **Magnitude metric:** flood **depth (ft above ground)** behind the M3 conditional losses — riverine/pluvial depth by
+# annual return period (10/25/50/100/500-yr), coastal surge depth by hurricane category per storm.
 #
-# **Event-model bridge ([JD-FL-7](../../../../docs/plans/flood/decisions.md)).** Riverine flood = **annual-maximum**
-# (~1 damaging flood/yr). We build a **loss-exceedance curve** straight from the M3 conditional losses — now a **5-point
-# RP curve** for the proving site (10/25/50/100/500-yr) after the [JD-FL-8](../../../../docs/plans/flood/decisions.md)
-# densification: the 100/500-yr points are **real BLE**; the 10/25/50-yr points come from a **regression flow-frequency
-# rating anchored to both BLE depths** (no more assumed onset depth). The MC draws each year's `AEP ~ U(0,1)` →
-# `loss(AEP)` (log-AEP interpolation, bounded extrapolation) → per-year loss vectors → the shared metrics. The
-# convective_wind strong-wind pattern (sample an RP curve), specialized to annual-max.
+# **Data source:** M3 conditional losses (the flood × solar curve over all three sub-perils), the riverine M2/M1 BLE
+# depths + flow-frequency rating, the coastal M1 catalog (`λ` + per-storm `event_family_id`), the hurricane × solar
+# wind leg (`data/hurricane/tc_m3_damage.parquet`), and **USGS STN high-water marks** for external validation.
 #
-# > **Honest:** PML@100/500-yr is **anchored to real BLE**; **EAL is now densified** — the frequent region rests on
-# > measurement-anchored 10/25/50-yr depths (JD-FL-8), not a flat onset guess. §2b shows how much that moved EAL.
-# > Seam-ready: the curve is built generically from whatever RPs M3 emits. Plan: [`m4_loss_metrics.md`](../../../../docs/plans/flood/m4_loss_metrics.md).
+# **What this notebook does:** turns the M3 conditional losses into the **annual loss distribution** → **EAL / VaR /
+# PML / TVaR** (% of TIV + dollars), the same metric frame hail/wildfire/wind report (DD-4). Two frequency frames run
+# under one roof. **Inland** (riverine + pluvial) is annual-maximum Monte Carlo: each year draws one severity
+# `AEP ~ U(0,1)`, reads both sub-peril loss-exceedance curves comonotonically, and the year's loss = `max(riverine,
+# pluvial)` (per JD-FL-11). **Coastal** is compound-Poisson surge × hurricane wind, combining per subsystem
+# `max(wind_DR, surge_DR)` on `event_family_id` at the surge `λ` (per JD-FL-12). **Total** = inland + coastal as
+# independent streams. Sites carry whatever sub-perils they have (Elizabeth inland-only, Discovery coastal-only, LA3
+# all-three); absent sub-perils enter as 0. The riverine loss-exceedance curve is a 5-point RP curve — the 100/500-yr
+# points are BLE-anchored and the 10/25/50-yr points come from a regression flow-frequency rating anchored to both BLE
+# depths ([JD-FL-7](../../../../docs/plans/flood/decisions.md)/[JD-FL-8](../../../../docs/plans/flood/decisions.md)).
+#
+# > **Honest:** PML@100/500-yr is anchored to real BLE; EAL rests on the measurement-anchored 10/25/50-yr depths
+# > (JD-FL-8). §2b shows how much that densification moves EAL. The curve is built generically from whatever RPs M3
+# > emits. Plan: [`m4_loss_metrics.md`](../../../../docs/plans/flood/m4_loss_metrics.md).
 
 # %%
 import json
@@ -42,11 +50,12 @@ while ROOT != ROOT.parent and not (ROOT / "AGENTS.md").exists():
     ROOT = ROOT.parent
 OUT = ROOT / "data" / "flood"
 
-m3 = pd.DataFrame(json.loads((OUT / "flood_m3_damage_manifest.json").read_text())["sites"])
+m3 = pd.DataFrame(json.loads((OUT / "flood_solar_m3_damage_manifest.json").read_text())["sites"])
 sites = m3.groupby("name").agg(role=("role", "first"), tiv_usd=("tiv_usd", "first")).reset_index()
 L = {(r["name"], r["sub_peril"], r["rp_years"]): r["cond_loss_frac_tiv"] for _, r in m3.iterrows()}   # keyed by sub_peril
-# real 10-yr exposure (BLE 10% extent, from M1) + the vendored damage curve (to price the onset depth)
-F10 = {s["name"]: s.get("rp10_inund_frac", 0.0) for s in json.loads((OUT / "flood_m1_catalog_manifest.json").read_text())["sites"]}
+# 10-yr riverine exposure now comes from M2's densified rows (Path 2: footprint reduction moved M1→M2, JD-FL-19)
+_m2rows = json.loads((OUT / "flood_solar_m2_coupling_manifest.json").read_text())["rows"]
+F10 = {r["name"]: r["exposure_fraction"] for r in _m2rows if r["sub_peril"] == "riverine" and r["rp_years"] == 10}
 _cv = json.loads((OUT / "damage_curves" / "flood_solar_asset_capex_weighted.json").read_text())
 
 
@@ -65,9 +74,9 @@ print("  10-yr riverine exposure (BLE 10% extent):", {n: f"{f*100:.0f}%" for n, 
 # %% [markdown]
 # ## 1 · Per-sub-peril loss-exceedance curves (one per sub_peril × site)
 #
-# Each `(site, sub_peril)` gets its own RP→loss curve from M3 — riverine (10/25/50/100/500-yr, BLE+densified) and
-# pluvial (10/25/50/100/500-yr, Atlas-14). `ONSET_AEP` (10-yr) is the most-frequent mapped flood for both; below it,
-# no modelled loss. §2 **co-samples** both at one annual severity and takes the **worse** ([JD-FL-11](../../../../docs/plans/flood/decisions.md)).
+# Each `(site, sub_peril)` gets its own RP→loss curve from M3 — riverine (10/25/50/100/500-yr, BLE + regression-
+# densified) and pluvial (10/25/50/100/500-yr, Atlas-14). `ONSET_AEP` (10-yr) is the most-frequent mapped flood for
+# both; below it, no modelled loss. §2 **co-samples** both at one annual severity and takes the **worse** ([JD-FL-11](../../../../docs/plans/flood/decisions.md)).
 
 # %%
 ONSET_AEP = 0.10        # 10-yr: the most-frequent mapped flood (both sub-perils); more frequent → no modelled loss
@@ -152,13 +161,13 @@ for _, r in M.iterrows():
 print("  (headline = worse-wins φ=1, used downstream; additive-capped = φ=0 upper bound, recorded sensitivity only — JD-FL-11)")
 
 # %% [markdown]
-# ## 2b · What the densification bought — densified EAL vs the old assumed-onset EAL
+# ## 2b · Densification sensitivity — regression-densified EAL vs an assumed-onset EAL
 #
-# Before JD-FL-8, the frequent region rested on a single flat **assumed 10-yr onset depth** (`real BLE exposure ×
-# Asset_DR(0.5 ft)`). Now the 10/25/50-yr points are **regression-rating depths anchored to both BLE depths**. Here's
-# how much that moved EAL (and what the old assumption would have given across a plausible onset-depth band).
-# **PML@100/500 are unchanged** (still the real BLE anchors). The M1 finding that the rating depths are near-invariant
-# to channel slope means this densified EAL is robust to the one free regression parameter.
+# Sensitivity check on the riverine frequent region: the densified EAL rests on **regression-rating depths anchored to
+# both BLE depths** (10/25/50-yr, per JD-FL-8), versus an assumed-onset EAL that rests on a single flat **10-yr onset
+# depth** (`BLE exposure × Asset_DR(onset_ft)`) swept across a plausible onset-depth band. PML@100/500 are the real BLE
+# anchors and are unaffected. Because the M1 rating depths are near-invariant to channel slope, the densified EAL is
+# robust to the one free regression parameter.
 
 # %%
 def eal_assumed_onset(name, onset_ft, n=200_000):   # the pre-JD-FL-8 RIVERINE method, for comparison only
@@ -175,6 +184,83 @@ cmp = pd.DataFrame(cmp_rows)
 print("Riverine EAL (% TIV): JD-FL-8 densified vs the old assumed-onset method (3 onset-depth guesses):")
 print(cmp.to_string(index=False))
 print("\n→ Densification replaces the onset guess with measurement-anchored 10/25/50-yr depths (riverine only).")
+
+# %% [markdown]
+# ## 2c · Coastal compound — surge × hurricane WIND, per subsystem (JD-FL-12), for coastal-exposed solar sites
+#
+# Per qualifying storm, combine the **surge** leg (this cell's coastal M3 `surge_loss`) and the **hurricane wind** leg
+# (`data/hurricane/tc_m3_damage`) **per subsystem**: `combined_DRₛ = max(wind_DRₛ, surge_DRₛ)`. Shared = PV_ARRAY +
+# SUBSTATION (both perils); wind-only = MOUNTING; surge-only = INVERTER/ELECTRICAL/CIVIL. Joined on `event_family_id`,
+# compound-Poisson MC at λ_surge. Coastal-exposed solar sites = **Discovery** + the all-three **LA3**.
+
+# %%
+TC = ROOT / "data" / "hurricane"
+TIV_W = {"PV_ARRAY": 0.33, "MOUNTING": 0.13, "SUBSTATION": 0.075, "INVERTER": 0.08,
+         "ELECTRICAL": 0.10, "CIVIL_INFRA": 0.08, "SCADA": 0.03, "BOS_REMAIN": 0.175}   # canonical solar split (02_coastal_compound)
+SHARED = ["PV_ARRAY", "SUBSTATION"]
+WIND_C = {"PV_ARRAY": {"L": 0.85, "k": 0.055, "x0": 148}, "MOUNTING": {"L": 0.80, "k": 0.055, "x0": 120},
+          "SUBSTATION": {"L": 0.80, "k": 0.040, "x0": 120}}                              # 3-s gust mph
+SURGE_C = {"PV_ARRAY": {"L": 0.90, "k": 1.8, "x0": 2.5}, "SUBSTATION": {"L": 0.95, "k": 2.5, "x0": 1.5},
+           "INVERTER": {"L": 0.95, "k": 3.5, "x0": 0.75}, "ELECTRICAL": {"L": 0.55, "k": 1.0, "x0": 3.0},
+           "CIVIL_INFRA": {"L": 0.70, "k": 1.2, "x0": 2.0}}                              # depth ft
+def _cdr(c, x):
+    raw = c["L"] / (1 + np.exp(-c["k"] * (x - c["x0"]))); base = c["L"] / (1 + np.exp(-c["k"] * (0 - c["x0"])))
+    return np.clip((raw - base) / (1 - base), 0, 1)
+def cp_metrics(annual, tiv):
+    return {"EAL_pct": annual.mean()/tiv*100, "PML100_pct": np.quantile(annual, 0.99)/tiv*100,
+            "PML250_pct": np.quantile(annual, 0.996)/tiv*100, "PML500_pct": np.quantile(annual, 0.998)/tiv*100}
+
+cman = json.loads((OUT / "flood_coastal_m1_catalog_manifest.json").read_text())
+coastal_solar = [c for c in cman["sites"] if c["asset"] == "solar" and c["exposed"]]
+wind_leg = pd.read_parquet(TC / "tc_m3_damage.parquet")
+compound_metrics, coastal_vectors = {}, {}
+for cs in coastal_solar:
+    cslug, nm, lam = cs["slug"], cs["name"], cs["lambda_per_yr"]
+    surge = pd.read_parquet(OUT / f"{cslug}_flood_solar_coastal_m3_surge_loss.parquet")
+    TIV = float(surge["tiv_usd"].iloc[0])
+    w = wind_leg[wind_leg.site == nm][["event_family_id", "gust_3s_mph"]]
+    df = w.merge(surge[["event_family_id", "conditional_depth_ft", "exposure_fraction"]], on="event_family_id", how="left")
+    df["conditional_depth_ft"] = df["conditional_depth_ft"].fillna(0.0); df["exposure_fraction"] = df["exposure_fraction"].fillna(0.0)
+    g, d, ex = df["gust_3s_mph"].values, df["conditional_depth_ft"].values, df["exposure_fraction"].values
+    wind_DR = {s: _cdr(WIND_C[s], g) for s in WIND_C}                 # PV, MOUNTING, SUBSTATION
+    surge_DR = {s: ex * _cdr(SURGE_C[s], d) for s in SURGE_C}         # exposure-scaled (areal surge)
+    def asset_loss(mode):
+        loss = np.zeros(len(df))
+        for sub, wt in TIV_W.items():
+            wd = wind_DR.get(sub, 0.0); sd = surge_DR.get(sub, 0.0)
+            dri = wd if mode == "wind" else sd if mode == "surge" else np.maximum(wd, sd)   # headline = max per subsystem
+            loss = loss + wt * np.asarray(dri)
+        return loss * TIV
+    df["wind_loss"], df["surge_loss"], df["compound_loss"] = asset_loss("wind"), asset_loss("surge"), asset_loss("headline")
+    counts = rng.poisson(lam, N); n_ev = int(counts.sum())           # ONE shared storm draw (per-realization compound ≥ each leg)
+    idx = rng.integers(0, len(df), n_ev); yr = np.repeat(np.arange(N), counts)
+    annual_of = lambda col: np.bincount(yr, weights=df[col].values[idx], minlength=N)
+    coa_annual = annual_of("compound_loss"); coastal_vectors[nm] = coa_annual / TIV
+    compound_metrics[nm] = {"lambda_per_yr": lam, "n_storms_wind": int(len(df)),
+                            "wind_only": cp_metrics(annual_of("wind_loss"), TIV), "surge_only": cp_metrics(annual_of("surge_loss"), TIV),
+                            "compound": cp_metrics(coa_annual, TIV)}
+    cm = compound_metrics[nm]
+    print(f"{nm} — coastal compound (λ={lam:.4f}/yr, {len(df)} wind storms): wind-only {cm['wind_only']['EAL_pct']:.3f}% · "
+          f"surge-only {cm['surge_only']['EAL_pct']:.3f}% · COMPOUND {cm['compound']['EAL_pct']:.3f}% · PML500 {cm['compound']['PML500_pct']:.2f}%")
+
+# %% [markdown]
+# ## 2d · Total flood per site = inland (annual-max) + coastal (compound-Poisson), independent streams (JD-FL-17)
+#
+# Inland-only sites (Elizabeth) keep their inland total; coastal-only (Discovery) is `0 + coastal`; the all-three
+# **LA3** gains both. Absent sub-perils enter as 0 — the same general engine as wind.
+
+# %%
+total_metrics = {}
+for nm in sorted(set(sites["name"]) | set(coastal_vectors)):
+    inland = vectors.get(nm, np.zeros(N)); coa = coastal_vectors.get(nm, np.zeros(N)); tot = inland + coa
+    total_metrics[nm] = {"inland_eal_pct": inland.mean()*100, "coastal_eal_pct": coa.mean()*100,
+                         "EAL_pct": tot.mean()*100, "PML100_pct": np.percentile(tot, 99)*100,
+                         "PML250_pct": np.percentile(tot, 99.6)*100, "PML500_pct": np.percentile(tot, 99.8)*100}
+    vectors[nm + "__total"] = tot
+print("\ntotal flood (inland + coastal), % of TIV:")
+for nm, tm in total_metrics.items():
+    print(f"  {nm:24s} inland {tm['inland_eal_pct']:.3f} + coastal {tm['coastal_eal_pct']:.3f} = "
+          f"TOTAL EAL {tm['EAL_pct']:.3f}% · PML100 {tm['PML100_pct']:.2f}% · PML500 {tm['PML500_pct']:.2f}%")
 
 # %% [markdown]
 # ## 3 · Plots — loss-exceedance curve + annual-loss distribution
@@ -198,9 +284,9 @@ axH.set_xscale("symlog", linthresh=0.01); axH.set_yscale("log"); axH.set_ylim(1e
 axH.set_xlabel("annual loss (% TIV)"); axH.set_ylabel("annual exceedance prob")
 axH.set_title("Simulated annual-loss exceedance (MC)"); axH.legend(fontsize=8); axH.grid(alpha=0.3)
 fig.suptitle("Flood × solar M4 — annual loss & metrics")
-fig.tight_layout(); fig.savefig(OUT / "flood_m4_loss_metrics.png", dpi=120, bbox_inches="tight")
+fig.tight_layout()
 plt.show()
-print("wrote:", OUT / "flood_m4_loss_metrics.png")
+
 
 # %% [markdown]
 # ## 4 · Known-answer checks (basics-spot-on)
@@ -221,7 +307,13 @@ assert eliz["EAL_pct"] > hay["EAL_pct"], "Elizabeth should dominate Hayhurst"
 print(f"✓ combine frame check: Elizabeth PML100 {eliz['PML100_pct']:.2f}% ≈ max-sp L100 {maxL('Elizabeth Solar Plant',100)*100:.2f}% | PML500 {eliz['PML500_pct']:.2f}% ≈ {maxL('Elizabeth Solar Plant',500)*100:.2f}%")
 print(f"✓ Elizabeth: EAL {eliz['EAL_pct']:.3f}% < PML100 {eliz['PML100_pct']:.2f}% < PML500 {eliz['PML500_pct']:.2f}% TIV (monotone), ≥ each marginal")
 print(f"✓ Elizabeth EAL {eliz['EAL_pct']:.3f}% > Hayhurst EAL {hay['EAL_pct']:.3f}% (contrast)")
-print("✓ M4 known-answer checks pass (combined riverine + pluvial).")
+for nm, cm in compound_metrics.items():
+    assert cm["compound"]["EAL_pct"] >= cm["surge_only"]["EAL_pct"] - 1e-9, "compound ≥ surge-only (per-subsystem max)"
+    assert cm["compound"]["EAL_pct"] >= cm["wind_only"]["EAL_pct"] - 1e-9, "compound ≥ wind-only (per-subsystem max)"
+    assert total_metrics[nm]["EAL_pct"] >= cm["compound"]["EAL_pct"] - 1e-9, "total ≥ coastal compound (inland adds)"
+    print(f"✓ COASTAL COMPOUND {nm}: compound EAL {cm['compound']['EAL_pct']:.3f}% ≥ max(wind {cm['wind_only']['EAL_pct']:.3f}%, "
+          f"surge {cm['surge_only']['EAL_pct']:.3f}%) — per-subsystem max on the joined storm stream (JD-FL-12)")
+print("✓ M4 known-answer checks pass (riverine + pluvial + coastal compound + total).")
 
 # %% [markdown]
 # ## 4b · External validation — observed flood depths (USGS high-water marks)
@@ -235,7 +327,7 @@ print("✓ M4 known-answer checks pass (combined riverine + pluvial).")
 import math
 import requests
 
-prov = pd.DataFrame(json.loads((OUT / "flood_m0_sites.json").read_text())["sites"])
+prov = pd.DataFrame(json.loads((OUT / "flood_solar_m0_sites.json").read_text())["sites"])
 prov = prov[prov.role.str.contains("proving")].iloc[0]
 # the HWM are river/channel flood marks → compare to the RIVERINE modeled depths
 _rivd = m3[(m3.name == prov["name"]) & (m3.sub_peril == "riverine")]["conditional_depth_m"]
@@ -266,13 +358,24 @@ except Exception as e:
 # ## 5 · Persist metrics + per-year vectors
 
 # %%
-for nm, v in vectors.items():
+for key, v in vectors.items():                                  # keys: "<site>" (inland) + "<site>__total" (inland+coastal)
+    nm = key.replace("__total", ""); sfx = "_total" if key.endswith("__total") else ""
     slug = nm.lower().replace(" ", "_").replace(",", "")
-    pd.DataFrame({"annual_loss_frac_tiv": v}).to_parquet(OUT / f"{slug}_flood_m4_annual_vectors.parquet")  # gitignored
+    pd.DataFrame({"annual_loss_frac_tiv": v}).to_parquet(OUT / f"{slug}_flood_solar_m4_annual_vectors{sfx}.parquet")  # gitignored
 manifest = {
-    "peril": "flood", "sub_peril": ["riverine", "pluvial"], "event_family_id": None, "layer": "M4",
-    "event_model": "annual-max MC; sub-perils co-sampled comonotonic, combined worse-source-wins (JD-FL-7/JD-FL-11)",
-    "combine_rule": "HEADLINE = max(riverine, pluvial) at one annual AEP (φ=1, shared-ground; research-backed, Bates 2021); metrics on the JOINT per-year vector",
+    "peril": "flood", "sub_peril": ["riverine", "pluvial", "coastal"], "event_family_id": None, "layer": "M4",
+    "event_model": "INLAND (riverine+pluvial): annual-max MC, co-sampled comonotonic worse-source-wins (JD-FL-7/11). "
+                   "COASTAL: compound-Poisson surge×hurricane-wind, per-subsystem max(wind,surge) on event_family_id (JD-FL-12). "
+                   "TOTAL = inland + coastal (independent streams). The UNIFIED solar M4 (JD-FL-17, LA3 all-three site).",
+    "coastal_compound": {nm: {"lambda_per_yr": cm["lambda_per_yr"], "n_storms_wind": cm["n_storms_wind"],
+                              "wind_only_eal_pct": round(cm["wind_only"]["EAL_pct"], 4),
+                              "surge_only_eal_pct": round(cm["surge_only"]["EAL_pct"], 4),
+                              "compound": {k: round(v, 4) for k, v in cm["compound"].items()}}
+                         for nm, cm in compound_metrics.items()},
+    "total_flood": {nm: {k: round(v, 4) for k, v in tm.items()} for nm, tm in total_metrics.items()},
+    "wind_leg_source": "data/hurricane/tc_m3_damage.parquet (hurricane × solar, per-storm gust at LA3/Discovery, event_family_id join)",
+    "compound_combine": "per subsystem max(wind_DR, surge_DR); shared = PV_ARRAY+SUBSTATION, wind-only = MOUNTING, surge-only = INVERTER/ELECTRICAL/CIVIL (JD-FL-12)",
+    "combine_rule": "INLAND HEADLINE = max(riverine, pluvial) at one annual AEP (φ=1, shared-ground; research-backed, Bates 2021); metrics on the JOINT per-year vector",
     "combine_envelope_sensitivity": {nm: {"headline_eal_pct": round(M[M.name == nm]["EAL_pct"].iloc[0], 3),
                                           "additive_capped_eal_pct_UB": round(M[M.name == nm]["EAL_addUB_pct"].iloc[0], 3),
                                           "note": "headline worse-wins (used downstream) → additive-capped upper bound (recorded only)"}
@@ -288,8 +391,8 @@ manifest = {
     "external_validation": validation,
     "metrics": json.loads(M.round(2).to_json(orient="records")),
 }
-(OUT / "flood_m4_metrics_manifest.json").write_text(json.dumps(manifest, indent=2))
-print("wrote:", OUT / "flood_m4_metrics_manifest.json")
+(OUT / "flood_solar_m4_metrics_manifest.json").write_text(json.dumps(manifest, indent=2))
+print("wrote:", OUT / "flood_solar_m4_metrics_manifest.json")
 
 # %% [markdown]
 # ## Findings — flood × solar, M0→M4 complete

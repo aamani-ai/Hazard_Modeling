@@ -34,7 +34,7 @@ per RP (frequency is the RP itself; the RP→MC bridge is the open M4 event-mode
 2. Emit the coupling contract: `exposure_fraction`, `conditional_depth_m`, `depth_max_m` per site × RP.
 3. Plot exposure × conditional-depth vs return period (the two sites).
 4. Known-answer: exposure + depth **grow** with RP for the high site; high site exposure×depth ≫ Hayhurst.
-5. Persist `flood_m2_coupling_manifest.json` (sub-peril-keyed, `event_family_id` reserved — JD-FL-4).
+5. Persist `flood_solar_m2_coupling_manifest.json` (sub-peril-keyed, `event_family_id` reserved — JD-FL-4).
 
 ## Verification checklist
 - [ ] `exposure_fraction` and `conditional_depth` monotone (non-decreasing) 100-yr → 500-yr at the high site.

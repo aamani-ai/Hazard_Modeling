@@ -1,0 +1,356 @@
+{
+  "peril": "flood",
+  "sub_peril": "pluvial",
+  "event_family_id": null,
+  "layer": "M1",
+  "kind": "shared asset-independent runoff field, ALL sites (Path 2 / JD-FL-19) \u2014 ponding deferred to each asset's M2",
+  "depth_source": {
+    "method": "NOAA Atlas 14 24-hr rainfall \u2192 SCS-CN runoff Q (one method, every site; JD-FL-9)",
+    "runoff": "SCS Curve Number CN=80.0",
+    "retention_r_for_M2": 0.5,
+    "return_periods_yr": [
+      10,
+      25,
+      50,
+      100,
+      500
+    ],
+    "units": "metres"
+  },
+  "caveats": [
+    "No depth anchor (JD-FL-9). PNW (Shepherds Flat) outside Atlas 14 \u2192 pluvial 0 (coverage gap).",
+    "Ponding fraction f + ponding now per-asset in M2: solar = areal lidar; wind = per-node lidar + pad-gate (JD-FL-19/W6)."
+  ],
+  "field": [
+    {
+      "asset": "solar",
+      "slug": "hayhurst_texas_solar",
+      "name": "Hayhurst Texas Solar",
+      "role": "baseline (low-flood)",
+      "rp_years": 10,
+      "aep": 0.1,
+      "rain_in": 3.73,
+      "runoff_m": 0.0462,
+      "atlas14_covered": true
+    },
+    {
+      "asset": "solar",
+      "slug": "hayhurst_texas_solar",
+      "name": "Hayhurst Texas Solar",
+      "role": "baseline (low-flood)",
+      "rp_years": 25,
+      "aep": 0.04,
+      "rain_in": 4.73,
+      "runoff_m": 0.0675,
+      "atlas14_covered": true
+    },
+    {
+      "asset": "solar",
+      "slug": "hayhurst_texas_solar",
+      "name": "Hayhurst Texas Solar",
+      "role": "baseline (low-flood)",
+      "rp_years": 50,
+      "aep": 0.02,
+      "rain_in": 5.55,
+      "runoff_m": 0.0858,
+      "atlas14_covered": true
+    },
+    {
+      "asset": "solar",
+      "slug": "hayhurst_texas_solar",
+      "name": "Hayhurst Texas Solar",
+      "role": "baseline (low-flood)",
+      "rp_years": 100,
+      "aep": 0.01,
+      "rain_in": 6.41,
+      "runoff_m": 0.1055,
+      "atlas14_covered": true
+    },
+    {
+      "asset": "solar",
+      "slug": "hayhurst_texas_solar",
+      "name": "Hayhurst Texas Solar",
+      "role": "baseline (low-flood)",
+      "rp_years": 500,
+      "aep": 0.002,
+      "rain_in": 8.5,
+      "runoff_m": 0.1548,
+      "atlas14_covered": true
+    },
+    {
+      "asset": "solar",
+      "slug": "elizabeth_solar_plant",
+      "name": "Elizabeth Solar Plant",
+      "role": "proving (high-flood)",
+      "rp_years": 10,
+      "aep": 0.1,
+      "rain_in": 7.75,
+      "runoff_m": 0.1369,
+      "atlas14_covered": true
+    },
+    {
+      "asset": "solar",
+      "slug": "elizabeth_solar_plant",
+      "name": "Elizabeth Solar Plant",
+      "role": "proving (high-flood)",
+      "rp_years": 25,
+      "aep": 0.04,
+      "rain_in": 9.87,
+      "runoff_m": 0.1879,
+      "atlas14_covered": true
+    },
+    {
+      "asset": "solar",
+      "slug": "elizabeth_solar_plant",
+      "name": "Elizabeth Solar Plant",
+      "role": "proving (high-flood)",
+      "rp_years": 50,
+      "aep": 0.02,
+      "rain_in": 11.7,
+      "runoff_m": 0.2326,
+      "atlas14_covered": true
+    },
+    {
+      "asset": "solar",
+      "slug": "elizabeth_solar_plant",
+      "name": "Elizabeth Solar Plant",
+      "role": "proving (high-flood)",
+      "rp_years": 100,
+      "aep": 0.01,
+      "rain_in": 13.8,
+      "runoff_m": 0.2844,
+      "atlas14_covered": true
+    },
+    {
+      "asset": "solar",
+      "slug": "elizabeth_solar_plant",
+      "name": "Elizabeth Solar Plant",
+      "role": "proving (high-flood)",
+      "rp_years": 500,
+      "aep": 0.002,
+      "rain_in": 19.6,
+      "runoff_m": 0.429,
+      "atlas14_covered": true
+    },
+    {
+      "asset": "solar",
+      "slug": "la3_west_baton_rouge_solar_facility",
+      "name": "LA3 West Baton Rouge Solar Facility",
+      "role": "all-three (coastal+riverine+pluvial)",
+      "rp_years": 10,
+      "aep": 0.1,
+      "rain_in": 7.42,
+      "runoff_m": 0.1291,
+      "atlas14_covered": true
+    },
+    {
+      "asset": "solar",
+      "slug": "la3_west_baton_rouge_solar_facility",
+      "name": "LA3 West Baton Rouge Solar Facility",
+      "role": "all-three (coastal+riverine+pluvial)",
+      "rp_years": 25,
+      "aep": 0.04,
+      "rain_in": 9.18,
+      "runoff_m": 0.1712,
+      "atlas14_covered": true
+    },
+    {
+      "asset": "solar",
+      "slug": "la3_west_baton_rouge_solar_facility",
+      "name": "LA3 West Baton Rouge Solar Facility",
+      "role": "all-three (coastal+riverine+pluvial)",
+      "rp_years": 50,
+      "aep": 0.02,
+      "rain_in": 10.7,
+      "runoff_m": 0.2081,
+      "atlas14_covered": true
+    },
+    {
+      "asset": "solar",
+      "slug": "la3_west_baton_rouge_solar_facility",
+      "name": "LA3 West Baton Rouge Solar Facility",
+      "role": "all-three (coastal+riverine+pluvial)",
+      "rp_years": 100,
+      "aep": 0.01,
+      "rain_in": 12.3,
+      "runoff_m": 0.2473,
+      "atlas14_covered": true
+    },
+    {
+      "asset": "solar",
+      "slug": "la3_west_baton_rouge_solar_facility",
+      "name": "LA3 West Baton Rouge Solar Facility",
+      "role": "all-three (coastal+riverine+pluvial)",
+      "rp_years": 500,
+      "aep": 0.002,
+      "rain_in": 16.5,
+      "runoff_m": 0.3515,
+      "atlas14_covered": true
+    },
+    {
+      "asset": "wind_farm",
+      "slug": "green_river_il",
+      "name": "Green River",
+      "role": "proving (high-flood)",
+      "rp_years": 10,
+      "aep": 0.1,
+      "rain_in": 4.33,
+      "runoff_m": 0.0589,
+      "atlas14_covered": true
+    },
+    {
+      "asset": "wind_farm",
+      "slug": "green_river_il",
+      "name": "Green River",
+      "role": "proving (high-flood)",
+      "rp_years": 25,
+      "aep": 0.04,
+      "rain_in": 5.21,
+      "runoff_m": 0.0782,
+      "atlas14_covered": true
+    },
+    {
+      "asset": "wind_farm",
+      "slug": "green_river_il",
+      "name": "Green River",
+      "role": "proving (high-flood)",
+      "rp_years": 50,
+      "aep": 0.02,
+      "rain_in": 5.95,
+      "runoff_m": 0.0949,
+      "atlas14_covered": true
+    },
+    {
+      "asset": "wind_farm",
+      "slug": "green_river_il",
+      "name": "Green River",
+      "role": "proving (high-flood)",
+      "rp_years": 100,
+      "aep": 0.01,
+      "rain_in": 6.75,
+      "runoff_m": 0.1134,
+      "atlas14_covered": true
+    },
+    {
+      "asset": "wind_farm",
+      "slug": "green_river_il",
+      "name": "Green River",
+      "role": "proving (high-flood)",
+      "rp_years": 500,
+      "aep": 0.002,
+      "rain_in": 8.89,
+      "runoff_m": 0.1642,
+      "atlas14_covered": true
+    },
+    {
+      "asset": "wind_farm",
+      "slug": "shepherds_flat_or",
+      "name": "Shepherds Flat",
+      "role": "baseline (low-flood)",
+      "rp_years": 10,
+      "aep": 0.1,
+      "rain_in": null,
+      "runoff_m": 0.0,
+      "atlas14_covered": false
+    },
+    {
+      "asset": "wind_farm",
+      "slug": "shepherds_flat_or",
+      "name": "Shepherds Flat",
+      "role": "baseline (low-flood)",
+      "rp_years": 25,
+      "aep": 0.04,
+      "rain_in": null,
+      "runoff_m": 0.0,
+      "atlas14_covered": false
+    },
+    {
+      "asset": "wind_farm",
+      "slug": "shepherds_flat_or",
+      "name": "Shepherds Flat",
+      "role": "baseline (low-flood)",
+      "rp_years": 50,
+      "aep": 0.02,
+      "rain_in": null,
+      "runoff_m": 0.0,
+      "atlas14_covered": false
+    },
+    {
+      "asset": "wind_farm",
+      "slug": "shepherds_flat_or",
+      "name": "Shepherds Flat",
+      "role": "baseline (low-flood)",
+      "rp_years": 100,
+      "aep": 0.01,
+      "rain_in": null,
+      "runoff_m": 0.0,
+      "atlas14_covered": false
+    },
+    {
+      "asset": "wind_farm",
+      "slug": "shepherds_flat_or",
+      "name": "Shepherds Flat",
+      "role": "baseline (low-flood)",
+      "rp_years": 500,
+      "aep": 0.002,
+      "rain_in": null,
+      "runoff_m": 0.0,
+      "atlas14_covered": false
+    },
+    {
+      "asset": "wind_farm",
+      "slug": "amazon_wind_us_east",
+      "name": "Amazon Wind Farm US East",
+      "role": "all-three (coastal+riverine+pluvial)",
+      "rp_years": 10,
+      "aep": 0.1,
+      "rain_in": 5.75,
+      "runoff_m": 0.0903,
+      "atlas14_covered": true
+    },
+    {
+      "asset": "wind_farm",
+      "slug": "amazon_wind_us_east",
+      "name": "Amazon Wind Farm US East",
+      "role": "all-three (coastal+riverine+pluvial)",
+      "rp_years": 25,
+      "aep": 0.04,
+      "rain_in": 7.11,
+      "runoff_m": 0.1218,
+      "atlas14_covered": true
+    },
+    {
+      "asset": "wind_farm",
+      "slug": "amazon_wind_us_east",
+      "name": "Amazon Wind Farm US East",
+      "role": "all-three (coastal+riverine+pluvial)",
+      "rp_years": 50,
+      "aep": 0.02,
+      "rain_in": 8.26,
+      "runoff_m": 0.1491,
+      "atlas14_covered": true
+    },
+    {
+      "asset": "wind_farm",
+      "slug": "amazon_wind_us_east",
+      "name": "Amazon Wind Farm US East",
+      "role": "all-three (coastal+riverine+pluvial)",
+      "rp_years": 100,
+      "aep": 0.01,
+      "rain_in": 9.53,
+      "runoff_m": 0.1796,
+      "atlas14_covered": true
+    },
+    {
+      "asset": "wind_farm",
+      "slug": "amazon_wind_us_east",
+      "name": "Amazon Wind Farm US East",
+      "role": "all-three (coastal+riverine+pluvial)",
+      "rp_years": 500,
+      "aep": 0.002,
+      "rain_in": 13.0,
+      "runoff_m": 0.2646,
+      "atlas14_covered": true
+    }
+  ]
+}

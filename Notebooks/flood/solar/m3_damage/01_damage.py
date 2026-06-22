@@ -12,20 +12,24 @@
 # ---
 
 # %% [markdown]
-# # Flood → Solar · M3 damage — capex-weighted depth-damage
+# # Flood · Solar — M3 damage: capex-weighted depth-damage over all three sub-perils
 #
-# **Peril:** Flood (riverine) · **Asset:** Solar · **Layer:** M3 (damage) · sub-peril `riverine`
+# **Peril:** Flood · **Asset:** Solar · **Layer:** M3 (damage) · sub-perils `riverine` + `pluvial` + `coastal`
+# (the solar M3 prices all three; per JD-FL-17, LA3 West Baton Rouge is the all-three solar site)
 #
-# **Goal:** map the M2 coupled flood depth → a **capex-weighted subsystem damage ratio**, then
-# `conditional_loss = exposure × Asset_DR(conditional_depth) × TIV`. The **house recipe** (same as hail / wildfire /
-# wind): per-subsystem logistic `DR(x)=L/(1+exp(-k(x-x0)))`, anchored `DR(0)=0`, blended by NREL capex weights.
+# **Magnitude metric:** flood **depth (ft above ground)** — the source-agnostic intensity for all three sub-perils;
+# riverine/pluvial conditional depth by return period, coastal surge conditional depth per storm.
 #
-# **Curves = the canonical `infrasure-damage-curves` library — RIVERINE_FLOOD × solar** (`FLOOD_x_SOLAR.md`,
-# `master_curve_index.json`, priority 4). Intensity = **flood depth (ft) above ground**. The genuinely flood-specific
-# physics — the **height inversion** — is baked into each `x0`: ground-level **inverters drown at ~0.75 ft**, while
-# elevated **panels (x0 2.5 ft) survive shallow water**; underground **cables are resilient** (L 0.55). So no separate
-# mount-height step is needed — `x0` *is* the elevation. (Same library hail/wildfire/wind use; A22's "no curve" is
-# superseded.)
+# **Data source:** the canonical **`infrasure-damage-curves`** library — **RIVERINE_FLOOD × solar** (`FLOOD_x_SOLAR.md`,
+# the infrasure-damage-curves library, priority 4); NREL solar BoS capex weights; M2 coupled depths.
+#
+# **What this notebook does:** maps the M2 coupled flood depth → a **capex-weighted subsystem damage ratio**, then
+# `conditional_loss = exposure × Asset_DR(conditional_depth) × TIV`. The house recipe (same as hail / wildfire / wind):
+# per-subsystem logistic `DR(x)=L/(1+exp(-k(x-x0)))`, anchored `DR(0)=0`, blended by capex weights. **One
+# source-agnostic curve** applies to all three sub-perils — riverine/pluvial by return period and coastal surge per
+# storm. The flood-specific physics — the **height inversion** — is baked into each `x0`: ground-level **inverters
+# drown at ~0.75 ft**, while elevated **panels (x0 2.5 ft) survive shallow water** and underground **cables are
+# resilient** (L 0.55), so `x0` itself encodes component elevation and no separate mount-height step is needed.
 #
 # > Plan: [`m3_damage.md`](../../../../docs/plans/flood/m3_damage.md) · Curves vendored to
 # > `data/flood/damage_curves/` for reproducibility. **Confidence: medium**; duration unmodeled (Gen-1).
@@ -42,7 +46,7 @@ while ROOT != ROOT.parent and not (ROOT / "AGENTS.md").exists():
 OUT = ROOT / "data" / "flood"
 FT_M = 0.3048
 
-m2 = pd.DataFrame(json.loads((OUT / "flood_m2_coupling_manifest.json").read_text())["rows"])
+m2 = pd.DataFrame(json.loads((OUT / "flood_solar_m2_coupling_manifest.json").read_text())["rows"])
 print("M2 coupling contract (input — all sub-perils):")
 print(m2[["sub_peril", "name", "rp_years", "exposure_fraction", "conditional_depth_m"]].to_string(index=False))
 
@@ -101,9 +105,9 @@ for _, s in m2[(m2.rp_years == 500) & (m2.sub_peril == "riverine")].iterrows():
 ax.set_xlabel("flood depth above ground (ft)"); ax.set_ylabel("damage ratio (anchored)")
 ax.set_title("Flood × solar depth-damage — RIVERINE_FLOOD × solar (infrasure-damage-curves)")
 ax.legend(fontsize=7, ncol=2); ax.grid(alpha=0.3)
-fig.tight_layout(); fig.savefig(OUT / "flood_m3_damage_curve.png", dpi=120, bbox_inches="tight")
+fig.tight_layout()
 plt.show()
-print("wrote:", OUT / "flood_m3_damage_curve.png")
+
 
 # %% [markdown]
 # ## 3 · Conditional loss per site × return period
@@ -113,7 +117,10 @@ print("wrote:", OUT / "flood_m3_damage_curve.png")
 
 # %%
 TIV_PER_MW = 36_778_400 / 24.8     # Hayhurst hail TIV basis
-MW = {"Hayhurst Texas Solar": 24.8, "Elizabeth Solar Plant": 142.8}
+# MW from BOTH solar rosters (inland: Hayhurst/Elizabeth/LA3 · coastal: Discovery/LA3) so the all-three LA3 + the
+# coastal-only Discovery both resolve — no hardcoded dict (JD-FL-17 unify).
+MW = ({s["name"]: s["solar_mw"] for s in json.loads((OUT / "flood_solar_m0_sites.json").read_text())["sites"]}
+      | {s["name"]: s["solar_mw"] for s in json.loads((OUT / "flood_solar_coastal_m0_sites.json").read_text())["sites"]})
 m2["tiv_usd"] = m2["name"].map(lambda n: round(MW[n] * TIV_PER_MW))
 m2["depth_ft"] = m2["conditional_depth_m"] / FT_M
 m2["asset_dr"] = m2["depth_ft"].map(asset_dr).round(4)
@@ -121,6 +128,32 @@ m2["cond_loss_frac_tiv"] = (m2["exposure_fraction"] * m2["asset_dr"]).round(4)
 m2["cond_loss_usd"] = (m2["cond_loss_frac_tiv"] * m2["tiv_usd"]).round(0)
 print(m2[["sub_peril", "name", "rp_years", "depth_ft", "exposure_fraction", "asset_dr", "cond_loss_frac_tiv", "cond_loss_usd"]]
       .to_string(index=False))
+
+# %% [markdown]
+# ## 3b · Coastal — per-storm surge damage (same curve), for each coastal-exposed solar site
+#
+# Apply the **same** flood × solar curve to the coastal M2 per-storm conditional depth → per-storm surge loss, for
+# Discovery + the all-three **LA3**. Output: per-site `*_flood_solar_coastal_m3_surge_loss.parquet` (event-based,
+# `event_family_id`-stamped) — the input M4's coastal compound combine joins to the hurricane wind leg (JD-FL-12).
+
+# %%
+cman = json.loads((OUT / "flood_coastal_m1_catalog_manifest.json").read_text())
+coastal_solar = [c for c in cman["sites"] if c["asset"] == "solar" and c["exposed"]]
+coa_summ = []
+for cs in coastal_solar:
+    cslug, nm = cs["slug"], cs["name"]; TIV = MW[nm] * TIV_PER_MW
+    cc = pd.read_parquet(OUT / f"{cslug}_flood_solar_coastal_m2_coupling.parquet")
+    cc["asset_dr"] = cc["conditional_depth_ft"].map(asset_dr).round(5)
+    cc["surge_loss_frac_tiv"] = (cc["exposure_fraction"] * cc["asset_dr"]).round(5)
+    cc["surge_loss_usd"] = (cc["surge_loss_frac_tiv"] * TIV).round(0); cc["tiv_usd"] = round(TIV)
+    keep = ["site", "slug", "storm_ID", "event_family_id", "category", "near_site_vmax_kt", "min_dist_km",
+            "surge_depth_ft", "conditional_depth_ft", "exposure_fraction", "asset_dr",
+            "surge_loss_frac_tiv", "surge_loss_usd", "tiv_usd", "depth_source"]
+    cc[keep].sort_values("event_family_id").to_parquet(OUT / f"{cslug}_flood_solar_coastal_m3_surge_loss.parquet", index=False)
+    coa_summ.append({"name": nm, "slug": cslug, "n_storms": int(len(cc)), "tiv_usd": round(TIV),
+                     "max_event_surge_loss_pct": round(float(cc["surge_loss_frac_tiv"].max()) * 100, 3)})
+    print(f"  coastal {nm:24s}: {len(cc)} storms · max event surge loss {cc['surge_loss_frac_tiv'].max()*100:.2f}% of TIV "
+          f"(${cc['surge_loss_usd'].max()/1e6:.1f}M)")
 
 # %% [markdown]
 # ## 4 · Known-answer checks (basics-spot-on)
@@ -158,7 +191,7 @@ vendored = {
     "uncovered_subsystems_zero_damage": {**UNCOVERED, "note": "no flood curve → flood-immune"},
     "metadata": {
         "source_repo": "infrasure-damage-curves (Divi-patel/infrasure-damage-curves)",
-        "component_curves": "research/FLOOD_x_SOLAR.md via master_curve_index.json (RIVERINE_FLOOD × solar, priority 4)",
+        "component_curves": "infrasure-damage-curves (RIVERINE_FLOOD × solar) (RIVERINE_FLOOD × solar, priority 4)",
         "capex_weights": "NREL solar BoS (vendored from hail_solar_asset_capex_weighted.json) — peril-independent",
         "confidence": "medium; x0 encodes component elevation (the flood inversion); duration unmodeled (Gen-1)",
         "pv_variant": "single-axis horizontal stow (x0 2.5 ft); flood-stow (x0 7 ft) = mitigation lever",
@@ -167,15 +200,17 @@ vendored = {
 (OUT / "damage_curves" / "flood_solar_asset_capex_weighted.json").write_text(json.dumps(vendored, indent=2))
 
 manifest = {
-    "peril": "flood", "sub_peril": "riverine", "event_family_id": None, "layer": "M3",
-    "curve": "infrasure-damage-curves RIVERINE_FLOOD × solar, capex-weighted, anchored (medium confidence)",
+    "peril": "flood", "sub_peril": ["riverine", "pluvial", "coastal"], "event_family_id": None, "layer": "M3",
+    "curve": "infrasure-damage-curves RIVERINE_FLOOD × solar, capex-weighted, anchored (medium confidence) — source-agnostic, all three sub-perils",
     "conditional_loss_rule": "exposure × Asset_DR(conditional_depth) × TIV",
-    "tiv_basis": f"${TIV_PER_MW:,.0f}/MW (Hayhurst hail TIV); Elizabeth estimated",
-    "sites": json.loads(m2.to_json(orient="records")),
+    "tiv_basis": f"${TIV_PER_MW:,.0f}/MW (Hayhurst hail TIV); Elizabeth/LA3 estimated",
+    "rp_sites": json.loads(m2.to_json(orient="records")),                          # riverine + pluvial (RP-indexed)
+    "coastal_sites": coa_summ,                                                     # per-storm surge_loss parquets keyed by slug
+    "sites": json.loads(m2.to_json(orient="records")),                            # back-compat alias (= rp_sites)
 }
-(OUT / "flood_m3_damage_manifest.json").write_text(json.dumps(manifest, indent=2))
+(OUT / "flood_solar_m3_damage_manifest.json").write_text(json.dumps(manifest, indent=2))
 print("wrote:", OUT / "damage_curves" / "flood_solar_asset_capex_weighted.json")
-print("wrote:", OUT / "flood_m3_damage_manifest.json")
+print("wrote:", OUT / "flood_solar_m3_damage_manifest.json")
 
 # %% [markdown]
 # ## Findings & what's next

@@ -1,0 +1,225 @@
+{
+  "peril": "flood",
+  "sub_peril": [
+    "riverine",
+    "pluvial",
+    "coastal"
+  ],
+  "event_family_id": null,
+  "layer": "M4",
+  "event_model": "INLAND (riverine+pluvial): annual-max MC, co-sampled comonotonic worse-source-wins (JD-FL-7/11). COASTAL: compound-Poisson surge\u00d7hurricane-wind, per-subsystem max(wind,surge) on event_family_id (JD-FL-12). TOTAL = inland + coastal (independent streams). The UNIFIED solar M4 (JD-FL-17, LA3 all-three site).",
+  "coastal_compound": {
+    "Discovery Solar Center": {
+      "lambda_per_yr": 0.0289,
+      "n_storms_wind": 280,
+      "wind_only_eal_pct": 0.2507,
+      "surge_only_eal_pct": 0.1402,
+      "compound": {
+        "EAL_pct": 0.3375,
+        "PML100_pct": 9.3479,
+        "PML250_pct": 20.6975,
+        "PML500_pct": 38.7164
+      }
+    },
+    "LA3 West Baton Rouge Solar Facility": {
+      "lambda_per_yr": 0.0173,
+      "n_storms_wind": 51,
+      "wind_only_eal_pct": 0.0929,
+      "surge_only_eal_pct": 0.02,
+      "compound": {
+        "EAL_pct": 0.1074,
+        "PML100_pct": 4.5977,
+        "PML250_pct": 6.5134,
+        "PML500_pct": 7.2188
+      }
+    }
+  },
+  "total_flood": {
+    "Discovery Solar Center": {
+      "inland_eal_pct": 0.0,
+      "coastal_eal_pct": 0.3375,
+      "EAL_pct": 0.3375,
+      "PML100_pct": 9.3479,
+      "PML250_pct": 20.6975,
+      "PML500_pct": 38.7164
+    },
+    "Elizabeth Solar Plant": {
+      "inland_eal_pct": 0.1627,
+      "coastal_eal_pct": 0.0,
+      "EAL_pct": 0.1627,
+      "PML100_pct": 2.5951,
+      "PML250_pct": 3.5316,
+      "PML500_pct": 4.2624
+    },
+    "Hayhurst Texas Solar": {
+      "inland_eal_pct": 0.0302,
+      "coastal_eal_pct": 0.0,
+      "EAL_pct": 0.0302,
+      "PML100_pct": 0.28,
+      "PML250_pct": 0.4624,
+      "PML500_pct": 0.6063
+    },
+    "LA3 West Baton Rouge Solar Facility": {
+      "inland_eal_pct": 0.6534,
+      "coastal_eal_pct": 0.1074,
+      "EAL_pct": 0.7607,
+      "PML100_pct": 7.0026,
+      "PML250_pct": 10.0666,
+      "PML500_pct": 12.2387
+    }
+  },
+  "wind_leg_source": "data/hurricane/tc_m3_damage.parquet (hurricane \u00d7 solar, per-storm gust at LA3/Discovery, event_family_id join)",
+  "compound_combine": "per subsystem max(wind_DR, surge_DR); shared = PV_ARRAY+SUBSTATION, wind-only = MOUNTING, surge-only = INVERTER/ELECTRICAL/CIVIL (JD-FL-12)",
+  "combine_rule": "INLAND HEADLINE = max(riverine, pluvial) at one annual AEP (\u03c6=1, shared-ground; research-backed, Bates 2021); metrics on the JOINT per-year vector",
+  "combine_envelope_sensitivity": {
+    "Elizabeth Solar Plant": {
+      "headline_eal_pct": 0.163,
+      "additive_capped_eal_pct_UB": 0.166,
+      "note": "headline worse-wins (used downstream) \u2192 additive-capped upper bound (recorded only)"
+    },
+    "Hayhurst Texas Solar": {
+      "headline_eal_pct": 0.03,
+      "additive_capped_eal_pct_UB": 0.034,
+      "note": "headline worse-wins (used downstream) \u2192 additive-capped upper bound (recorded only)"
+    },
+    "LA3 West Baton Rouge Solar Facility": {
+      "headline_eal_pct": 0.653,
+      "additive_capped_eal_pct_UB": 0.68,
+      "note": "headline worse-wins (used downstream) \u2192 additive-capped upper bound (recorded only)"
+    }
+  },
+  "n_sim_years": 500000,
+  "onset_aep": 0.1,
+  "rp_points_per_site": {
+    "Elizabeth Solar Plant \u00b7 pluvial": [
+      10,
+      25,
+      50,
+      100,
+      500
+    ],
+    "Elizabeth Solar Plant \u00b7 riverine": [
+      10,
+      25,
+      50,
+      100,
+      500
+    ],
+    "Hayhurst Texas Solar \u00b7 pluvial": [
+      10,
+      25,
+      50,
+      100,
+      500
+    ],
+    "Hayhurst Texas Solar \u00b7 riverine": [
+      100,
+      500
+    ],
+    "LA3 West Baton Rouge Solar Facility \u00b7 pluvial": [
+      10,
+      25,
+      50,
+      100,
+      500
+    ],
+    "LA3 West Baton Rouge Solar Facility \u00b7 riverine": [
+      10,
+      25,
+      50,
+      100,
+      500
+    ]
+  },
+  "marginal_eal_pct": {
+    "Elizabeth Solar Plant \u00b7 pluvial": 0.003,
+    "Elizabeth Solar Plant \u00b7 riverine": 0.163,
+    "Hayhurst Texas Solar \u00b7 pluvial": 0.004,
+    "Hayhurst Texas Solar \u00b7 riverine": 0.03,
+    "LA3 West Baton Rouge Solar Facility \u00b7 pluvial": 0.026,
+    "LA3 West Baton Rouge Solar Facility \u00b7 riverine": 0.653
+  },
+  "metric_frame": "per-year loss vectors; PML_T = (1-1/T) percentile (DD-4)",
+  "caveats": [
+    "RIVERINE: BLE tail + JD-FL-8 regression densification (lower RPs); PML@100/500 BLE-anchored (solid).",
+    "PLUVIAL: blind-spot \u2014 Atlas-14 rainfall + SCS-CN + sheet ponding; NO depth anchor, assumption-driven (retention r, ponding-fraction f) \u2192 screening-grade; often DOMINATES the combined loss (driven by the f exposure knob).",
+    "COMBINE (JD-FL-11): comonotonic worse-wins \u2014 overstates correlation slightly, ignores compound stacking; independent-sum / additive-stacking are the sensitivity variants.",
+    "value\u221darea exposure; Elizabeth TIV estimated; medium-confidence curves; duration unmodeled; regression-Q + pluvial-knob uncertainty not yet propagated."
+  ],
+  "external_validation": {
+    "source": "USGS STN high-water marks (regional, Aug-2016 LA flood era)",
+    "n_marks": 21,
+    "observed_ft": {
+      "min": 0.0,
+      "median": 2.06,
+      "max": 7.9
+    },
+    "modeled_depth_ft": [
+      1.01,
+      1.18,
+      1.3,
+      1.42,
+      1.75
+    ],
+    "model_within_observed": true
+  },
+  "metrics": [
+    {
+      "name": "Elizabeth Solar Plant",
+      "role": "proving (high-flood)",
+      "tiv_usd": 211772400,
+      "EAL_pct": 0.16,
+      "EAL_usd": 344450.68,
+      "VaR99_pct": 2.6,
+      "TVaR99_pct": 3.63,
+      "PML100_pct": 2.6,
+      "PML250_pct": 3.53,
+      "PML500_pct": 4.26,
+      "PML100_usd": 5495678.22,
+      "PML250_usd": 7478929.34,
+      "PML500_usd": 9026595.87,
+      "EAL_pluvial_pct": 0.0,
+      "EAL_riverine_pct": 0.16,
+      "EAL_addUB_pct": 0.17,
+      "PML500_addUB_pct": 4.29
+    },
+    {
+      "name": "Hayhurst Texas Solar",
+      "role": "baseline (low-flood)",
+      "tiv_usd": 36778400,
+      "EAL_pct": 0.03,
+      "EAL_usd": 11110.39,
+      "VaR99_pct": 0.28,
+      "TVaR99_pct": 0.3,
+      "PML100_pct": 0.28,
+      "PML250_pct": 0.46,
+      "PML500_pct": 0.61,
+      "PML100_usd": 102979.52,
+      "PML250_usd": 170067.16,
+      "PML500_usd": 222999.32,
+      "EAL_pluvial_pct": 0.0,
+      "EAL_riverine_pct": 0.03,
+      "EAL_addUB_pct": 0.03,
+      "PML500_addUB_pct": 0.65
+    },
+    {
+      "name": "LA3 West Baton Rouge Solar Facility",
+      "role": "all-three (coastal+riverine+pluvial)",
+      "tiv_usd": 74150000,
+      "EAL_pct": 0.65,
+      "EAL_usd": 484465.49,
+      "VaR99_pct": 6.61,
+      "TVaR99_pct": 8.44,
+      "PML100_pct": 6.61,
+      "PML250_pct": 8.07,
+      "PML500_pct": 9.9,
+      "PML100_usd": 4898498.79,
+      "PML250_usd": 5985487.28,
+      "PML500_usd": 7343890.82,
+      "EAL_pluvial_pct": 0.03,
+      "EAL_riverine_pct": 0.65,
+      "EAL_addUB_pct": 0.68,
+      "PML500_addUB_pct": 10.16
+    }
+  ]
+}
