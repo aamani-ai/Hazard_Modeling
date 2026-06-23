@@ -2,7 +2,7 @@
 
 *The first modeling layer (it sits **under** [layer-0](00_hazard_definition.md), which authored the event method
 before any data): meet the raw hurricane evidence and **understand** it. "What tropical-cyclone hazard does the
-public record say exists at the two solar sites, and what do we really know about it?" Method-neutral —
+public record say exists at the four solar sites, and what do we really know about it?" Method-neutral —
 understanding, not the model. Mirrors hail's record-fit M0 and wildfire/flood's pre-integrated M0; hurricane meets
 **both shapes** — a storm-resolved catalog to build from (RAFT) **and** pre-integrated/observed surfaces to
 validate against (STORM RP grid, IBTrACS/HURDAT2).*
@@ -26,7 +26,7 @@ we don't read a pre-integrated profile at a point (we must *build* the field our
 | Source | Shape | Role in M0 |
 |---|---|---|
 | **RAFT** (synthetic tracks + intensity + rainfall) | storm-resolved catalog | **the build source** — the storms we'll turn into fields (M1) |
-| **IBTrACS / HURDAT2** (observed best tracks) | event record | **landfall-wind validation** — does the catalog (and later the Holland field) match reality? |
+| **HURDAT2** (observed best tracks; IBTrACS deferred — HURDAT2 suffices for US Atlantic) | event record | **frequency anchor + landfall-wind validation** — does the catalog (and later the Holland field) match reality? |
 | **STORM 10 km wind-RP GeoTIFF** | pre-integrated RP surface | **RP cross-check** — does our catalog's return-period wind agree (noting STORM's empirical-Weibull runs low past ~100-yr)? |
 
 > So M0 here is **understand the catalog, then bracket it** — not "fit a record" and not "read a surface." Both
@@ -39,9 +39,9 @@ we don't read a pre-integrated profile at a point (we must *build* the field our
 | Notebook | Source | What it is | Access |
 |---|---|---|---|
 | `01_raft_catalog` | **RAFT** (Risk Analysis Framework for TCs) | synthetic N. Atlantic tracks: position, along-track intensity (pressure/wind), radius params, **TC rainfall** | NetCDF; CC-BY-4.0; **Zenodo `10.5281/zenodo.10392723`** ✅ probed live (2026-06-19) — tracks file `RAFT.NA.v20231016.nc` **154 MB** (V1 spine); resolve via the Zenodo **API** (versioned record), don't hardcode a version |
-| `02_landfall_…` | **IBTrACS** (NCEI) | observed global best tracks, max wind, central pressure, 3-hourly | CSV/NetCDF; public domain |
-| `02_landfall_…` | **HURDAT2** (NHC) | Atlantic best tracks, 6-hourly center/wind/pressure | CSV; public domain |
-| `02_landfall_…` | **STORM 10 km wind-RP GeoTIFFs** (Zenodo 10931452) | max-wind return-period grids (m/s), 28 RPs | GeoTIFF; CC0 |
+| `02_landfall_record` | **IBTrACS** (NCEI) — *deferred at build (HURDAT2 suffices for US Atlantic)* | observed global best tracks, max wind, central pressure, 3-hourly | CSV/NetCDF; public domain |
+| `02_landfall_record` | **HURDAT2** (NHC) — *the record actually used* | Atlantic best tracks, 6-hourly center/wind/pressure | CSV; public domain |
+| `02_landfall_record` | **STORM 10 km wind-RP GeoTIFFs** (Zenodo 10931452) — *RP cross-check moved to M1* | max-wind return-period grids (m/s), 28 RPs | GeoTIFF; CC0 |
 | `03_site_geometry` | **OSM / EIA `powerplants_enriched_v2`** | solar footprint polygon + capacity (TIV basis) | public |
 | (screening) | **FEMA Hazus / NRI** (Hurricane) | tract-level loss benchmark | public |
 
@@ -82,11 +82,11 @@ concern — M0 only *reads* RAFT, it does not build fields. Notebooks are jupyte
 2. **Subset to the site neighborhood** — keep tracks whose closest approach passes within a stated collection
    radius of each site (radius *size* cancels in `λ_site`, [learning-06](../../learning_logs/06_collection_region_size_cancels.md)).
    Cache the subset.
-3. **Field-dictionary every variable** (value + meaning + units/base + what-it's-NOT): **wind in m/s** (⚠ →mph
-   ×2.237, [ATC-8](assumptions.md)); **max *sustained* wind** (1-min, Saffir-Simpson basis — *not* the 3-s gust;
-   gust factor applied in M1, [ATC-7](assumptions.md)); central pressure (hPa); RMW (km); rainfall (mm).
+3. **Field-dictionary every variable** (value + meaning + units/base + what-it's-NOT): **RAFT `vmax` is in knots**
+   (⚠ →mph ×1.150779 — corrected at build, [ATC-8](assumptions.md); only STORM is m/s ×2.237); **max *sustained* wind** (1-min, Saffir-Simpson basis — *not* the 3-s gust;
+   gust factor applied in M1, [ATC-7](assumptions.md)); central pressure (hPa); RMW (km). *(No rainfall variable in the RAFT tracks file — confirmed at build; it's the deferred 16 GB slice.)*
 4. **Catalog audit** — synthetic-year count, storms/year near each site, intensity distribution, RMW distribution;
-   confirm the N. Atlantic basin covers both US sites. State RAFT's own skill (R²≈0.73 landfall winds vs obs) as
+   confirm the N. Atlantic basin covers all four US sites. State RAFT's own skill (R²≈0.73 landfall winds vs obs) as
    the honest accuracy bound.
 5. **Emit** `data/hurricane/<asset>_tc_m0_raft.parquet` (subset track points + storm IDs + intensity/radius/rain)
    + manifest (DOI, basin, synthetic-year count, radius, units).
@@ -99,7 +99,7 @@ concern — M0 only *reads* RAFT, it does not build fields. Notebooks are jupyte
 > **validation targets**. IBTrACS deferred (HURDAT2 suffices for US Atlantic). See
 > [`Notebooks/hurricane/m0_input_data/02_landfall_record`](../../../Notebooks/hurricane/m0_input_data/02_landfall_record.ipynb).
 
-## Notebook `02_landfall_record_and_rp_crosscheck` — the two truth surfaces
+## Notebook `02_landfall_record` — the two truth surfaces *(planned name `02_landfall_record_and_rp_crosscheck`; RP cross-check moved to M1's `02_tail_validation`)*
 
 1. **IBTrACS / HURDAT2 walkthrough** — observed best tracks: what "best track" means (post-storm reanalysis),
    3/6-hourly resolution, max wind = sustained. The **landfall-validation purpose**: when M1's Holland field replays
@@ -108,7 +108,7 @@ concern — M0 only *reads* RAFT, it does not build fields. Notebooks are jupyte
    landfall max wind + pressure → the validation targets.
 3. **STORM RP grid walkthrough + sample** — read the 10 km max-wind RP GeoTIFF at each site centroid → an RP→wind
    curve. Explain it is **pre-integrated, empirical-Weibull RP** (⚠ runs low past ~100-yr vs EVD — Hazard Data Ref
-   §7, [ATC-10](assumptions.md)); m/s (→mph ×2.237).
+   §7, [ATC-10](assumptions.md)); STORM is m/s (→mph ×2.237).
 4. **Field-dictionary** both: observed sustained wind vs synthetic, RP = return period, datum/units.
 5. **Emit** `data/hurricane/<asset>_tc_m0_validation.parquet` (historical landfalls + STORM RP curve per site) +
    manifest.
@@ -120,14 +120,15 @@ concern — M0 only *reads* RAFT, it does not build fields. Notebooks are jupyte
 > (degenerate field-sample point); TIV $1.483 M/MW. **M0 complete.** See
 > [`Notebooks/hurricane/m0_input_data/03_site_geometry`](../../../Notebooks/hurricane/m0_input_data/03_site_geometry.ipynb).
 
-## Notebook `03_site_geometry` — the two solar sites
+## Notebook `03_site_geometry` — the solar sites *(built: four sites; planned table below kept for the seed contrast)*
 
-1. **The two sites** ([JD-TC-5](decisions.md)) — a low-vs-high contrast:
+1. **The sites** ([JD-TC-5](decisions.md)) — a low-vs-high contrast (built set = Everglades high + Hayhurst baseline + Discovery & LA3 cross-link riders):
 
 | role | asset | where | screened exposure |
 |---|---|---|---|
-| **proving** | screened **Gulf/Atlantic-coast solar farm** | confirmed in this notebook | material TC landfall wind; coastal (future surge ground) |
-| **baseline** | **Hayhurst Texas Solar** (reused) | Culberson Co., TX (desert) | near-zero TC — the control |
+| **proving** | **Everglades Solar Energy Center** (FL) | Miami-Dade, FL | highest US landfall density (31/100 km); coastal (surge cross-link ground) |
+| **baseline** | **Hayhurst Texas Solar** (reused) | Culberson Co., TX (desert) | near-zero TC (λ=0) — the control |
+| **cross-link** | **Discovery Solar Center** (FL) + **LA3 West Baton Rouge** (LA) | FL / LA | riders for flood-coastal × solar's wind+surge compound combine |
 
 2. **Screen the high site** — rank coastal solar (national `powerplants_enriched_v2`) by TC exposure (STORM RP wind
    / historical landfall density) **and** real-footprint availability; confirm one. Reuse Hayhurst's polygon.
@@ -138,10 +139,10 @@ concern — M0 only *reads* RAFT, it does not build fields. Notebooks are jupyte
 
 ## Cross-source comparison (the M0 payoff → feeds M1)
 
-For each site, put the **RAFT synthetic intensity** beside the **observed IBTrACS/HURDAT2 landfalls** (does the
+For each site, put the **RAFT synthetic intensity** beside the **observed HURDAT2 landfalls** (IBTrACS deferred — HURDAT2 suffices for US Atlantic) (does the
 synthetic catalog's intensity range bracket the historical?) and the **RAFT-implied RP wind** beside the **STORM RP
 curve** (do they agree, given STORM's empirical-Weibull low tail?). Conclude the M1 plan: **RAFT is the build
-source; IBTrACS/HURDAT2 the landfall validation; STORM the RP cross-check.** This is M0's deliverable — the hazard
+source (severity shape only); HURDAT2 the frequency anchor + landfall validation; ASCE 7-22 the M1 RP validation (STORM = optional peer cross-check).** This is M0's deliverable — the hazard
 *understood and bracketed*, ready for the Holland field build.
 
 ---
@@ -178,10 +179,10 @@ instances:
 
 | Source / field | The trap | Its base / correct reading |
 |---|---|---|
-| RAFT / STORM wind | looks like "the wind" | **m/s**, not mph (×2.237); and **sustained**, not 3-s gust |
+| RAFT / STORM wind | looks like "the wind" | RAFT `vmax` = **knots** (×1.150779); STORM = **m/s** (×2.237); both **sustained**, not 3-s gust |
 | RAFT max wind | reads as gust | **1-min sustained** — apply a gust factor (M1) before the damage curve |
 | STORM RP wind | reads as "the 1000-yr wind" | **empirical-Weibull RP** — runs **low** past ~100-yr vs EVD |
-| RAFT synthetic year | reads as a forecast | a **synthetic climatology** — the catalog *is* the frequency |
+| RAFT synthetic year | reads as a forecast | a **synthetic climatology** — but the raw genesis is a ~71× oversample, so **frequency is observed-anchored to HURDAT2** (JD-TC-8), not read off RAFT's raw rate; RAFT supplies severity shape |
 | solar polygon at storm scale | "the field hits the plant" | the storm field is ~uniform across ~1 km → **one centroid sample** (degenerate coupling, M2) |
 
 **Next → [M1 (catalog)](m1_catalog.md):** turn the RAFT tracks into a **Holland wind field**, sample per site, stamp

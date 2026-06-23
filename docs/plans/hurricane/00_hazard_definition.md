@@ -9,8 +9,9 @@ sub-perils, owned once, never double-counted. That authoring earns its own layer
 
 **Where this sits:** **layer-0 (hazard definition)** → [M0 (input data)](m0_input_data.md) →
 [M1 (catalog)](m1_catalog.md) → [M2 (coupling)](m2_coupling.md) → [M3 (damage)](m3_damage.md) →
-[M4 (loss & metrics)](m4_loss_metrics.md). Built for **two solar sites** (a Gulf/Atlantic-coast high/proving site
-+ Hayhurst TX, baseline). Written for a reader new to the domain — terms defined on first use.
+[M4 (loss & metrics)](m4_loss_metrics.md). Built for **four solar sites** (Everglades Solar Energy Center FL, high/proving
++ Hayhurst TX, baseline + Discovery Solar Center FL & LA3 West Baton Rouge LA, flood-coastal cross-link riders).
+Written for a reader new to the domain — terms defined on first use.
 
 ---
 
@@ -88,12 +89,13 @@ a Holland parametric wind field → rasterize peak wind per cell. Validate the f
 sampled at the asset) · **site-conditioned** (a field × per-asset susceptibility). **Hurricane wind is
 field-intensity** — and the *first primary build* of it.
 
-- **On a wind farm (V2):** turbines are scattered over tens of km; the radial field varies turbine-to-turbine
-  within one storm → field-intensity in full (sample the field at *each* point). This is where the prize is proven.
+- **On a wind farm (built):** turbines are scattered over tens of km; the radial field varies turbine-to-turbine
+  within one storm → field-intensity in full (sample the field at *each* point). This is where the prize is proven —
+  built at Amazon Wind Farm US East.
 - **On solar V1 (degenerate, stated):** a ~1 km polygon is small vs the storm scale → the field is ~uniform across
   it → the coupling collapses to ≈ a **single centroid sample**, operationally like the site-conditioned perils
   already built. **V1 therefore does not *claim* to prove field-intensity** — it builds the field (M1) and applies
-  it at a point (M2); the per-point proof is V2. ([JD-TC-2](decisions.md))
+  it at a point (M2); the per-point proof is the wind-farm cell, **now built**. ([JD-TC-2](decisions.md))
 
 ### 5. The primary→secondary cross-link — wind is ours; surge & rain are flood's
 
@@ -108,10 +110,11 @@ So the definition is explicit about ownership:
 | System | Owner | Status in hurricane V1 |
 |---|---|---|
 | **Wind** | **hurricane** (primary) | **modeled** (this pipeline, M0→M4) |
-| Storm **surge** | **flood** — coastal `[C]` (SLOSH/ADCIRC) | **not modeled**; `event_family_id` **hook reserved** |
-| TC **rainfall** | **flood** — pluvial `[F]` (Atlas 14 + future RAFT slice) | **not modeled**; hook reserved |
+| Storm **surge** | **flood** — coastal `[C]` (SLOSH/ADCIRC) | **not modeled here**; `event_family_id` **active** (flood coastal built, consumes it) |
+| TC **rainfall** | **flood** — pluvial `[F]` (Atlas 14 + future RAFT slice) | **not modeled here**; `event_family_id` active |
 
-- **`event_family_id` (reserved in M1):** the field that lets a future flood coastal/pluvial event point back to its
+- **`event_family_id` (stamped in M1, now active):** the field that lets a flood coastal/pluvial event (coastal built)
+  point back to its
   parent storm, so Total Loss treats one storm's wind+surge+rain as **one event** — the structural fix to the old
   model's separate-and-summed `Hurricane` + `Coastal Flood` double-count.
 - **Why not tag surge/rain as hurricane sub-perils:** they are the *same physics* as an existing peril (flood) →
@@ -128,11 +131,11 @@ So the definition is explicit about ownership:
 - **Footprint** = the **Holland (1980) continuous wind field**, swept along the track, **validated vs
   IBTrACS/HURDAT2 landfall winds** (STORM RP grid cross-check).
 - **Coupling** = **field-intensity** (third bucket); **spatially degenerate on solar V1** (centroid sample),
-  fully exercised at the **wind-farm V2** cell.
+  fully exercised at the **wind-farm** cell (**built**, Amazon Wind Farm US East).
 - **Catalog** = the shared, storm-resolved **RAFT** TC catalog (North Atlantic; tracks + intensity + rainfall) —
   the reusable foundation for hurricane wind, coastal surge, and the pluvial TC slice.
 - **Ownership** = **wind is hurricane's**; **surge = flood `[C]`, rain = flood `[F]`** — cross-linked via the
-  reserved `event_family_id`, not re-catalogued.
+  now-active `event_family_id` (flood coastal built), not re-catalogued.
 - **Units** = m/s → mph (**×2.237**) on ingest; sustained → 3-s gust via a gust factor.
 
 ## Decisions & assumptions
@@ -143,4 +146,4 @@ Holland parameterization; gust factor; unit conversion; field-intensity-degenera
 cross-link hook). Register: [`assumptions.md`](assumptions.md).
 
 **Next → [M0](m0_input_data.md):** meet the real evidence against this definition — RAFT tracks, the
-IBTrACS/HURDAT2 landfall record, the STORM RP grid cross-check, and the two solar sites' geometry.
+IBTrACS/HURDAT2 landfall record, the STORM RP grid cross-check, and the four solar sites' geometry.

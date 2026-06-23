@@ -33,7 +33,7 @@ susceptibility modifier (that's wildfire's site-conditioning)** — those belong
 
 **2. The rare near-eye tail (~8% max).** A small-eye storm passing *almost over* the plant drags its steep eyewall
 gradient across the 1.4 km footprint → up to ~8% spread. Small enough for solar (we use the centroid ≈ the average),
-but it **foreshadows why the wind-farm V2 cell genuinely needs per-point field-intensity** (turbines span tens of km).
+but it **shows why the wind-farm cell (built) uses per-point field-intensity** (turbines span tens of km).
 
 ## Inputs → outputs
 
@@ -44,7 +44,7 @@ fraction rule, the uniformity-check result).
 ## Deferred (stated, not hidden)
 
 - **Per-point field-intensity** — sampling the field at each asset node, where it genuinely varies. Moot on a small
-  solar polygon (uniform), **load-bearing at the wind-farm V2 cell** (the full field-intensity proof).
+  solar polygon (uniform); **realized in the built wind-farm cell** (the full field-intensity proof).
 - **Near-eye non-uniformity** — the ~8% tail is folded into the centroid value; a future per-point version would
   resolve it (only matters for the rare direct small-eye hit).
 

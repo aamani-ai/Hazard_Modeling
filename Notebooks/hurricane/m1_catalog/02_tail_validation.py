@@ -69,7 +69,7 @@ print("repo root:", ROOT)
 #
 # **ATC-10** validate the catalog tail against **independent** sources — **ASCE** (chosen over STORM, a RAFT cousin
 # with the same blind spot) + the observed record · **ATC-6/7** the gust factor / Holland B are corroborated *by* this
-# check (RP gusts land on ASCE) · catalog resolves to **~1,000-yr** only (deeper not validated). Full register:
+# check (RP gusts land on ASCE) · catalog resolves to **~1,300-yr** only (PML trustworthy to ~700–1,000 yr; deeper not validated). Full register:
 # [`assumptions.md`](../../../docs/plans/hurricane/assumptions.md).
 
 # %% [markdown]
@@ -214,7 +214,7 @@ print("wrote", DATA / "tc_m1_tail_validation_manifest.json")
 # ## Takeaways → next
 #
 # - **The tail is validated, independently and in the good direction.** Our catalog's return-period gusts match
-#   **ASCE** (a separate engineering hurricane model) within ~5% over 100–700 yr, with **no systematic low bias** —
+#   **ASCE** (a separate engineering hurricane model) within ~5.5% over 100–700 yr, with **no systematic low bias** —
 #   resolving the M1 tail flag at the level that actually drives PML.
 # - **The gust factor (1.2) is corroborated** — it lands our RP gusts on ASCE.
 # - **Observed record agrees** on central intensity (RAFT median ≈ observed); the deep extreme rests on a small

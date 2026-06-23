@@ -11,8 +11,8 @@ as hail, wildfire, convective wind, and flood were built. Hurricane is the peril
 coupling type — field-intensity** (a continuous hazard field sampled at the asset), which the repo has *defined*
 but never built as a primary (hail = areal hit-or-miss; wildfire/flood = site-conditioned; convective wind toured
 those two). Proving field-intensity is the **first architectural prize**. The **second** is that hurricane is the
-**prerequisite for coastal flood**: its storm catalog is what flood's deferred coastal `[C]` sub-peril (and the
-compound TC-rain slice of pluvial `[F]`) plug into via the reserved `event_family_id`.
+**prerequisite for coastal flood**: its storm catalog is what flood's coastal `[C]` sub-peril (and the
+compound TC-rain slice of pluvial `[F]`) plug into via the now-active `event_family_id` — flood coastal is built and consumes it.
 
 ## Why hurricane (fourth)
 
@@ -31,41 +31,43 @@ counter-example below).
 > asset, producing an asset-level annual loss distribution (EAL/VaR/PML/TVaR, % of TIV + $) on the shared MC
 > engine — wind only, solar first.** Storm **surge** and **TC rainfall** are **flood's** sub-perils (`[C]`/`[F]`),
 > **not** hurricane's; V1 does not catalog or model them — it only **reserves the `event_family_id` hook** so they
-> attach later without a refactor. The **wind-farm** asset is **V2** (where field-intensity is fully exercised);
+> attach later without a refactor. The **wind-farm** asset is the **V2** cell (now **built** — where field-intensity is fully exercised, at Amazon Wind Farm US East);
 > the **wind *resource*** (generation/revenue) is the Performance tier (`model-gpr`), out of scope here — V1 is
 > *extreme wind that breaks equipment*, not *everyday wind that spins turbines* (the boundary
 > [DD-WN-2](../convective_wind/decisions.md) already drew). **V1 does not claim to have *proven* field-intensity**:
 > on a ~1 km solar polygon the storm-scale field is ~uniform, so the coupling is **spatially degenerate**
-> (≈ a centroid sample) — the full per-point field-intensity proof is the wind-farm V2 cell. ([JD-TC-1/2](decisions.md))
+> (≈ a centroid sample) — the full per-point field-intensity proof is the wind-farm cell, **now built**. ([JD-TC-1/2](decisions.md))
 
 This honesty is *basics-spot-on* applied to scope: V1's real deliverable is **a built-and-validated, storm-resolved
 RAFT TC catalog** (the reusable foundation), proven end-to-end on the *simplest* asset. The spatial coupling and the
-turbine reuse come at V2; the surge/rain cross-link comes when coastal is built.
+turbine reuse are built in the wind-farm cell; the surge/rain cross-link is built (flood coastal).
 
 ## The two dividends (why this peril is worth more than its own loss number)
 
 1. **Completes the coupling taxonomy** — field-intensity is the third and last bucket. Built here (degenerate on
-   solar V1, full at wind-farm V2), the M0→M4 interface is general across *all* coupling types.
+   solar V1, full at wind-farm — **built**), the M0→M4 interface is general across *all* coupling types.
 2. **Unlocks coastal flood (and compound flooding)** — the shared, storm-resolved **RAFT** catalog + the
-   `event_family_id` cross-link are exactly what flood's deferred coastal `[C]` and the TC slice of pluvial `[F]`
-   need to recognize one storm's wind + surge + rain as **one event** (no double-count). See
+   `event_family_id` cross-link are exactly what flood's coastal `[C]` (**built**) and the TC slice of pluvial `[F]`
+   need to recognize one storm's wind + surge + rain as **one event** (no double-count) — the link is now active. See
    [flood JD-FL-1/4/11](../flood/decisions.md).
 
-## The asset (solar first; wind farm V2) — and why order, not exclusion
+## The asset (solar first; wind farm — both built) — and why order, not exclusion
 
 Both solar and wind farm are eventual cells (peril × asset matrix). The choice is **order**. **M0 + M1 (the
 catalog) are the peril — asset-independent and shared across both cells**, so building solar first does *not* waste
 the field machinery (that lives in M1). Only the **M2 coupling** is spatially degenerate on solar; the wind-farm
-V2 cell exercises it fully, reusing the same M1 field **plus** convective wind's **3-s-gust turbine fragility
-curve** ([DD-WN-16](../convective_wind/decisions.md)) and **turbine geometry** (Traverse / Shepherds Flat). This
+cell (**now built**) exercises it fully, reusing the same M1 field **plus** convective wind's **3-s-gust turbine fragility
+curve** ([DD-WN-16](../convective_wind/decisions.md)) and **turbine geometry** (Amazon Wind Farm US East). This
 mirrors flood's own order (solar V1 → wind farm V2) and keeps the build coherent across perils. ([JD-TC-1](decisions.md))
 
 ## The sites (low-vs-high contrast, mirroring every other cell)
 
-- **HIGH / proving — a Gulf/Atlantic-coast solar farm** (screened in M0). The coastal high site is the natural
-  proving ground for field-intensity *and* the future surge cross-link (surge only reaches the coast).
-- **LOW / baseline — reuse the solar baseline (Hayhurst, TX)** — near-zero TC exposure, the cross-peril-coherent
-  control (the same asset hail/wildfire/flood used). ([JD-TC-5](decisions.md))
+- **HIGH / proving — Everglades Solar Energy Center (FL)** (screened in M0, highest US landfall density). The coastal
+  high site is the natural proving ground for field-intensity *and* the surge cross-link (surge only reaches the coast).
+- **LOW / baseline — reuse the solar baseline (Hayhurst, TX)** — near-zero TC exposure (λ=0, true-zero), the
+  cross-peril-coherent control (the same asset hail/wildfire/flood used). ([JD-TC-5](decisions.md))
+- **CROSS-LINK riders — Discovery Solar Center (FL) + LA3 West Baton Rouge (LA)** — added so flood coastal's
+  wind+surge compound combine (built) has its hurricane-wind leg. (Four solar sites total.)
 
 ## The catalog — a shared, storm-resolved RAFT TC catalog (the load-bearing choice)
 
@@ -115,7 +117,7 @@ across perils.
 A reviewable M0→M4 notebook series that takes the RAFT TC track catalog → Holland wind field → a coherent *sampled*
 annual wind-loss distribution for a coastal solar farm (EAL/VaR/PML/TVaR, % of TIV), honestly labeled wind-only /
 spatially-degenerate-coupling, **validated against IBTrACS/HURDAT2 landfall winds and the STORM RP grid** — with the
-storm-resolved catalog and the `event_family_id` hook **ready for the wind-farm V2 cell and the coastal-flood build**.
+storm-resolved catalog and the `event_family_id` hook **now consumed by the built wind-farm cell and the built coastal-flood cell**.
 
 ## Open questions (to resolve as we plan / in layer-0 & M0)
 
@@ -128,4 +130,5 @@ storm-resolved catalog and the `event_family_id` hook **ready for the wind-farm 
   track→field step (the heavier part RAFT's storm-resolution buys us). Decide the V1 form in M1.
 - **STORM empirical-Weibull RP convention** — document where the RP cross-check runs low past ~100-yr vs EVD.
 - **Unit discipline** — STORM/RAFT wind in m/s; damage curve in mph (×2.237) — guard on ingest.
-- **TIV basis** — solar $/MW (Hayhurst hail basis); coastal high site estimated by capacity; % of TIV alongside $.
+- **TIV basis** *(resolved)* — solar $/MW (Hayhurst hail basis); high site = Everglades Solar Energy Center (~74.5 MW)
+  by capacity; % of TIV alongside $.

@@ -261,6 +261,6 @@ print("wrote", man_path)
 # - **STORM RP-grid cross-check deferred to M1** (site-dependent + 1.1 GB).
 # - Emitted `tc_m0_hurdat2_landfalls.parquet` + manifest.
 #
-# **Next → [03_site_geometry](03_site_geometry.py):** lock the two solar sites (screen the Gulf/Atlantic-coast high
-# site + reuse Hayhurst) and their geometry/TIV — after which M1 filters both RAFT (01) and these landfalls (02) to
+# **Next → [03_site_geometry](03_site_geometry.py):** lock the four solar sites (Hayhurst baseline, screened Everglades high,
+# and the Discovery/LA3 cross-link riders) and their geometry/TIV — after which M1 filters both RAFT (01) and these landfalls (02) to
 # each site, calibrates the rate, and builds the Holland field.

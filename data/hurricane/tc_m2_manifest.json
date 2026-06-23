@@ -9,7 +9,7 @@
       "p95": 1.117,
       "max": 7.937
     },
-    "conclusion": "uniform for ~95% of storms (median 0.5%, p95 1.1%); rare ~8% max = near-eye direct hit (eyewall gradient across 1.4 km). fraction=1.0 OK for solar; foreshadows V2 per-point need"
+    "conclusion": "uniform for ~95% of storms (median 0.5%, p95 1.1%); rare ~8% max = near-eye direct hit (eyewall gradient across 1.4 km). fraction=1.0 OK for solar; the built wind-farm cell does per-point sampling"
   },
   "contract_fields": [
     "site",
@@ -19,7 +19,7 @@
     "value_exposed_fraction"
   ],
   "n_events": 591,
-  "note": "full per-point field-intensity is the wind-farm V2 cell (asset tens of km \u2192 field varies)",
+  "note": "full per-point field-intensity is built in the wind-farm cell (asset tens of km \u2192 field varies)",
   "outputs": {
     "coupling_parquet": "data/hurricane/tc_m2_coupling.parquet"
   }

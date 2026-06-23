@@ -55,9 +55,9 @@ storm-resolved catalog ([JD-TC-3](decisions.md)).
 ## The honest headline label
 
 > Hurricane × solar V1: **wind-only** EAL/VaR/PML/TVaR (% of TIV + $), on a storm-resolved RAFT catalog. **Excludes
-> surge and rain** (flood's `[C]`/`[F]`, hooked via `event_family_id`) — so for a coastal site this is a **floor on
+> surge and rain** (flood's `[C]`/`[F]`, cross-linked via the now-active `event_family_id` — flood coastal built) — so for a coastal site this is a **floor on
 > total TC loss**, not the whole storm. Field-intensity coupling is **spatially degenerate** (solar); the wind-farm
-> V2 cell exercises it per-turbine.
+> cell (**built**, Amazon Wind Farm US East) exercises it per-turbine.
 
 ## Outputs
 
@@ -81,6 +81,11 @@ data/hurricane/<asset>_tc_m4_*.png                  EP curve, annual-loss distri
   (Flagged, not in the V1 headline — [ATC-18](assumptions.md).)
 - **Benchmark availability** — confirm Hazus/NRI hurricane loss is pullable for the coastal site's county.
 
-**This completes hurricane × solar V1.** The reusable products for what's next: the **storm-resolved RAFT catalog +
-`event_family_id`** (→ founds flood coastal `[C]` + pluvial-TC `[F]`) and the validated **Holland field** (→ the
-wind-farm V2 cell samples it per-turbine, reusing convective wind's 3-s-gust turbine curve).
+**This completes hurricane × solar V1.** The reusable products are now **both consumed**: the **storm-resolved RAFT
+catalog + `event_family_id`** founds flood coastal `[C]` (**built**) + pluvial-TC `[F]`, and the validated **Holland
+field** is sampled per-turbine by the **wind-farm cell** (**built**, Amazon Wind Farm US East — reusing convective
+wind's 3-s-gust turbine curve).
+
+> **✅ Built result (hurricane × solar, Everglades):** **EAL ≈ 2.2% / PML500 ≈ 41% of TIV** (point on the
+> provisional `tracker_stow` curve; Hayhurst baseline ≈ 0). Wind-only; loss side curve-limited (provisional curve
+> flagged for replacement). See the [README](README.md) headline.

@@ -1,5 +1,5 @@
 {
-  "notebook": "hurricane/m1_catalog/01_holland_field_catalog",
+  "notebook": "hurricane/m1_catalog/01_event_catalog",
   "method": "RAFT tracks \u2192 Holland (1980) field \u2192 per-site peak 3-s gust; frequency observed-anchored (JD-TC-8)",
   "magnitude_metric": "3-s peak gust (mph) at the site \u2014 Holland (1980) wind field on RAFT tracks",
   "levers": {
@@ -34,7 +34,7 @@
       }
     }
   },
-  "event_family_id": "= RAFT storm_ID (reserved cross-link to flood coastal/pluvial-TC; unused in V1)",
+  "event_family_id": "= RAFT storm_ID (active cross-link, consumed by flood coastal/pluvial-TC)",
   "validation": "RAFT anchor-storm intensity vs observed HURDAT2 near high site (overlap confirmed); STORM RP grid cross-check deferred",
   "units": "peak_gust_3s_mph = MPH (RAFT knots \u00d7 gust_factor \u00d7 1.150779)",
   "outputs": {

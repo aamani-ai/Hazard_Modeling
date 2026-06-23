@@ -19,10 +19,10 @@ wind is exactly here: the **3-s-gust wind-damage basis** ([DD-WN-9](../convectiv
 - **Form:** an anchored logistic/tabular `DR(gust)` over solar subsystems (panels, racking/trackers, inverters,
   combiners), **capex-weighted** to the asset damage ratio. Anchored so `DR ≈ 0` below the structural onset
   (design wind speed) and rising into the violent tail.
-- **If no hurricane-specific solar curve exists** in the library yet, use the **wind × solar** curve on the 3-s-gust
-  basis (hurricane and convective wind share the gust→damage physics for a turbine/panel — the gust has no memory of
-  its source), and record the substitution. *(Confirm availability at build — mirrors how flood confirmed its
-  `RIVERINE_FLOOD × solar` curve.)*
+- **Built with a provisional HURRICANE × SOLAR curve** ([ATC-14](assumptions.md)) — the library provides one
+  (caps ~48%, ATC-14 basis); it is flagged **provisional** and slated for replacement (the loss side is curve-limited
+  while the hazard side is independently validated). The earlier open question ("confirm a curve exists, else use
+  wind × solar") is **resolved** — a hurricane-specific curve was used.
 
 ## What M3 computes (per event)
 
@@ -38,9 +38,9 @@ conditional_DR   = DR(gust_3s_mph)                         # reported as % of TI
 
 - **Subsystem split** — carry the capex-weighted subsystem contributions (which subsystem drives loss at which gust)
   for legibility, as wind/flood M3 did.
-- **Tracker stow** — single-axis trackers have a **stow position** that changes wind vulnerability; if the curve
-  library distinguishes stow states, record which is assumed (mirrors flood's PV-variant note, [AFL-15](../flood/assumptions.md)).
-  Deferred mitigation lever otherwise.
+- **Tracker stow** — single-axis trackers have a **stow position** that changes wind vulnerability; the built headline
+  is on the **`tracker_stow`** curve variant (mirrors flood's PV-variant note, [AFL-15](../flood/assumptions.md));
+  a harsher non-stow variant is carried as sensitivity.
 
 ## Validation — the M3 known-answer checks
 
@@ -61,11 +61,11 @@ data/hurricane/<asset>_tc_m3_manifest.json      curve ID/version, gust basis, su
 [ATC-14](assumptions.md) (curve = `infrasure-damage-curves` hurricane-wind × solar, 3-s-gust basis) ·
 [ATC-4](assumptions.md) (3-s gust observable) · [ATC-2](assumptions.md) (physical loss only).
 
-## Open questions
+## Open questions *(curve availability resolved at build — kept for context)*
 
-- **Curve availability** — confirm a hurricane-wind × solar curve exists in the library; else use wind × solar +
-  record it.
-- **Stow state** — which tracker stow assumption; is it in the curve?
+- **Curve availability** — ✅ **resolved**: a provisional library **HURRICANE × SOLAR** curve was used (caps ~48%,
+  ATC-14); flagged provisional, slated for replacement.
+- **Stow state** — ✅ resolved: headline on the **`tracker_stow`** variant (harsher non-stow carried as sensitivity).
 - **Subsystem onset spread** — do inverters/trackers fail at different gusts than panels (changes the curve shape)?
 
 **Next → [M4 (loss & metrics)](m4_loss_metrics.md):** sample the storm-resolved event catalog through the shared MC

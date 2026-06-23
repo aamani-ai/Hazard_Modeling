@@ -31,7 +31,7 @@ filters `cross-link`). Everglades + Hayhurst are the example pair.
 - **M2 — field-intensity coupling (degenerate on solar).** On a ~1.4 km solar polygon at storm scale the field is
   **uniform** — demonstrated, not asserted: gust spread across the footprint is **median 0.5%, p95 1.1%**. So the plant
   sees one effective gust → **`value_exposed_fraction = 1.0`** ([JD-TC-2](../../../docs/plans/hurricane/decisions.md)).
-  A rare ~8% max spread for a near-eye direct hit foreshadows why the wind-farm cell needs per-point field-intensity.
+  A rare ~8% max spread for a near-eye direct hit foreshadows why the wind-farm cell (built) uses per-point field-intensity.
   Output: `data/hurricane/tc_m2_coupling.parquet`.
 - **M3 — damage.** Maps each event's 3-s gust through the capex-weighted **HURRICANE × SOLAR** library curve
   (tracker-stow headline). Wind-immune subsystems → asset DR saturates ≈48% (no total-loss mode); the worst storm in

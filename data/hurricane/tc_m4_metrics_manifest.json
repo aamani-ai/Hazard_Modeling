@@ -37,7 +37,7 @@
     "TVaR99": 37.2977,
     "OEP-PML100": 28.2591
   },
-  "occurrence_basis_note": "OEP-PML100 = per-EVENT (largest single storm/yr); AEP metrics = annual aggregate (sum of a year's storms). For Everglades (\u03bb\u22480.6) OEP < AEP where a year carries >1 storm.",
+  "occurrence_basis_note": "OEP-PML100 = per-EVENT (largest single storm/yr); AEP metrics = annual aggregate (sum of a year's storms). For Everglades (\u03bb\u22480.19) OEP < AEP where a year carries >1 storm.",
   "baseline": "Hayhurst EAL = 0 (true-zero control, \u03bb=0)",
   "caveats": [
     "LOSS side is curve-limited (provisional ATC-14 curves) \u2014 the dominant uncertainty; hazard side is ASCE-validated",

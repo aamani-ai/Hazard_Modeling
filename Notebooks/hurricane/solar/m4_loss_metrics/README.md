@@ -44,5 +44,5 @@ AEP-PML100 (~31%)** because rare years carry two storms. *(The Everglades + Hayh
 `cross-link` filter — LA3/Discovery ride the catalog to feed flood-coastal and are tagged `cross-link` per JD-FL-16, so
 they stay out of the hurricane headline. LA3 is the all-three FLOOD site in flood's own files; here it is a rider.)*
 
-**Dividends banked:** field-intensity coupling built; `event_family_id` stamped → coastal flood + pluvial-TC attach
-later via the shared RAFT catalog. **Next:** swap the provisional curve + add a loss benchmark; then wind-farm V2.
+**Dividends banked:** field-intensity coupling built; `event_family_id` stamped → coastal flood attaches now (active cross-link); pluvial-TC
+later via the shared RAFT catalog. **Next:** swap the provisional curve + add a loss benchmark. *(The wind-farm cell is already built.)*

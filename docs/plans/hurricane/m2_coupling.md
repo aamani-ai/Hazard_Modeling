@@ -2,7 +2,7 @@
 
 *The first per-(peril × asset) layer: how the hurricane wind **field reaches the solar asset**. This is the repo's
 first **field-intensity** primary build — and, honestly, its **spatially-degenerate** form on a small solar polygon
-([JD-TC-2](decisions.md)). The full per-point field-intensity proof is the wind-farm V2 cell; here the coupling is
+([JD-TC-2](decisions.md)). The full per-point field-intensity proof is the wind-farm cell (**built**, Amazon Wind Farm US East); here the coupling is
 thin because M1 already sampled the field.*
 
 **Where this sits:** layer-0 → [M0](m0_input_data.md) → [M1](m1_catalog.md) → **M2 (coupling)** →
@@ -26,8 +26,8 @@ A solar farm is a **dense areal polygon ~1 km across**; a hurricane field varies
 radius-of-max-wind (~tens of km). So across the footprint the field is **~uniform** → sampling it reduces to **one
 value at the centroid**. Operationally this looks like the site-conditioned perils already built (read one hazard
 value at the site). **V1 says so plainly** ([JD-TC-2](decisions.md)): it builds the field-intensity *machinery* and
-applies it at a point; the per-point variation that makes field-intensity distinctive is exercised at **wind-farm
-V2** (turbines span tens of km → the field genuinely differs turbine-to-turbine).
+applies it at a point; the per-point variation that makes field-intensity distinctive is exercised at the **wind-farm
+cell** (**built**, Amazon Wind Farm US East — turbines span tens of km → the field genuinely differs turbine-to-turbine).
 
 ## What M2 actually does (thin, because M1 pre-sampled)
 

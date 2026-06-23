@@ -268,7 +268,7 @@ manifest = {
     # house-standard twin blocks (headline: Everglades, tracker_stow) — identical keys, block name carries the unit
     "metrics_usd": metrics_usd,
     "metrics_pct_of_tiv": metrics_pct_of_tiv,
-    "occurrence_basis_note": "OEP-PML100 = per-EVENT (largest single storm/yr); AEP metrics = annual aggregate (sum of a year's storms). For Everglades (λ≈0.6) OEP < AEP where a year carries >1 storm.",
+    "occurrence_basis_note": "OEP-PML100 = per-EVENT (largest single storm/yr); AEP metrics = annual aggregate (sum of a year's storms). For Everglades (λ≈0.19) OEP < AEP where a year carries >1 storm.",
     "baseline": "Hayhurst EAL = 0 (true-zero control, λ=0)",
     "caveats": [
         "LOSS side is curve-limited (provisional ATC-14 curves) — the dominant uncertainty; hazard side is ASCE-validated",
@@ -290,8 +290,8 @@ print("wrote", DATA / "tc_m4_loss_metrics.parquet", "and manifest")
 #   the provisional curve is the dominant uncertainty, flagged for replacement. Hayhurst = 0.
 # - **The hazard side is independently validated** (ASCE, 90 kt==obs); **the loss side is the soft part** — curve-driven,
 #   awaiting the replacement fragility curve and a **loss-side benchmark** (Hazus/NRI) as its own second opinion.
-# - **Architectural dividends banked:** field-intensity coupling built (degenerate on solar, full at wind-farm V2);
-#   `event_family_id` stamped → coastal flood + pluvial-TC can attach later via the shared RAFT catalog.
+# - **Architectural dividends banked:** field-intensity coupling built (degenerate on solar, full in the built wind-farm cell);
+#   `event_family_id` stamped → coastal flood attaches now (active cross-link); pluvial-TC later — via the shared RAFT catalog.
 #
-# **Next (beyond V1):** swap the provisional damage curve + add a Hazus/NRI loss benchmark; then the wind-farm V2 cell
+# **Next (beyond V1):** swap the provisional damage curve + add a Hazus/NRI loss benchmark. The wind-farm cell is built
 # (per-turbine field-intensity, reusing this catalog + convective wind's turbine curve).

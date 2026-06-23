@@ -30,7 +30,7 @@
 # is far smaller than the gust (median < 1%, p95 < 2%), so the whole plant sees one effective gust and
 # `value_exposed_fraction = 1.0` is justified. It emits the per-event coupling contract
 # (`tc_m2_coupling.parquet`: `gust_3s_mph × value_exposed_fraction`) + manifest. The full per-point field-intensity is
-# the wind-farm V2 cell, where the asset is tens of km across and the field genuinely varies.
+# the wind-farm cell (built — Amazon Wind), where the asset is tens of km across and the field genuinely varies.
 #
 # > Plan: [`m2_coupling.md`](../../../../docs/plans/hurricane/m2_coupling.md) · Decisions:
 # > [`decisions.md`](../../../../docs/plans/hurricane/decisions.md) (JD-TC-2). Prior: [M1 catalog](../../m1_catalog/01_event_catalog.ipynb).
@@ -126,7 +126,7 @@ print(f"per-storm gust spread across the footprint (max−min)/mean:")
 print(f"  median {np.median(spread_pct):.3f}%   p95 {p95:.3f}%   max {spread_pct.max():.3f}%")
 print(f"→ uniform for ~95% of storms (p95 {p95:.1f}%); the ~{spread_pct.max():.0f}% MAX is a rare near-eye direct hit")
 print("  (small RMW passing almost over the plant → eyewall gradient crosses 1.4 km). Still small ⇒ fraction=1.0 OK;")
-print("  it does foreshadow why the wind-farm V2 cell (tens of km) genuinely needs per-point field-intensity.")
+print("  it shows why the wind-farm cell (tens of km, built) uses per-point field-intensity.")
 ds.close()
 
 # %% [markdown]
@@ -176,11 +176,11 @@ manifest = {
         "gust_spread_across_footprint_pct": {"median": round(float(np.median(spread_pct)), 3),
                                              "p95": round(float(p95), 3), "max": round(float(spread_pct.max()), 3)},
         "conclusion": "uniform for ~95% of storms (median 0.5%, p95 1.1%); rare ~8% max = near-eye direct hit "
-                      "(eyewall gradient across 1.4 km). fraction=1.0 OK for solar; foreshadows V2 per-point need",
+                      "(eyewall gradient across 1.4 km). fraction=1.0 OK for solar; the built wind-farm cell does per-point sampling",
     },
     "contract_fields": ["site", "storm_ID", "event_family_id", "gust_3s_mph", "value_exposed_fraction"],
     "n_events": int(len(m2)),
-    "note": "full per-point field-intensity is the wind-farm V2 cell (asset tens of km → field varies)",
+    "note": "full per-point field-intensity is built in the wind-farm cell (asset tens of km → field varies)",
     "outputs": {"coupling_parquet": str(out.relative_to(ROOT))},
 }
 (DATA / "tc_m2_manifest.json").write_text(json.dumps(manifest, indent=2))
@@ -192,7 +192,7 @@ print("wrote", out, "and", DATA / "tc_m2_manifest.json")
 # - **Field-intensity coupling built** — and the "degenerate on solar" label is **demonstrated**: the wind field
 #   varies **~0.5% (median), <1.1% (p95)** across the footprint, so the plant sees one effective gust →
 #   `value_exposed_fraction = 1.0`. The rare **~8% max** (a near-eye direct hit) is small enough for solar but
-#   **foreshadows why the wind-farm V2 cell genuinely needs per-point field-intensity.**
+#   **shows why the wind-farm cell (built) uses per-point field-intensity.**
 # - **Thin by design** — M1 did the field; M2 just attaches exposure (no Minkowski, no susceptibility).
 # - **Contract emitted** — per-event `gust_3s_mph × value_exposed_fraction` for M3.
 #

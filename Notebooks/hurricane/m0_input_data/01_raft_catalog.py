@@ -49,7 +49,7 @@
 # storm-resolved source, named here up-front with access + caching:
 #
 # - **RAFT** — a North-Atlantic **synthetic tropical-cyclone catalog**. **Role:** the storm-resolved build source —
-#   every event is an object with identity (`storm_ID` → the reserved `event_family_id`), carrying the track +
+#   every event is an object with identity (`storm_ID` → the (now-active) `event_family_id`), carrying the track +
 #   intensity M1's Holland wind field needs. **Access:** Zenodo (`zenodo.org/records/10392723`, concept DOI
 #   `10.5281/zenodo.10392723`), **CC-BY-4.0**; downloaded once and **cached** at
 #   `data/hurricane/raw/RAFT.NA.v20231016.nc` (≈154 MB) → re-runs are offline + idempotent. **Magnitude basis:**
@@ -64,8 +64,8 @@
 # > **Secondary perils, cross-linked (not built here).** A hurricane also drives **storm surge** and **TC rainfall**;
 # > by the reference these are the *same physics as flood* and are not re-catalogued — surge = flood's **coastal [C]**
 # > (**NOAA SLOSH** MOMs / P-Surge → surge depth, ft), TC rainfall = flood's **pluvial [F]** (**NOAA Atlas 14** →
-# > ponding depth). They attach to the hurricane wind event via the reserved `event_family_id` (one storm, counted
-# > once — JD-TC-4/5), **deferred** in V1.
+# > ponding depth). They attach to the hurricane wind event via the active `event_family_id` (one storm, counted
+# > once — JD-TC-4/5) — flood coastal is built, so the cross-link is now active.
 
 # %%
 import json, hashlib
@@ -147,7 +147,7 @@ print("VARS:", list(ds.variables))
 # | `shear_x/y` | (storm, step) | 200–850 hPa wind shear | m/s | intensity-model driver, not a damage input |
 # | `year` | (storm,) | **env-conditions year** (1979–2018) used to generate the storm | — | **NOT a calendar of when it "happened"** |
 # | `basin_ID` | (storm,) | 1 = North Atlantic | — | single basin here |
-# | `storm_ID` | (storm,) | TC id (from 0) | — | → the future `event_family_id` |
+# | `storm_ID` | (storm,) | TC id (from 0) | — | → the `event_family_id` (now active) |
 #
 # > **🔴 The live unit trap.** The Hazard-Data-Reference's generic note says "STORM wind is m/s (×2.237)". **RAFT is
 # > different — `vmax` is in *knots*.** So the conversion to the damage-curve mph is **×1.150779**, and to m/s is
@@ -217,7 +217,7 @@ print(f"major hurricanes (≥Cat3): {n_major:,} ({100*n_major/n_storms:.1f}%) �
 # %% [markdown]
 # ## 5 · Spatial coverage + US-coast landfall illustration
 #
-# RAFT is the **North Atlantic** basin — confirm both V1 sites' region is covered, and illustrate the
+# RAFT is the **North Atlantic** basin — confirm all four sites' region is covered, and illustrate the
 # **landfall-relevant filtering** M1 will do per-site: how many storms reach **hurricane intensity (≥64 kt)** while
 # inside a US Gulf/Atlantic-coast box (`lon −98…−65, lat 24…45`). This is *illustrative* (a coarse box, not a
 # coastline); the **precise per-site collection radius** is applied in M1 once 03 locks the sites.
@@ -269,7 +269,7 @@ genesis_step = np.argmax(valid, axis=1)                 # first valid step
 
 summary = pd.DataFrame({
     "storm_ID": storm_id,
-    "event_family_id": storm_id.astype("int64"),        # reserved cross-link key (JD-TC-4); = storm here
+    "event_family_id": storm_id.astype("int64"),        # active cross-link key (JD-TC-4); = storm here
     "env_year": year,
     "genesis_lat": lat[rows, genesis_step],
     "genesis_lon": lon[rows, genesis_step],
@@ -324,6 +324,6 @@ ds.close()
 # - **No rainfall here** — confirms the wind/rain scope split (the rain is the deferred 16 GB pluvial-TC slice).
 # - Emitted `tc_m0_raft_summary.parquet` (per-storm) + manifest.
 #
-# **Next → [02_landfall_record_and_rp_crosscheck](02_landfall_record_and_rp_crosscheck.py):** bracket RAFT with
+# **Next → [02_landfall_record](02_landfall_record.py):** bracket RAFT with
 # **IBTrACS/HURDAT2** observed landfalls (the rate anchor + Holland validation targets) and the **STORM RP grid**
 # cross-check.

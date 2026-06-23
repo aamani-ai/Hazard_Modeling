@@ -18,15 +18,17 @@ with the **3-s peak gust** at the site, the storm's metadata, and identity:
 
 ```
 event_id · event_family_id · site_id · year(synthetic) · peak_gust_3s_mph
-         · max_sustained_ms · central_pressure_hpa · rmw_km · closest_approach_km · rainfall_mm(carried, unused V1)
+         · max_sustained_ms · central_pressure_hpa · rmw_km · closest_approach_km
 ```
 
-- **`event_family_id`** is stamped here ([ATC-11](assumptions.md), [JD-TC-4](decisions.md)) — **unused in V1**, but
-  present so a future flood coastal/pluvial-TC event can point back to its parent storm (no double-count). It is the
-  *one* thing expensive to retrofit.
-- **`rainfall_mm`** is carried from RAFT but **not modeled in V1** (it's flood's pluvial-TC slice — [JD-TC-6](decisions.md)).
-- The catalog **is the frequency** — synthetic-year count + storms-per-year fall straight out of RAFT (no rate-fit;
-  contrast hail's record extraction).
+- **`event_family_id`** is stamped here ([ATC-11](assumptions.md), [JD-TC-4](decisions.md)) — **now active**:
+  flood coastal (built) consumes it so a coastal/pluvial-TC event points back to its parent storm (no double-count).
+  It is the *one* thing expensive to retrofit.
+- **No `rainfall_mm`** — the RAFT tracks file carries no rainfall variable (confirmed at build; rainfall is the
+  deferred 16 GB slice, flood's pluvial-TC — [JD-TC-6](decisions.md)).
+- The frequency is **observed-anchored** ([JD-TC-8](decisions.md)) — count of distinct HURDAT2 hurricanes ≥64 kt
+  passing within 100 km ÷ record years; RAFT's raw genesis rate is a ~71× oversample, so it supplies the severity
+  (gust) shape only, not the rate.
 
 This is **event-based** (discrete storms), so it feeds the shared event MC **directly** — no RP-curve bridge
 (contrast flood, which had to build one in [JD-FL-7](../flood/decisions.md)). A clean fit, like hail.
@@ -44,16 +46,17 @@ local one verified against it).
   fitted form), **RMW** (RAFT-provided where available), **environmental pressure**, asymmetry strength.
 - **Gust factor ([ATC-7](assumptions.md)):** RAFT wind is **1-min sustained** → multiply by a **gust factor
   (≈1.1–1.3)** to the **3-s gust** the damage curve expects. Apply **once, here.**
-- **Units ([ATC-8](assumptions.md)):** convert m/s → **mph ×2.237** on the way out.
+- **Units ([ATC-8](assumptions.md)):** RAFT `vmax` is **knots → mph ×1.150779** (ATC-8 corrected at build; only STORM is m/s ×2.237).
 
 ### 2. Sample at the site — the field at the asset
 V1 samples the field at the **site centroid** (one value per storm) — the **spatially-degenerate** field-intensity
-read for solar ([JD-TC-2](decisions.md)). (V2 wind farm samples per turbine; the field-build above is identical —
+read for solar ([JD-TC-2](decisions.md)). (The wind-farm cell — **built** — samples per turbine; the field-build above is identical —
 only the sampling points change. *Modular-from-day-one*: the field is the peril; sampling is the cell.)
 
-### 3. Frequency — straight from the catalog
-Storms/year near the site = (count of site-reaching storms) ÷ (RAFT synthetic years). No fit. Carry per-storm, not
-just an aggregate λ, so M4 samples actual events.
+### 3. Frequency — observed-anchored ([JD-TC-8](decisions.md))
+Storms/year near the site = **count of distinct HURDAT2 hurricanes ≥64 kt passing within 100 km ÷ record years**
+(the RAFT raw genesis rate is a ~71× oversample, so it is *not* used for λ — RAFT supplies the severity/gust shape
+only). Carry per-storm, not just an aggregate λ, so M4 samples actual events.
 
 ### 4. Stamp identity & emit
 Assign `event_id` per (storm, site) and `event_family_id` per storm (shared across perils). Emit the catalog +
@@ -91,13 +94,15 @@ data/hurricane/<asset>_tc_m1_manifest.json        Holland params, gust factor, u
 (validation + STORM low tail) · [ATC-11](assumptions.md) (`event_family_id` reserved) · [ATC-18](assumptions.md)
 (climate non-stationarity = overlay, not embedded).
 
-## Open questions to resolve in / before M1
+## Open questions to resolve in / before M1 *(resolved in the build — kept for context)*
 
 - **Holland B form** — which parameterization (Holland 2008 pressure-based vs a fitted local form)? Decide + sensitivity-test.
 - **Gust factor value** — pin ≈1.1–1.3 with a source; sensitivity-test.
 - **RMW source** — use RAFT's RMW directly or a wind-radii model where missing.
 - **Asymmetry model** — forward-motion + inflow form for V1.
 - **Field resolution** — sample at the centroid only (V1) vs a small grid over the footprint (cheap robustness check).
+
+*(Resolved at build — the Holland field is built, severity validated (90 kt == observed) and the tail matches ASCE 7-22 within 5.5% over 100–700 yr; see [`02_tail_validation`](../../../Notebooks/hurricane/m1_catalog/02_tail_validation.ipynb).)*
 
 **Next → [M2 (coupling)](m2_coupling.md):** the **field-intensity** coupling — sample the site field against the
 solar footprint (degenerate: one centroid value), emitting the per-event exposure the damage curve reads.

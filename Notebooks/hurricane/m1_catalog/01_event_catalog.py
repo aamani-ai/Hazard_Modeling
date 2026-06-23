@@ -83,7 +83,7 @@ print("repo root:", ROOT)
 # **ATC-6** footprint = **Holland (1980)** field, B parameterized (sensitivity lever) · **ATC-7** sustained → 3-s
 # gust via a **gust factor ≈1.2** (lever) · **ATC-8** wind **knots → mph ×1.150779**; rmax **nmi → km** ·
 # **ATC-9 / JD-TC-8** frequency = **observed-anchored rate × RAFT-physics severity** (the oversample fix) ·
-# **ATC-10** validated vs IBTrACS/HURDAT2 landfall winds · **ATC-11** `event_family_id` reserved (= RAFT storm;
+# **ATC-10** validated vs IBTrACS/HURDAT2 landfall winds · **ATC-11** `event_family_id` active (= RAFT storm;
 # cross-link to flood surge/rain). Full register: [`assumptions.md`](../../../docs/plans/hurricane/assumptions.md).
 
 # %% [markdown]
@@ -266,7 +266,7 @@ manifest = {
                                  "obs_passages_100km": r["obs_passages_100km"],
                                  "raft_anchor_storms": r["raft_anchor_storms"]} for r in site_summ},
     },
-    "event_family_id": "= RAFT storm_ID (reserved cross-link to flood coastal/pluvial-TC; unused in V1)",
+    "event_family_id": "= RAFT storm_ID (active cross-link, consumed by flood coastal/pluvial-TC)",
     "validation": "RAFT anchor-storm intensity vs observed HURDAT2 near high site (overlap confirmed); STORM RP grid cross-check deferred",
     "units": "peak_gust_3s_mph = MPH (RAFT knots × gust_factor × 1.150779)",
     "outputs": {"catalog": str(cat_path.relative_to(ROOT)), "site_summary": str(summ_path.relative_to(ROOT))},
@@ -288,7 +288,7 @@ ds.close()
 # - **Frequency calibrated honestly (JD-TC-8)** — λ from the **observed** rate (Everglades ≈ 0.18/yr; Hayhurst 0),
 #   severity from RAFT physics — resolving the M0 oversample flag.
 # - **RAFT severity validated** against observed intensities near the high site (overlapping ranges).
-# - **`event_family_id` stamped** (= RAFT storm) — the reserved cross-link for flood's future surge/rain.
+# - **`event_family_id` stamped** (= RAFT storm) — the active cross-link consumed by flood's coastal surge (built).
 # - **Honest levers flagged** — gust factor, Holland B, symmetric field — for sensitivity in M4.
 # - Emitted `tc_m1_catalog.parquet` + site summary + manifest.
 #
