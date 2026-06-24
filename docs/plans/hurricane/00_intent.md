@@ -129,6 +129,6 @@ storm-resolved catalog and the `event_family_id` hook **now consumed by the buil
 - **Holland parameterization** — central pressure / RMW / Holland B / asymmetry / gust-factor choices for the
   track→field step (the heavier part RAFT's storm-resolution buys us). Decide the V1 form in M1.
 - **STORM empirical-Weibull RP convention** — document where the RP cross-check runs low past ~100-yr vs EVD.
-- **Unit discipline** — STORM/RAFT wind in m/s; damage curve in mph (×2.237) — guard on ingest.
+- **Unit discipline** — RAFT wind is **knots** → mph (×1.150779) on ingest (ATC-8; NOT m/s ×2.237); guard on ingest.
 - **TIV basis** *(resolved)* — solar $/MW (Hayhurst hail basis); high site = Everglades Solar Energy Center (~74.5 MW)
   by capacity; % of TIV alongside $.

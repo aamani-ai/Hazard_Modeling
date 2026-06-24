@@ -63,6 +63,11 @@ R_ANCHOR_KM = 100.0    # "a hurricane affects the site" = center within 100 km (
 HUR_KT = 64.0          # hurricane intensity (Saffir-Simpson, sustained knots)
 KT_TO_MPH = 1.150779
 NMI_TO_KM = 1.852
+
+def saffir_cat(v_kt):
+    """Saffir-Simpson category from sustained 1-min knots (near-site peak); 0 = sub-hurricane."""
+    return 5 if v_kt >= 137 else 4 if v_kt >= 113 else 3 if v_kt >= 96 else 2 if v_kt >= 83 else 1 if v_kt >= 64 else 0
+
 print("repo root:", ROOT)
 
 # %% [markdown]
@@ -177,16 +182,22 @@ for s in sites:
 
     idx = np.where(is_anchor)[0]
     for i in idx:
+        # near-site peak intensity (max vmax among track points within the anchor radius) → Saffir-Simpson category.
+        # NOT the storm's lifetime-peak vmax (which could be Cat5 mid-ocean but Cat1 at the site).
+        nsv = float(np.nanmax(np.where((d[i] <= R_ANCHOR_KM) & ~np.isnan(vmax_kt[i]), vmax_kt[i], np.nan)))
         catalog_rows.append({
-            "site": s["name"], "site_role": s["role"],
+            "site": s["name"], "site_role": s["role"], "asset": s.get("asset", "solar"),
             "storm_ID": int(storm_id[i]),
             "event_family_id": int(storm_id[i]),       # JD-TC-4 cross-link key (= RAFT storm)
             "peak_gust_3s_mph": float(peak_gust[i]),
             "min_dist_km": float(min_d[i]),
             "peak_vmax_kt": float(peak_vmax[i]),
+            "near_site_vmax_kt": nsv,
+            "category": saffir_cat(nsv),
         })
     site_summ.append({
-        "site": s["name"], "role": s["role"], "lat": s["lat"], "lon": s["lon"],
+        "site": s["name"], "role": s["role"], "asset": s.get("asset", "solar"),
+        "lat": s["lat"], "lon": s["lon"],
         "tiv_usd": s["tiv_usd"],
         "obs_passages_100km": obs_n, "lambda_per_yr": round(lam, 4),
         "raft_anchor_storms": int(is_anchor.sum()),

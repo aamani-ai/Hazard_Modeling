@@ -15,6 +15,7 @@
  "sites": [
   {
    "role": "baseline (low-TC)",
+   "asset": "solar",
    "name": "Hayhurst Texas Solar",
    "eia": 66880,
    "state": "TX",
@@ -28,6 +29,7 @@
   },
   {
    "role": "proving (high-TC)",
+   "asset": "solar",
    "name": "Everglades Solar Energy Center",
    "eia": 65423,
    "state": "FL",
@@ -41,6 +43,7 @@
   },
   {
    "role": "cross-link (flood-coastal)",
+   "asset": "solar",
    "name": "Discovery Solar Center",
    "eia": 63109,
    "state": "FL",
@@ -55,6 +58,7 @@
   },
   {
    "role": "cross-link (flood compound)",
+   "asset": "solar",
    "name": "LA3 West Baton Rouge Solar Facility",
    "eia": 61646,
    "state": "LA",
@@ -66,6 +70,22 @@
    "footprint_r_m": 556,
    "note": "appended for flood-coastal's wind+surge compound combine (JD-FL-16) — NOT a hurricane proving site; excluded from the hurricane headline (Everglades remains the example). It is the all-three FLOOD site (riverine+pluvial+coastal, JD-FL-17) in flood's own files; here in the hurricane namespace it is a cross-link rider, tagged 'cross-link' per the JD-FL-16 convention so the hurricane headline filter excludes it.",
    "tiv_usd": 74150000.0
+  },
+  {
+   "role": "wind-farm (high-TC, NC)",
+   "asset": "wind_farm",
+   "name": "Amazon Wind US East",
+   "slug": "amazon_wind_us_east",
+   "state": "NC",
+   "county": "Pasquotank/Perquimans",
+   "lat": 36.31688173076923,
+   "lon": -76.41951471153847,
+   "sub_lat": 36.2779125,
+   "sub_lon": -76.4934708,
+   "farm_mw": 208.0,
+   "n_turb": 104,
+   "tiv_usd": 291200000.0,
+   "note": "Wind-farm proving site for the hurricane WIND leg; added to the unified hurricane M1 catalog at the 100 km wind screen (previously the wind cell borrowed flood-coastal's 50 km surge catalog, wrongly screening wind at the surge radius). asset=wind_farm so solar M2/M3/M4 skip it; consumed by wind_farm M2-M4. The surge leg stays in flood-coastal (50 km); the two join on event_family_id (= RAFT storm_ID). Centroid/geometry sourced from flood_wind_m0_sites.json."
   }
  ]
 }

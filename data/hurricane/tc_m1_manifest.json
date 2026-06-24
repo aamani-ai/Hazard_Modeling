@@ -31,6 +31,11 @@
         "lambda_per_yr": 0.0809,
         "obs_passages_100km": 14,
         "raft_anchor_storms": 51
+      },
+      "Amazon Wind US East": {
+        "lambda_per_yr": 0.0751,
+        "obs_passages_100km": 13,
+        "raft_anchor_storms": 95
       }
     }
   },

@@ -47,8 +47,9 @@ load scales with gust², not with a daily mean.
 
 - **Reference basis:** 3-s gust at 33 ft (10 m), Exposure C — same convention as the convective-wind layer-0.
   Hub-height / terrain corrections are M2 adjustments, flagged as assumptions.
-- **Unit discipline `[REF]`:** RAFT/STORM report wind in **m/s**; the damage curve uses **mph** → convert
-  **×2.237 on ingest** (the single most common error — Hazard Data Reference §7).
+- **Unit discipline `[REF]`:** **RAFT `vmax` is in knots** (rmax in nmi) — convert **knots → mph ×1.150779**
+  on ingest (the single most common error — ATC-8; NOT m/s ×2.237, which is the STORM convention RAFT does not use).
+  The wind-farm fragility curve then works in m/s internally (mph ×0.44704), a separate downstream step.
 - **Gust vs sustained / vs resource:** synthetic catalogs carry **maximum sustained wind** (1-min, the
   Saffir-Simpson basis); the damage observable is the **3-s gust**, obtained via a **gust factor** (≈1.1–1.3,
   to fix in M1). And neither is the *resource* wind that drives generation — that is the Performance tier
@@ -136,7 +137,7 @@ So the definition is explicit about ownership:
   the reusable foundation for hurricane wind, coastal surge, and the pluvial TC slice.
 - **Ownership** = **wind is hurricane's**; **surge = flood `[C]`, rain = flood `[F]`** — cross-linked via the
   now-active `event_family_id` (flood coastal built), not re-catalogued.
-- **Units** = m/s → mph (**×2.237**) on ingest; sustained → 3-s gust via a gust factor.
+- **Units** = knots → mph (**×1.150779**) on ingest (ATC-8; RAFT is knots, not m/s ×2.237); sustained → 3-s gust via a gust factor.
 
 ## Decisions & assumptions
 

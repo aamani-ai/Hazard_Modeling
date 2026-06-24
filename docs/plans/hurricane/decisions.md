@@ -39,7 +39,7 @@ ambiguous "RAFT effective years" entirely. The event definition is **identical**
 severity (center within 100 km at hurricane intensity), so frequency and severity compose consistently.
 
 **Validation (M1/01).** RAFT anchor-storms' near-site intensity **median 90 kt == observed 90 kt** (p90 116 vs
-125 kt) — RAFT severity matches reality at the high site. λ reproduces the observed rate by construction.
+123 kt) — RAFT severity matches reality at the high site. λ reproduces the observed rate by construction.
 
 **Tail validation (M1/02).** The decision-relevant *tail* was checked against **two independent opinions** (not
 STORM — a RAFT cousin with the same blind spot): our return-period gusts match **ASCE 7-22** (a separate engineering
@@ -228,7 +228,47 @@ hazard-first.
 
 **Honest caveats.** Holland **B**, **RMW**, asymmetry, and the gust factor are parameterized (assumptions,
 sensitivity-tested). STORM's empirical-Weibull RP **runs low past ~100-yr** vs EVD (§7) — document the convention
-when cross-checking. m/s → mph **×2.237** on ingest.
+when cross-checking. RAFT is **knots** → mph **×1.150779** on ingest (ATC-8; not m/s ×2.237).
 
 **Revisit trigger.** A higher-fidelity open wind-field model (or RAFT shipping a ready gust field) → swap the field
 step, keep the catalog.
+
+---
+
+## JD-TC-9 · Unified catalog & wind screen — **wind = 100 km, surge = 50 km; the wind-farm reads its own 100 km catalog** (un-fork)
+
+**Date:** 2026-06-24 · **Status:** decided · **built** (M0/M1 + wind M2/M4 + solar M2/M4 + flood-coastal × wind M4) · corrects [JD-FL-19](../flood/decisions.md); the screen radius realizes [JD-TC-8](#jd-tc-8).
+
+**Problem.** The wind-farm cell was forked off flood-coastal's M1 catalog ([JD-FL-19](../flood/decisions.md)) so the
+wind & surge legs would share one event frame. But that catalog is screened at the **50 km surge radius**, so the
+wind hazard was being counted with the surge ruler: only 2 observed passages → λ = 0.0116/yr, and a 24-storm severity
+pool. Solar, by contrast, built its own catalog at 100 km and was already correct. The radius is a property of the
+**hazard, not the asset** — wind reaches ~100 km; surge attenuates by ~50 km.
+
+**Decision.**
+1. **One unified hurricane M1 catalog with all sites**, every site screened at the **100 km wind radius**. Amazon
+   (the wind farm) is added to `tc_m0_sites.json` with `asset: "wind_farm"`; M1 carries `asset` (+ `category`,
+   `near_site_vmax_kt`) so the asset forks at M2 (the M0/M1-shared principle).
+2. **Wind farm reads its own 100 km catalog** (`tc_m1_catalog.parquet`, `asset==wind_farm`) instead of borrowing
+   flood-coastal's 50 km file. Result: λ **0.0116 → 0.0751/yr** (13 obs, ±28% vs the old ±71%), severity pool
+   **24 → 95 storms** (Cat-3 count 1 → 5), wind **EAL 0.012% → 0.067%**, **PML500 1.43% → 5.70%** of TIV.
+3. **Solar M2/M4 gain an `asset=="solar"` filter** so the wind-farm site can't leak into the solar pipeline
+   (verified: solar outputs byte-identical).
+4. **Surge stays at 50 km.** The flood-coastal surge leg keeps its ≤50 km rate ([JD-FL-15](../flood/decisions.md)).
+   The two legs join on `event_family_id` (= RAFT storm_ID); the 50 km surge storms are a strict **subset** of the
+   100 km wind storms, so the join is still clean. The flood-coastal × wind **coastal compound restricts its wind
+   leg to the 50 km surge event set** (so the surge-driven compound is unchanged — still 24 storms — and the
+   50–100 km wind-only storms are carried by the standalone wind product, not the surge compound).
+
+**Tier-3 caveat (forward-looking, no code yet).** The standalone hurricane-wind product (100 km, all 95 storms) and
+the flood coastal compound (which already contains the 24 close storms' wind via `max(wind, surge)`) **overlap on
+those 24 storms' wind**. Nothing in this repo combines the two, so there is **no double-count today**. But when the
+**Overall Risk Modeling** tier merges them into Total Loss, it must combine **worse-wins (max), not sum**, for the
+overlapping storms — otherwise their wind is counted twice. Record kept so that combiner is built correctly.
+
+**Why.** Same structure for both assets, driven by the hazard. Removing the fork makes each pipeline independent and
+correct (wind at its own radius), while the shared `event_family_id` preserves the compound join — the fork was a
+convenience, never a requirement.
+
+**Revisit trigger.** A native standalone-wind site screen that differs from 100 km, or a hurricane-specific turbine
+curve (would also lift the 0.65 DR cap).
