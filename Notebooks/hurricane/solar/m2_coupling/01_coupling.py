@@ -81,8 +81,12 @@ print("repo root:", ROOT)
 
 # %%
 cat = pd.read_parquet(DATA / "tc_m1_catalog.parquet")
+# This is the SOLAR cell. The unified M1 catalog also carries the wind-farm site (Amazon, asset=wind_farm) — the
+# asset forks at M2 (M0/M1 shared). Keep only solar sites here (the cross-link riders Discovery/LA3 are real solar
+# plants, asset=solar, and stay — they supply the solar wind leg for flood-coastal × solar).
+cat = cat[cat["asset"] == "solar"].copy()
 sites = {s["name"]: s for s in json.load(open(DATA / "tc_m0_sites.json"))["sites"]}
-print(f"M1 catalog: {len(cat)} per-event rows across {cat.site.nunique()} sites")
+print(f"M1 catalog (solar sites): {len(cat)} per-event rows across {cat.site.nunique()} sites")
 print(cat.groupby("site").agg(events=("storm_ID", "size"),
       med_gust=("peak_gust_3s_mph", "median"), max_gust=("peak_gust_3s_mph", "max")).round(1).to_string())
 

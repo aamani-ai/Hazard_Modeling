@@ -20,7 +20,7 @@ asset** as flood-coastal × wind, so the per-storm wind loss **joins the surge l
 |---|---|---|
 | M2 coupling | [`m2_coupling/01_coupling`](m2_coupling/01_coupling.ipynb) | ✅ **built** — **per-node** field-intensity (non-degenerate; demonstrated) |
 | M3 damage | [`m3_damage/01_damage`](m3_damage/01_damage.ipynb) | ✅ **built** — reused turbine wind curve → per-storm **per-subsystem** DR + `event_family_id` |
-| M4 loss & metrics | [`m4_loss_metrics/01_loss_metrics`](m4_loss_metrics/01_loss_metrics.ipynb) | ✅ **built** — wind-only EAL 0.012% / PML500 1.43% TIV |
+| M4 loss & metrics | [`m4_loss_metrics/01_loss_metrics`](m4_loss_metrics/01_loss_metrics.ipynb) | ✅ **built** — wind-only EAL 0.067% / PML500 5.70% TIV (≤100 km wind screen) |
 
 ## The build, layer by layer
 
@@ -34,15 +34,17 @@ asset** as flood-coastal × wind, so the per-storm wind loss **joins the surge l
   DR caps ~0.65 (no tower-collapse total-loss mode — the honest limitation). Emits **per-storm, per-subsystem** wind DR
   stamped `event_family_id` → `data/hurricane/tc_windfarm_m3_damage.parquet` (the exact compound-combine input).
   Bimodal: bulk tiny (median ~0.3%, storms below IEC survival), rare Cat-3 close passage ~11% of TIV.
-- **M4 — loss & metrics.** Compound-Poisson MC at the **shared** λ (0.0116/yr, ±71% — 2-storm anchor) → wind-only
-  **EAL 0.012% / PML250 0.42% / PML500 1.43% of TIV** (98.85% loss-free years). Wind is small at Amazon — the cell's
-  material hazard is **surge**; this leg is the compound join partner.
+- **M4 — loss & metrics.** Compound-Poisson MC at the **≤100 km wind** λ (0.0751/yr, ±28% — 13-storm anchor) → wind-only
+  **EAL 0.067% / PML250 3.59% / PML500 5.70% of TIV** (~92.8% loss-free years). Wind is modest at Amazon, but the
+  ≤100 km screen (vs the old, wrong 50 km surge radius) raises it ~6×. The cell's material hazard is still **surge**;
+  this leg is also the compound join partner (surge events are a subset of these wind events).
 
 ## Honest caveats (carried in the manifests)
 
 - **Curve Low-confidence** (reused convective_wind turbine curve, greenfield) — the dominant uncertainty; DR caps ~0.65.
-- **λ is the shared coastal-event rate** (≤50 km, [JD-FL-15](../../../docs/plans/flood/decisions.md)), reused so wind &
-  surge share one event frame; a standalone ≤100 km wind screen ([JD-TC-8](../../../docs/plans/hurricane/decisions.md))
-  would admit more distant-but-windy storms and raise it — the documented upgrade.
+- **λ is the ≤100 km wind-screen rate** ([JD-TC-8](../../../docs/plans/hurricane/decisions.md), unified hurricane M1 — wind
+  reaches ~100 km, so it is no longer screened at the 50 km surge radius). The **surge** leg keeps its ≤50 km rate
+  ([JD-FL-15](../../../docs/plans/flood/decisions.md)); the two join on `event_family_id` and the 50 km surge storms
+  remain a strict subset of these 100 km wind storms, so the compound combine stays consistent.
 - **Wind-only headline is the cell's own number**; the surge × wind **compound** combine is the separate flood-coastal
   × wind M4 step (reads M3's per-storm per-subsystem table, joins on `event_family_id`).

@@ -90,7 +90,8 @@ m3 = m3[~m3["site_role"].astype(str).str.startswith("cross-link")].copy()
 summ = pd.read_parquet(DATA / "tc_m1_site_summary.parquet")     # carries lambda_per_yr per site
 summ = summ[~summ["role"].astype(str).str.startswith("cross-link")].copy()
 sites = {s["name"]: s for s in json.load(open(DATA / "tc_m0_sites.json"))["sites"]
-         if not str(s.get("role", "")).startswith("cross-link")}   # drop appended flood-coastal sites (JD-FL-16)
+         if not str(s.get("role", "")).startswith("cross-link")        # drop appended flood-coastal sites (JD-FL-16)
+         and str(s.get("asset", "solar")) == "solar"}                  # and the wind-farm site (Amazon) — solar headline only
 lam = {r["site"]: float(r["lambda_per_yr"]) for _, r in summ.iterrows()}
 print("per-site λ (events/yr):", {k: round(v, 4) for k, v in lam.items()})
 print("per-event loss fraction (conditional_DR) is % of TIV; value_exposed_fraction already folded in (=1.0)")

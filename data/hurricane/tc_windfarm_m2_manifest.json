@@ -4,18 +4,19 @@
   "slug": "amazon_wind_us_east",
   "asset": "wind_farm",
   "coupling_type": "field-intensity (3rd bucket) \u2014 FULL per-node (NON-degenerate; the wind-farm V2 the solar cell foreshadowed)",
-  "shared_catalog": "data/flood/amazon_wind_us_east_flood_coastal_m1_catalog.parquet (flood-coastal M1, JD-FL-19) \u2014 M0/M1 shared, asset forked at M2",
+  "catalog": "data/hurricane/tc_m1_catalog.parquet (unified hurricane M1, asset=wind_farm) \u2014 100 km WIND screen; asset forks at M2",
+  "catalog_history": "was data/flood/amazon_wind_us_east_flood_coastal_m1_catalog.parquet (flood-coastal 50 km surge, 24 storms) \u2014 moved to the 100 km wind screen so the wind hazard is not screened at the surge radius; surge leg stays in flood-coastal and joins on event_family_id",
   "field_levers": {
     "holland_B": 1.3,
     "gust_factor_1min_to_3s": 1.2
   },
   "n_nodes": 105,
   "n_turbines": 104,
-  "n_storms": 24,
+  "n_storms": 95,
   "fraction_rule": "value_exposed_fraction = 1.0 PER NODE (turbines/substation are point structures); exposure carried by per-node gust",
   "field_variation_across_farm_pct": {
-    "median": 4.42,
-    "p95": 21.48,
+    "median": 3.68,
+    "p95": 7.57,
     "max": 23.02
   },
   "contract_fields": [
@@ -29,7 +30,7 @@
     "gust_3s_mph",
     "value_exposed_fraction"
   ],
-  "n_rows": 2520,
+  "n_rows": 9975,
   "outputs": {
     "coupling_parquet": "data/hurricane/tc_windfarm_m2_coupling.parquet"
   }

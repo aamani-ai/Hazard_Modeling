@@ -5,45 +5,45 @@
   "asset": "wind_farm",
   "engine": "shared compound-Poisson MC (event-based, no RP bridge); N_years=1000000",
   "headline_metric": "% of TIV (dollars secondary \u2014 $/MW estimate)",
-  "lambda_per_yr": 0.0116,
-  "lambda_note": "SHARED coastal-event rate (\u226450 km, JD-FL-15) \u2014 reused so wind & surge legs share one event frame for the compound join; anchored on 2 obs / 173 yr \u2192 \u00b171% band; a \u2264100 km wind screen would raise it",
+  "lambda_per_yr": 0.0751,
+  "lambda_note": "WIND-screen rate (\u2264100 km, unified hurricane M1) \u2014 wind reaches ~100 km, so the rate is anchored on 13 obs hurricane passages / 173 yr \u2192 \u00b128% band. Was previously the \u226450 km surge rate (2 obs \u2192 0.0116/yr), which screened wind at the surge radius and undercounted it ~6.5\u00d7. The surge leg keeps the \u226450 km rate; the two join on event_family_id (= RAFT storm_ID, surge \u2286 wind).",
   "headline_pct_of_TIV": {
-    "EAL": 0.012,
+    "EAL": 0.067,
     "EAL_with_freq_unc": [
-      0.004,
-      0.021
+      0.048,
+      0.086
     ],
-    "PML100": 0.02,
-    "PML250": 0.42,
-    "PML500": 1.43,
-    "VaR99": 0.02,
-    "TVaR99": 1.22
+    "PML100": 1.52,
+    "PML250": 3.59,
+    "PML500": 5.7,
+    "VaR99": 1.52,
+    "TVaR99": 4.27
   },
   "metrics_usd": {
-    "EAL": 35829.43,
-    "VaR95 (AEP-PML20)": 0.0,
-    "VaR99 (AEP-PML100)": 63481.6,
-    "VaR99.6 (AEP-PML250)": 1222166.4,
-    "PML500 (AEP-99.8)": 4154259.2,
-    "TVaR99": 3548932.18,
-    "OEP-PML100": 63481.6
+    "EAL": 195313.35,
+    "VaR95 (AEP-PML20)": 463881.6,
+    "VaR99 (AEP-PML100)": 4416630.4,
+    "VaR99.6 (AEP-PML250)": 10466019.2,
+    "PML500 (AEP-99.8)": 16589081.6,
+    "TVaR99": 12443950.15,
+    "OEP-PML100": 4416630.4
   },
   "metrics_pct_of_tiv": {
-    "EAL": 0.0123,
-    "VaR95 (AEP-PML20)": 0.0,
-    "VaR99 (AEP-PML100)": 0.0218,
-    "VaR99.6 (AEP-PML250)": 0.4197,
-    "PML500 (AEP-99.8)": 1.4266,
-    "TVaR99": 1.2187,
-    "OEP-PML100": 0.0218
+    "EAL": 0.0671,
+    "VaR95 (AEP-PML20)": 0.1593,
+    "VaR99 (AEP-PML100)": 1.5167,
+    "VaR99.6 (AEP-PML250)": 3.5941,
+    "PML500 (AEP-99.8)": 5.6968,
+    "TVaR99": 4.2733,
+    "OEP-PML100": 1.5167
   },
   "occurrence_basis_note": "OEP-PML100 = per-EVENT (largest single storm/yr); AEP metrics = annual aggregate (sum of a year's storms). \u03bb\u226a1 \u2192 OEP\u2248AEP (rarely >1 storm/yr).",
-  "zero_loss_year_fraction": 0.9885,
+  "zero_loss_year_fraction": 0.9275,
   "caveats": [
     "wind is SMALL at Amazon \u2014 frequent storms below IEC turbine survival; tail = rare Cat-3 close passage",
     "the cell's MATERIAL hazard is SURGE (flood-coastal \u00d7 wind M4); this wind leg is the compound join partner",
     "curve Low-confidence (reused convective_wind turbine curve); DR caps ~0.65 (no tower-collapse total loss)",
-    "\u03bb shared coastal-event rate (\u00b171%, 2-storm anchor); standalone-wind \u2264100 km screen is the documented upgrade"
+    "\u03bb from \u2264100 km wind screen (\u00b128%, 13-obs anchor); surge leg keeps \u226450 km, join on event_family_id (surge \u2286 wind)"
   ],
   "outputs": {
     "metrics_parquet": "data/hurricane/tc_windfarm_m4_loss_metrics.parquet",

@@ -95,7 +95,12 @@ def holland_sustained(vmax_kt, rmw_km, r_km, B=HOLLAND_B):
 # **collector substation** as a 105th node (it carries 0.09 of farm value and is wind-exposed just like the turbines).
 
 # %%
-cat = pd.read_parquet(FLOOD / f"{AMAZON_SLUG}_flood_coastal_m1_catalog.parquet")
+# WIND leg reads the unified hurricane M1 catalog at the 100 km WIND screen (asset=wind_farm = Amazon).
+# Previously this borrowed flood-coastal's 50 km SURGE catalog — wrongly screening wind at the surge radius
+# (2 obs/24 storms). The surge leg stays in flood-coastal (50 km); the two join on event_family_id (= RAFT storm_ID),
+# and the 50 km surge storms remain a subset of these 100 km wind storms.
+cat = pd.read_parquet(DATA / "tc_m1_catalog.parquet")
+cat = cat[cat["asset"] == "wind_farm"].copy()
 geo = pd.read_parquet(FLOOD / f"{AMAZON_SLUG}_flood_wind_m0_geometry.parquet")
 site = next(s for s in json.loads((FLOOD / "flood_wind_m0_sites.json").read_text())["sites"]
             if s["slug"] == AMAZON_SLUG)
@@ -107,7 +112,7 @@ nodes = pd.concat([nodes, pd.DataFrame([{"lon": site["sub_lon"], "lat": site["su
                                          "node_id": "SUB", "node_type": "substation"}])], ignore_index=True)
 print(f"Amazon Wind US East: TIV ${site['tiv']/1e6:.0f}M · {(nodes.node_type=='turbine').sum()} turbines + "
       f"1 substation = {len(nodes)} nodes")
-print(f"shared storm catalog: {len(cat)} storms · λ (flood-coastal M1) reused at M4 · "
+print(f"hurricane M1 catalog (100 km WIND screen): {len(cat)} storms · λ from M1 site summary (used at M4) · "
       f"category dist {cat['category'].value_counts().sort_index().to_dict()}")
 print(f"farm extent: {haversine_km(nodes.lat.min(), nodes.lon.min(), nodes.lat.max(), nodes.lon.max()):.1f} km corner-to-corner")
 
@@ -169,7 +174,7 @@ print("  centroid sample would erase → per-node sampling is required, not a co
 # %%
 checks = {
     "every shared storm × node represented once (no drop/dup)": len(m2) == len(cat) * len(nodes),
-    "all 24 join keys (event_family_id) preserved from the shared catalog":
+    "all join keys (event_family_id) preserved from the M1 catalog":
         set(m2.event_family_id.unique()) == set(cat.event_family_id.astype(int)),
     "value_exposed_fraction == 1.0 at every node (point structures)": bool((m2.value_exposed_fraction == 1.0).all()),
     "gusts non-negative & finite": bool(np.isfinite(m2.gust_3s_mph).all() and (m2.gust_3s_mph >= 0).all()),
@@ -193,7 +198,8 @@ manifest = {
     "notebook": "hurricane/wind_farm/m2_coupling/01_coupling",
     "site": "Amazon Wind US East (NC)", "slug": AMAZON_SLUG, "asset": "wind_farm",
     "coupling_type": "field-intensity (3rd bucket) — FULL per-node (NON-degenerate; the wind-farm V2 the solar cell foreshadowed)",
-    "shared_catalog": "data/flood/amazon_wind_us_east_flood_coastal_m1_catalog.parquet (flood-coastal M1, JD-FL-19) — M0/M1 shared, asset forked at M2",
+    "catalog": "data/hurricane/tc_m1_catalog.parquet (unified hurricane M1, asset=wind_farm) — 100 km WIND screen; asset forks at M2",
+    "catalog_history": "was data/flood/amazon_wind_us_east_flood_coastal_m1_catalog.parquet (flood-coastal 50 km surge, 24 storms) — moved to the 100 km wind screen so the wind hazard is not screened at the surge radius; surge leg stays in flood-coastal and joins on event_family_id",
     "field_levers": {"holland_B": HOLLAND_B, "gust_factor_1min_to_3s": GUST_FACTOR},  # identical to hurricane M1/M2
     "n_nodes": int(len(nodes)), "n_turbines": int((nodes.node_type == "turbine").sum()), "n_storms": int(len(cat)),
     "fraction_rule": "value_exposed_fraction = 1.0 PER NODE (turbines/substation are point structures); exposure carried by per-node gust",

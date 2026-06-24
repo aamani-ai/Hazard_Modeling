@@ -25,7 +25,7 @@
     "foundation",
     "civil"
   ],
-  "n_storms": 24,
+  "n_storms": 95,
   "tiv_usd": 291200000.0,
   "worst_storm": {
     "storm_ID": 27313,

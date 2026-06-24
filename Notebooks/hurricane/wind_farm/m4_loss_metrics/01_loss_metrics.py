@@ -60,7 +60,8 @@ print("repo root:", ROOT)
 # ## Source & provenance (pin it, cache it)
 #
 # - **M3 per-storm conditional losses** (`data/hurricane/tc_windfarm_m3_damage.parquet`) — the severity samples.
-# - **Shared λ** (`data/flood/flood_coastal_m1_catalog_manifest.json`, Amazon entry) — the event rate (JD-FL-15).
+# - **Wind λ** (`data/hurricane/tc_m1_site_summary.parquet`, Amazon row) — the ≤100 km WIND-screen event rate
+#   (unified hurricane M1, JD-TC-8). The surge leg keeps its own ≤50 km rate (JD-FL-15); join on `event_family_id`.
 # - **TIV** (`data/flood/flood_wind_m0_sites.json`). **Engine:** shared compound-Poisson MC (event-based, no RP bridge).
 #   **Reproducibility:** metrics + annual vector + EP curve → `data/hurricane/tc_windfarm_m4_*`.
 
@@ -69,14 +70,18 @@ print("repo root:", ROOT)
 
 # %%
 m3 = pd.read_parquet(DATA / "tc_windfarm_m3_damage.parquet")
-cman = json.loads((FLOOD / "flood_coastal_m1_catalog_manifest.json").read_text())
-amz = next(s for s in cman["sites"] if s["slug"] == AMAZON_SLUG)
+# WIND-leg λ now from the unified hurricane M1 site summary (Amazon, 100 km WIND screen) — NOT the flood-coastal
+# 50 km surge rate. Wind reaches ~100 km, so screening wind at the 50 km surge radius undercounted the rate
+# (2 obs → 0.0116/yr); the 100 km wind screen gives 13 obs → ~0.0751/yr. The surge leg keeps the 50 km rate; the
+# two join on event_family_id (= RAFT storm_ID), and the 50 km surge storms remain a subset of these wind storms.
+summ = pd.read_parquet(DATA / "tc_m1_site_summary.parquet")
+amz = summ[summ["asset"] == "wind_farm"].iloc[0]
 LAM = float(amz["lambda_per_yr"])
-OBS_N = int(amz["obs_passages_50km"]); REC_YR = int(amz["record_years"])
-FREQ_REL_UNC = OBS_N ** -0.5                                    # √n/n — wide here (n=2 observed)
+OBS_N = int(amz["obs_passages_100km"]); REC_YR = 2023 - 1851 + 1
+FREQ_REL_UNC = OBS_N ** -0.5                                    # √n/n
 TIV = float(m3["tiv_usd"].iloc[0])
 loss_fracs = m3["conditional_DR"].values
-print(f"shared λ = {LAM:.4f}/yr (anchored on {OBS_N} obs passages / {REC_YR} yr → ±{FREQ_REL_UNC*100:.0f}% freq band)")
+print(f"wind λ = {LAM:.4f}/yr (100 km WIND screen, unified M1; anchored on {OBS_N} obs passages / {REC_YR} yr → ±{FREQ_REL_UNC*100:.0f}% freq band)")
 print(f"{len(loss_fracs)} per-storm DR samples · mean {loss_fracs.mean()*100:.3f}% · max {loss_fracs.max()*100:.2f}% of TIV · TIV ${TIV/1e6:.0f}M")
 
 # %% [markdown]
@@ -160,7 +165,8 @@ checks = {
         max(m["VaR99"], m["TVaR99"], *[m[f"PML{T}"] for T in RPS]) <= 1.0 + 1e-9,
     "EAL > 0 (material peril, however small)": m["EAL"] > 0,
     "single-event PML ≤ DR cap (~0.65); no total loss": m["PML500"] <= 0.66,
-    "most years are loss-free (λ ≪ 1)": (annual == 0).mean() > 0.95,
+    "most years loss-free; zero-year frac ≈ Poisson exp(-λ) (MC known-answer)":
+        ((annual == 0).mean() > 0.5) and (abs((annual == 0).mean() - np.exp(-LAM)) < 0.01),
     "AEP ≥ OEP every year (annual total ≥ its largest single storm)": bool((annual + 1e-12 >= oep).all()),
     "OEP-PML100 ≤ AEP-PML100 (occurrence ≤ aggregate)": tw["OEP-PML100"] <= tw["VaR99 (AEP-PML100)"] + 1e-12,
     "twin-block unit consistency: usd/TIV*100 == pct_of_tiv (to rounding)":
@@ -205,8 +211,10 @@ manifest = {
     "engine": f"shared compound-Poisson MC (event-based, no RP bridge); N_years={N_YEARS}",
     "headline_metric": "% of TIV (dollars secondary — $/MW estimate)",
     "lambda_per_yr": LAM,
-    "lambda_note": ("SHARED coastal-event rate (≤50 km, JD-FL-15) — reused so wind & surge legs share one event frame "
-                    "for the compound join; anchored on %d obs / %d yr → ±%d%% band; a ≤100 km wind screen would raise it"
+    "lambda_note": ("WIND-screen rate (≤100 km, unified hurricane M1) — wind reaches ~100 km, so the rate is anchored "
+                    "on %d obs hurricane passages / %d yr → ±%d%% band. Was previously the ≤50 km surge rate "
+                    "(2 obs → 0.0116/yr), which screened wind at the surge radius and undercounted it ~6.5×. The surge "
+                    "leg keeps the ≤50 km rate; the two join on event_family_id (= RAFT storm_ID, surge ⊆ wind)."
                     % (OBS_N, REC_YR, round(FREQ_REL_UNC * 100))),
     "headline_pct_of_TIV": {"EAL": round(m["EAL"] * 100, 3),
                             "EAL_with_freq_unc": [round(eal_lo * 100, 3), round(eal_hi * 100, 3)],
@@ -221,7 +229,7 @@ manifest = {
         "wind is SMALL at Amazon — frequent storms below IEC turbine survival; tail = rare Cat-3 close passage",
         "the cell's MATERIAL hazard is SURGE (flood-coastal × wind M4); this wind leg is the compound join partner",
         "curve Low-confidence (reused convective_wind turbine curve); DR caps ~0.65 (no tower-collapse total loss)",
-        "λ shared coastal-event rate (±%d%%, 2-storm anchor); standalone-wind ≤100 km screen is the documented upgrade" % round(FREQ_REL_UNC * 100),
+        "λ from ≤100 km wind screen (±%d%%, %d-obs anchor); surge leg keeps ≤50 km, join on event_family_id (surge ⊆ wind)" % (round(FREQ_REL_UNC * 100), OBS_N),
     ],
     "outputs": {"metrics_parquet": "data/hurricane/tc_windfarm_m4_loss_metrics.parquet",
                 "annual_vectors": "data/hurricane/tc_windfarm_m4_annual_vectors.parquet",
