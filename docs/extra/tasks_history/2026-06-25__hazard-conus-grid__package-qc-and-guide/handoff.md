@@ -64,7 +64,17 @@ Run-id oracles + the per-gate results are in [`notes.md`](notes.md).
    "fill the five blanks," fix the engine, don't fork it.
 5. **Deferred accuracy** — frequency pooling / spatial shrinkage (fixes sparse-cell hard-zeros), record
    extension (MYRORSS), MESH de-biasing (Murillo & Homeyer; fixes West under-detection), EVT severity tail.
-6. **Loose ends** — verify CI is green after this push (`ci.yml` may have triggered); run the Cloud Run
+6. **Swap the grid's M3 to the curated damage curve** *(a deliberate, standalone decision — flagged to tackle
+   separately; it moves the loss numbers).* The grid currently runs the **legacy** solar curve
+   `data/hail/damage_curves/hail_solar_asset_capex_weighted.json` (`curve_id: hail/solar__asset__capex_weighted`,
+   vendored from `infrasure-damage-curves`; a *real* solar PV+tracker capex-weighted curve, ~34% cap) — **not**
+   the freshly-curated `damage_modeling/.../01_cells/hail_solar/current/hail_solar__model_v1_0__docs_r5__curve_artifact.json`,
+   which was used only as a *reference* for the QC rule, not wired in. Per the architecture, M3 should consume
+   the curated curve via the versioned `damage_code()` contract. To do: **diff** the two (how far do EAL/PML
+   move?), then re-point `pipelines/hail/damage.py` + `drivers/conus_grid/.../entrypoint.py` and re-run.
+   *(Aside: NOAA Storm-Events damage-`$` is **not** a calibration target for this — it's a generic
+   property/real-estate estimate, not the asset's loss.)*
+7. **Loose ends** — verify CI is green after this push (`ci.yml` may have triggered); run the Cloud Run
    `workflow_dispatch` once to confirm the **image builds with the vendored packages** (by-construction
    correct, not yet exercised); curate the **150 untracked `data/` manifests** into a deliberate commit;
    **wire the 5 reproduction gates into `ci.yml`** so they run on every push (today they're manual `pytest`);
