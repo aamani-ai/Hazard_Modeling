@@ -7,7 +7,7 @@ Driven by the plan in [`../../docs/plans/hail/`](../../docs/plans/hail/README.md
 
 ```
 hail/
-  m0_input_data/   ← raw evidence: NOAA point reports + MRMS gridded footprints   ┐ the PERIL
+  m0_input_data/   ← raw evidence: NOAA reports + MRMS/MYRORSS gridded radar       ┐ the PERIL
   m1_catalog/      ← canonical events (footprint polygons) + NegBin frequency fit ┘ (asset-independent)
   solar/           ← hail × SOLAR — coupling · damage · loss & metrics    ✅ built end-to-end
   # wind/          ← hail × WIND FARM — next (see "how a wind farm differs" below)
@@ -25,13 +25,14 @@ at the **peril** level. Only M2–M4 (coupling/damage/loss) specialize per asset
 
 ### M0 — input data  ·  [📖 folder README](m0_input_data/README.md)
 
-Two sources behind one interface; each notebook does a complete-pass field dictionary (per
+Multiple sources behind one interface; each notebook does a complete-pass field dictionary (per
 `docs/principles/notebook_work/`).
 
 | Notebook | Source | Grain | Status |
 |----------|--------|-------|--------|
 | `m0_input_data/01_noaa_hydronos.ipynb` | NOAA Storm Events (Hydronos API) + FEMA NRI (reference-only) | **point reports** (hail size + location; no footprint) | ✅ built + executed |
 | `m0_input_data/02_mrms_aws.ipynb` | MRMS MESH (AWS Open Data) | **gridded** → real event **footprints**; opens with a from-scratch "what is this data" walkthrough (§1–§7) | ✅ built + executed |
+| `m0_input_data/03_myrorss_reanalysis_source_qualification/` | MYRORSS MESH reanalysis | **gridded** source qualification; current outputs include a selected-cell grid adapter proof, not a final climatology | research/qualification in progress |
 
 ### M1 — event catalog + frequency  ·  [📖 folder README](m1_catalog/README.md)
 
