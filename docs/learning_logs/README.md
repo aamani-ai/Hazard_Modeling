@@ -82,8 +82,11 @@ competitive-research `learnings/architecture/` folder does. **Don't pre-create s
 | [10](10_monte_carlo_effective_sample_size.md) | A Monte Carlo metric is only as precise as its *effective* sample — and a known-answer tolerance must track that, not a fixed band | method · anti-pattern | wildfire × solar · M4 / [DD-W7](../plans/wildfire/decisions.md) | every peril reading metrics off an MC — acutely rare perils (low λ) and deep-tail PMLs |
 | [11](11_return_period_conventions.md) | Return period is `1/p` (annual-exceedance), not `1/λ` — the EVT conventions coincide only when rare; safe to mix an ASCE MRI with a fitted rate only at the asset level | method · substrate | convective wind × wind farm · M0 (`01_asce_hazard`) / [DD-WN-3](../plans/convective_wind/decisions.md) | any peril that reads a return-period/MRI surface *and* fits an event-rate λ |
 | [12](12_evt_for_a_new_peril.md) | EVT for a new peril — the decision tree: read-or-fit → method (POT vs block-maxima) → tail (ξ: bounded/light/heavy) → pin it; stitches 01·02·04·09·11 + the severity refs, with all three perils worked through it | method · forward-looking | synthesis · hail + wildfire + convective-wind M0–M1 | every **new peril** or **new hazard data product** at M0/M1 (not a new asset under an existing peril) |
+| [13](13_one_chain_many_products.md) | One chain, many products — same intensity *quantity* ≠ same *node*, and basis risk lives in the node-gap (catalog / damage curve / parametric trigger each pin X at their own node) | method · substantive insight | convective wind M0–M3 + cross-repo `damage_modeling` x-axis foundations + Descartes parametric ref / [discussion](../extra/discussion/intensity_variable_and_products/README.md) | any peril read by ≥2 consumers; choosing/critiquing the hazard intensity variable for any new product (incl. a parametric trigger) |
+| [CG-01](conus_grid/01_exact_cell_alignment_and_neighborhood_qa.md) | Exact cell alignment is stricter than hazard nearby | method · anti-pattern | common hail M0 / MYRORSS source qualification with grid selected-cell adapter | any grid hazard layer that maps raw evidence onto fixed cells |
+| [CG-02](conus_grid/02_raw_gridded_sources_need_batch_denominators.md) | Raw gridded sources need batch denominators | execution · data-contract | common hail M0 / MYRORSS source qualification with grid selected-cell adapter | gridded hazard sources scanned from raw files |
 
-*Sub-folders in this tree:* none yet (see the naming rule above).
+*Sub-folders in this tree:* [`conus_grid/`](conus_grid/README.md) for fixed-grid hazard product learnings.
 
 ## How to add an entry
 
@@ -124,4 +127,7 @@ The decision it generalizes, the principle it serves, the reference it builds on
 
 ---
 
-**Last update:** 2026-06-13 — added entry 10 (Monte Carlo effective sample size & the self-calibrating known-answer tolerance), from wildfire M4. Earlier same-day: 07 (one simulation, two products), 08 (the oozing trap), 09 (pre-integrated vs extracted catalog), from wildfire M0–M1.
+**Last update:** 2026-06-21 - added entry 13 (one chain, many products — the hazard intensity variable is
+product-dependent; same quantity ≠ same node; basis risk = the node-gap), sourced from the convective-wind
+cells + the cross-repo damage-curve x-axis foundations + the parametric-trigger discussion. Previous:
+2026-06-16 CONUS-grid entries CG-01/CG-02; 2026-06-13 entries 07-10 from wildfire M0-M4.

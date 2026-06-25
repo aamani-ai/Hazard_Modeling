@@ -21,6 +21,19 @@ trust — and almost every belief here is a lesson the old model *paid for*. (Fu
 These three are not independent — they reinforce one another, and each page ends with how it connects to
 the other two.
 
+## Delivery discipline — a fourth, of a different kind
+
+The three above are about **building correctly**. This one is about **how much to build before shipping a
+first version** — and it's grounded in *this rebuild's* experience (a research-depth pull), not the old
+model's collapse.
+
+| File | The principle | The pull it answers |
+|------|---------------|---------------------|
+| [`good_enough_for_v1.md`](good_enough_for_v1.md) | **Good enough for V1 — ship honest, defer accuracy** — a V1 is a vertical slice that runs end-to-end and is honest about its limits, not a calibrated product. | Our own tendency toward research-grade depth (the hail-catalog spiral): work that improves the *number* but can stall a working *slice*. |
+
+It is the explicit counterweight to *basics spot-on*: get the foundation exactly right, then **stop at
+correct-and-honest** rather than gold-plating every layer.
+
 ## Working sub-areas
 
 Beyond the three foundational principles, this folder also collects **working principles** — how we operate

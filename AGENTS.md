@@ -52,7 +52,8 @@ These point at machine-specific absolute paths and **must not be committed**:
 | [`hazard_analysis`](hazard_analysis) | sibling repo | hazard-domain reference _(role TBD — owner to detail)_ |
 | [`infrasure-hazard-competitive-research`](infrasure-hazard-competitive-research) | sibling repo | competitive / market research on hazard modeling _(role TBD)_ |
 | [`Learning`](Learning) | `~/Desktop/Learning` knowledge base | domain notes (risk, insurance, modeling, electricity markets) |
-| [`infrasure-damage-curves`](infrasure-damage-curves) | sibling repo (`Divi-patel/infrasure-damage-curves`) | the **damage-curve library** — peril × asset/subsystem/component fragility curves; the source for **M3 severity** (replaces the literature-curated curve) |
+| [`infrasure-damage-curves`](infrasure-damage-curves) | sibling repo (`Divi-patel/infrasure-damage-curves`) | the **legacy** damage-curve library (weak method, strong **evidence** ~280 refs) — still consumed by current M3 notebooks; now the **evidence source** being harvested into `damage_modeling` |
+| [`damage_modeling`](damage_modeling) | sibling repo (this platform) | the **damage-curve discipline, spun out** — foundations + implementation library; the dedicated home + future source for **M3 severity** (consumed via a versioned `damage_code()` contract) |
 
 ---
 

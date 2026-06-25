@@ -28,8 +28,8 @@ Our events span ~28–95 mm, so the top event (95.5 mm ≈ 3.76″) lands in the
 
 V1 emits a **scalar mean damage ratio** per event (the methodology worked-example choice). Deferred richer
 options: a **damage-state vector** or a **full conditional distribution** (matters for the tail — two same-size
-events can damage differently); and **duration / business interruption** (v1 folds repair downtime into the
-damage ratio and leaves revenue loss aside, exactly as the methodology worked example does).
+events can damage differently); and **duration / business interruption** (deferred — the damage ratio is
+physical repair cost only; the downtime → revenue loss is a separate additive stage, methodology §7 + §9).
 
 ## Inputs → outputs
 
@@ -42,7 +42,7 @@ damage ratio and leaves revenue loss aside, exactly as the methodology worked ex
 
 - **Conditional damage *distribution*** (vs the scalar mean) — the tail-relevant richness (A22); Phase 5
   will need a severity spread to sample, not just the mean.
-- **Duration / BI** (downtime → revenue loss) — folded into the damage ratio for v1.
+- **Duration / BI** (downtime → revenue loss) — deferred; the damage ratio is physical repair cost only (a separate additive stage, methodology §7 + §9).
 - **Curve calibration to PV claims / >75 mm extrapolation** — the curve is curated-from-literature; refine
   with asset/claims data and a real giant-hail anchor.
 

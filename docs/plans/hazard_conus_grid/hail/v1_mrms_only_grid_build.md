@@ -5,7 +5,14 @@ source-inventory/GCS upload proof, full intended MRMS source inventory, first lo
 daily-evidence batch, Cloud Run seven-day M0 proof, Cloud Run 14-day M0 proof, and first two-batch
 reconciliation proof have run. The full accepted source-date denominator has now completed through
 task-indexed Cloud Run fanout and streaming reconciliation under
-`run_id=20260616T225000Z_m0_full_conus_reconciled`.
+`run_id=20260616T225000Z_m0_full_conus_reconciled`. The first full-CONUS MRMS-only M1 layer has also been
+built and uploaded under `run_id=20260618T040000Z_m1_mrms_only`.
+
+The full M0 review, M1 evidence readout, and M2-M4 handoff policy are documented in
+[`docs/extra/discussion/conus_grid/hail/03_mrms_tail_qa_and_m1_policy.md`](../../../extra/discussion/conus_grid/hail/03_mrms_tail_qa_and_m1_policy.md).
+The short version: the M0 row contract passed; M1 frequency has been built from severe cell-day flags; raw
+MESH severity is preserved with tail QA/provisional-severity flags; M2-M4 can start only as clearly labeled
+smoke/provisional work until severity policy is hardened.
 
 ## Decision
 
@@ -243,6 +250,32 @@ From M0 daily evidence:
 - assign `freq_dist = poisson_v1` unless diagnostics justify only a flag, not a more complex model;
 - assign QA flags for sparse cells, short record, no-data, and provisional tail.
 
+Status: **done and uploaded**.
+
+```text
+m1_run_id = 20260618T040000Z_m1_mrms_only
+local_root = data/hazard_conus_grid/hail/v1_mrms_only/m1_hazard_layer/run_id=20260618T040000Z_m1_mrms_only/
+gcs_root = gs://infrasure-benchmark/hazard_conus_grid/dev/hail/v1_mrms_only/m1_hazard_layer/run_id=20260618T040000Z_m1_mrms_only/
+rows = 13,085 cells
+columns = 53
+accepted source dates summarized = 2,071
+M0 cell-day rows summarized = 27,099,035
+```
+
+Current M1 readout:
+
+| Item | Value | Use |
+|---|---:|---|
+| Cells with any severe hail day | 12,111 | Frequency support. |
+| Cells with no severe hail days | 974 | Zero-event handling. |
+| Cells with `raw_mesh_body_only` | 11,526 | Provisional body-size evidence. |
+| Cells with `raw_mesh_tail_requires_qa` | 585 | Review/sensitivity, not literal size. |
+| Max `lambda_cell_raw` | 44.973 days/year | Screening signal; not final climatology. |
+| Max raw MESH | 1,437.40 mm | Preserved for audit; not a literal hailstone size. |
+
+This means M1 is ready for **screening** and **selected-cell M2-M4 smoke tests**. The first selected-cell
+M2-M4 smoke run has completed, but the layer is still not ready for reportable EAL/PML/VaR/TVaR.
+
 ### 5. Validation / QA
 
 Validation checks patterns, not hidden calibration:
@@ -252,7 +285,36 @@ Validation checks patterns, not hidden calibration:
 - NRI: downstream sanity after loss metrics only;
 - Hayhurst bridge: confirm no interface drift against the deep hail x solar reference.
 
-### 6. Canonical Solar Risk Layer
+### 6. M2-M4 Readiness Gate
+
+Do not jump directly from this M1 artifact to final full-CONUS losses.
+
+The next correct step is a **selected-cell solar M2-M4 smoke run** that proves the loss stack can consume the
+M1 artifact while preserving the provisional-tail warnings.
+
+Required before the selected-cell smoke run:
+
+- use `lambda_cell_raw` and `freq_dist = poisson_v1_default`;
+- carry `severity_magnitude_status` into every downstream output;
+- compare raw-MESH severity against a capped/log/compressed sensitivity for tail-QA cells;
+- include at least one central hail-corridor body cell, one moderate cell, one no-severe cell, one
+  high-frequency suspicious cell, and one tail-QA cell;
+- label every output as `MRMS-only V1`, `provisional severity`, and `not reportable`.
+
+Status: **done for selected cells**.
+
+```text
+risk_run_id = 20260618T045301Z_m2_m4_selected_cell_smoke
+notebook = Notebooks/hazard_conus_grid/hail/solar/m2_m4_risk_metrics/03_full_m1_selected_cell_solar_smoke.ipynb
+local_root = data/hazard_conus_grid/hail/solar/v1_mrms_only/m2_m4_selected_cell_smoke/run_id=20260618T045301Z_m2_m4_selected_cell_smoke/
+gcs_root = gs://infrasure-benchmark/hazard_conus_grid/dev/hail/solar/v1_mrms_only/m2_m4_selected_cell_smoke/run_id=20260618T045301Z_m2_m4_selected_cell_smoke/
+```
+
+The smoke run emitted both `raw_mrms` and `cap_100mm_sensitivity` severity-policy rows, all M4 engine QA
+checks passed, and the comparable metric family was produced. Only after reviewing that readout should solar
+M2-M4 be scaled across the full M1 cell set.
+
+### 7. Canonical Solar Risk Layer
 
 Run the canonical solar M2-M4 layer from the MRMS-only M1 artifact.
 
@@ -300,8 +362,10 @@ The local proof is done and `gcloud` bucket listing works. Current known choices
 | Full task-indexed M0 run | GitHub Actions run `27651275076`; execution `hazard-conus-grid-mrms-m0-54dm7`; task count 148, parallelism 8; all tasks succeeded. |
 | Full M0 reconciliation | Run `20260616T225000Z_m0_full_conus_reconciled`; 148 input batches, 2,071 dates, 27,099,035 rows, duplicate `cell_id/date` rows = 0, row-count failures = 0. |
 | Full M0 review | Run `20260616T232500Z_m0_review`; row contract passed; 613 records / 585 cells / 38 dates have `mesh_max_mm >= 300`, so raw MESH severity needs a named QA filter or sensitivity before empirical size/loss use. |
+| Full M1 build/upload | Run `20260618T040000Z_m1_mrms_only`; 13,085 M1 rows; 12,111 cells with any severe hail day; 974 zero severe-day cells; 585 cells flagged `raw_mesh_tail_requires_qa`; uploaded 10 GCS objects under the M1 hazard-layer prefix. |
+| Full-M1 selected-cell solar M2-M4 smoke | Run `20260618T045301Z_m2_m4_selected_cell_smoke`; five cells, two severity policies, QA checks passed; uploaded 9 GCS objects. |
 
-Current main output:
+Current M0 main output:
 
 ```text
 gs://infrasure-benchmark/hazard_conus_grid/dev/hail/v1_mrms_only/m0_reconciled_daily_cell_evidence/
@@ -311,6 +375,16 @@ gs://infrasure-benchmark/hazard_conus_grid/dev/hail/v1_mrms_only/m0_reconciled_d
 This is the first full-grid M0 layer. It is partitioned by date, with JSON metadata plus flat CSV sidecars
 for batch manifest, date coverage, and status summary. Individual Cloud Run batch outputs are audit/debug
 material; M1 should consume the reconciled root.
+
+Current M1 main output:
+
+```text
+gs://infrasure-benchmark/hazard_conus_grid/dev/hail/v1_mrms_only/m1_hazard_layer/
+  run_id=20260618T040000Z_m1_mrms_only/
+```
+
+This is the first full-grid MRMS-only M1 layer. It contains one row per served `cell_id`, plus summary CSVs,
+metadata JSON, and map PNGs for frequency, raw MESH, tail-QA, and severity-status review.
 
 Current review output:
 
@@ -330,9 +404,9 @@ Review result:
 - extreme raw MESH records: 613 cell-days, 585 cells, 38 dates;
 - max raw MESH: 1,437.4 mm.
 
-Interpretation: the GCP output/reconciliation is mechanically usable. The raw severity values are not ready
-to feed empirical size summaries or losses without a named extreme-MESH QA/capping rule. M1 frequency can
-proceed from severe-day flags after review; M1 size summaries need the QA decision.
+Interpretation: the GCP output/reconciliation is mechanically usable. M1 frequency can proceed from
+severe-day flags for screening and selected-cell M2-M4 smoke tests. Raw severity values remain provisional and
+must not drive final losses without a named extreme-MESH QA/capping/sensitivity rule.
 
 See [`../common/storage_artifacts.md`](../common/storage_artifacts.md) for the full path contract and
 [`../common/gcp_execution_and_storage_conventions.md`](../common/gcp_execution_and_storage_conventions.md)
@@ -369,13 +443,15 @@ gs://infrasure-benchmark/hazard_conus_grid/dev/hail/v1_mrms_only/m0_daily_cell_e
 ```
 
 The immediate operational task is no longer a permissions or fanout fix. Cloud Run Jobs, GCS writes, the
-durable GitHub Actions image path, task indexing, and full-run reconciliation are proven.
+durable GitHub Actions image path, task indexing, full-run reconciliation, local M1 aggregation, and M1 GCS
+upload are proven.
 
 Next:
 
-1. Define the V1 extreme-MESH severity rule: cap, exclude, or produce named raw/capped sensitivity fields.
-2. Build M1 frequency from the reconciled M0 severe-day flags.
-3. Build M1 empirical MESH-size summaries only with the severity QA rule made explicit.
-4. Only after M1 review, resume M2-M4 solar coupling and loss metrics.
+1. Review the selected-cell M2-M4 smoke metrics and maps.
+2. Decide whether full scaleout should emit both `raw_mrms` and `cap_100mm_sensitivity` rows or only one
+   named provisional severity policy.
+3. Decide whether high-frequency suspicious cells need a frequency-QA/pooling treatment before full scaleout.
+4. If accepted, run full-CONUS solar M2-M4 as a provisional screening layer with explicit tail metadata.
 
 Use [`m0_m1_scaleout_execution.md`](m0_m1_scaleout_execution.md) as the execution guide.

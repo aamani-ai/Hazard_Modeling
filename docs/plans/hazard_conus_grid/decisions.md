@@ -5,6 +5,95 @@ decisions live in each hazard subfolder.
 
 ---
 
+## DD-G14 · In-repo monorepo with extractable subpackages; no repo split for the grid
+
+**Date:** 2026-06-25 · **Status:** decided for grid production architecture.
+
+**Decision.** Grid production code lives in this repo as a monorepo of independently installable subpackages
+(`shared/`, `pipelines/<peril>/`, `drivers/`), each with its own `pyproject`. No separate repo for the grid —
+the spine is common. A repo split is reserved for a piece that becomes "a whole different process" (as the
+damage curve did → the `damage_modeling` repo). Because every subpackage is independently installable,
+extraction to a standalone repo later is **mechanical, not a refactor**.
+
+**Why.** Keep grid logic with its docs/notebooks and the engine genuinely shared *by import*; avoid premature
+split cost (code duplication, version skew, cross-repo coordination).
+
+**Pointer.** [`architecture/README.md`](architecture/README.md).
+
+---
+
+## DD-G13 · New perils plug in via a SourceAdapter — the five-blank contract
+
+**Date:** 2026-06-25 · **Status:** decided for grid production architecture.
+
+**Decision.** Adding a peril is filling five blanks: (1) a **SourceAdapter** (raw source → per-cell-day
+evidence, + a plausibility-QC hook), (2) the **M1 fit** (frequency + severity → the hazard-distribution
+boundary object), (3) the **coupling type** (`areal | field-intensity | site-conditioned`, dispatched by the
+shared engine), (4) a **damage-curve reference** (the M3 contract), (5) **config** (peril id, source URIs,
+thresholds, canonical assets). The shared engine, drivers, orchestration, and contracts are reused unchanged.
+A new source must honor the A/B/C boundary (Source-Qualification → Extraction-Adapter → Modeling) and pass
+the promotion gate before entering M1.
+
+**Why.** Make "add a peril" fill-in-the-blanks, not copy-and-rebuild — *standard interface, not standard
+physics* as code.
+
+**Pointer.** [`architecture/README.md`](architecture/README.md), [`architecture/migration_plan.md`](architecture/migration_plan.md), and [`common/gridded_radar_source_qualification.md`](common/gridded_radar_source_qualification.md).
+
+---
+
+## DD-G12 · The peril→engine boundary is the typed, versioned per-cell hazard-distribution object
+
+**Date:** 2026-06-25 · **Status:** decided for grid production architecture.
+
+**Decision.** The object M1 emits and the engine consumes is a **typed, code-enforced per-cell
+hazard-distribution object** with a first-class `schema_version` from day one. It standardizes: identity
+(`cell_id` + grid key), a frequency object `(family, params)` (V1: `poisson`, `{lambda: lambda_cell_raw}`), a
+severity object (V1: empirical MESH summaries + status), and QA/provenance — promoting today's stringly-typed
+M1 columns and `np.select` enums to typed fields. Nothing bypasses it: a peril never calls engine internals;
+the engine imports no peril.
+
+**Why.** A typed, versioned contract is what stops the boundary from silently drifting — the failure mode the
+rebuild exists to kill. It also lets NegBin/EVT (V1.5) slot into the same `(family, params)` / severity slots
+without a schema break.
+
+**Pointer.** [`architecture/contracts.md`](architecture/contracts.md).
+
+---
+
+## DD-G11 · One shared, exposure-agnostic risk engine; grid and deep-per-asset are two drivers of it
+
+**Date:** 2026-06-25 · **Status:** decided for grid production architecture.
+
+**Decision.** There is exactly **one** shared M2–M4 risk engine. It consumes `(hazard distribution + an
+exposure input)`; the exposure input is the only thing that differs between products — canonical-asset-per-cell
+(the **CONUS grid driver**, V1) vs one real asset (the future **deep-per-asset driver**). The engine is never
+duplicated; the deep per-asset is a *second driver*, not a second engine. Its data complexity (new DB, real
+assets) lands in its driver; its capability additions (financial terms, richer severity) enrich the shared
+engine for both products.
+
+**Why.** off-grid==on-grid as code — the two products can never silently disagree, which is the founding
+reason for this whole rebuild.
+
+**Pointer.** [`architecture/README.md`](architecture/README.md).
+
+---
+
+## DD-G10 · Grid production code becomes an importable package; notebooks go thin
+
+**Date:** 2026-06-25 · **Status:** decided for grid production architecture.
+
+**Decision.** Move the CONUS-grid logic out of notebooks/scripts into an importable package; notebooks become
+**thin** explore/validate harnesses that import it (the Hayhurst bridge stays as a validation harness). The
+shared M4 engine functions (today re-typed inline in the smoke notebook), the GCS helpers (today byte-
+duplicated across two scripts), and the per-peril M0 ingest are extracted; M0 becomes a SourceAdapter.
+
+**Why.** Today the engine is re-typed inline and helpers are copy-pasted, so "add a peril" = copy hail and
+rebuild. That does not scale to peril #2 — *modular from day one* applied as real code.
+
+**Pointer.** [`architecture/README.md`](architecture/README.md), [`architecture/migration_plan.md`](architecture/migration_plan.md).
+
+---
+
 ## DD-G9 · Use task-indexed Cloud Run fanout for hail MRMS M0 full denominator
 
 **Date:** 2026-06-16 · **Status:** decided for hail V1 scale-out.
