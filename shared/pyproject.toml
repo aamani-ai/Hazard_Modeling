@@ -1,0 +1,17 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "risk-engine"
+version = "0.1.0"
+description = "Shared hazard risk engine (M2-M4) for the CONUS grid and the deep per-asset products. Consumes a hazard-distribution object + an exposure input; emits the per-cell risk-metrics object."
+requires-python = ">=3.12"
+dependencies = ["numpy"]
+
+[project.optional-dependencies]
+gcs = ["google-cloud-storage"]
+test = ["pandas", "pyarrow"]
+
+[tool.setuptools.packages.find]
+where = ["src"]

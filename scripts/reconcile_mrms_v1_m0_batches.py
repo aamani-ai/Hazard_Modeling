@@ -26,18 +26,16 @@ from typing import Any
 
 import pandas as pd
 
+from hail.config import COVERAGE_STATUSES
+from risk_engine.io_base import is_gcs_uri, split_gcs_uri
+
 
 ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_LOCAL_ROOT = ROOT / "data" / "hazard_conus_grid" / "hail" / "v1_mrms_only" / "m0_reconciled_daily_cell_evidence"
 DEFAULT_GCS_OUTPUT_ROOT = (
     "gs://infrasure-benchmark/hazard_conus_grid/dev/hail/v1_mrms_only/m0_reconciled_daily_cell_evidence"
 )
-ALLOWED_STATUSES = {
-    "observed_no_hail",
-    "observed_sub_severe_hail",
-    "observed_severe_hail",
-    "no_native_pixel_coverage",
-}
+ALLOWED_STATUSES = set(COVERAGE_STATUSES)
 _STORAGE_CLIENT: Any | None = None
 
 
@@ -61,20 +59,6 @@ def parse_args() -> argparse.Namespace:
     )
     parser.add_argument("--dry-run", action="store_true")
     return parser.parse_args()
-
-
-def is_gcs_uri(value: str | Path) -> bool:
-    return str(value).startswith("gs://")
-
-
-def split_gcs_uri(uri: str) -> tuple[str, str]:
-    if not uri.startswith("gs://"):
-        raise ValueError(f"not a gs:// URI: {uri}")
-    rest = uri[5:]
-    bucket, _, blob = rest.partition("/")
-    if not bucket or not blob:
-        raise ValueError(f"invalid gs:// URI: {uri}")
-    return bucket, blob
 
 
 def get_storage_client() -> Any:

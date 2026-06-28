@@ -24,16 +24,12 @@ Examples:
 from __future__ import annotations
 
 import argparse
-import gzip
 import json
 import os
-import re
 import shutil
-import subprocess
 import sys
 import tempfile
 import time
-from dataclasses import dataclass
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
@@ -42,10 +38,17 @@ import matplotlib
 
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
-import numpy as np
 import pandas as pd
-import requests
-import xarray as xr
+
+from hail.config import PRODUCT, THRESHOLD_MM
+from hail.mrms_m0 import BatchContext, build_daily_panel
+from risk_engine.io_base import (
+    download_gcs_uri,
+    gcs_prefix_exists,
+    is_gcs_uri,
+    split_gcs_uri,
+    upload_file_to_gcs,
+)
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -53,8 +56,6 @@ GRID_DIR = ROOT / "data" / "hazard_conus_grid" / "common" / "benchmark_grid"
 HAIL_GRID_DIR = ROOT / "data" / "hazard_conus_grid" / "hail"
 MRMS_CACHE = Path(os.environ.get("MRMS_CACHE_ROOT", str(ROOT / "data" / "hail" / "mrms_raw")))
 
-THRESHOLD_MM = 25.4
-PRODUCT = "CONUS/MESH_Max_1440min_00.50"
 DEFAULT_SOURCE_INVENTORY_RUN_ID = "20260616T165806Z"
 DEFAULT_SOURCE_INVENTORY_LABEL = "20140101_20260615"
 DEFAULT_GCS_OUTPUT_ROOT = "gs://infrasure-benchmark/hazard_conus_grid/dev/hail/v1_mrms_only/m0_daily_cell_evidence"
@@ -133,65 +134,6 @@ def parse_args() -> argparse.Namespace:
         help="Skip per-day QA PNG maps. Use this for full scale-out runs; keep maps for proof batches.",
     )
     return parser.parse_args()
-
-
-def is_gcs_uri(value: str | Path) -> bool:
-    return str(value).startswith("gs://")
-
-
-def split_gcs_uri(uri: str) -> tuple[str, str]:
-    if not uri.startswith("gs://"):
-        raise ValueError(f"not a gs:// URI: {uri}")
-    rest = uri[5:]
-    bucket, _, blob = rest.partition("/")
-    if not bucket or not blob:
-        raise ValueError(f"invalid gs:// URI: {uri}")
-    return bucket, blob
-
-
-def download_gcs_uri(uri: str, local_path: Path) -> Path:
-    local_path.parent.mkdir(parents=True, exist_ok=True)
-    try:
-        from google.cloud import storage  # type: ignore
-    except Exception:
-        subprocess.run(["gcloud", "storage", "cp", uri, str(local_path)], check=True)
-        return local_path
-
-    bucket_name, blob_name = split_gcs_uri(uri)
-    client = storage.Client()
-    client.bucket(bucket_name).blob(blob_name).download_to_filename(local_path)
-    return local_path
-
-
-def upload_file_to_gcs(local_path: Path, destination_uri: str) -> None:
-    try:
-        from google.cloud import storage  # type: ignore
-    except Exception:
-        subprocess.run(["gcloud", "storage", "cp", str(local_path), destination_uri], check=True)
-        return
-
-    bucket_name, blob_name = split_gcs_uri(destination_uri)
-    client = storage.Client()
-    client.bucket(bucket_name).blob(blob_name).upload_from_filename(local_path)
-
-
-def gcs_prefix_exists(uri: str) -> bool:
-    try:
-        from google.cloud import storage  # type: ignore
-    except Exception:
-        result = subprocess.run(
-            ["gcloud", "storage", "ls", f"{uri.rstrip('/')}/**"],
-            text=True,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-            check=False,
-        )
-        return result.returncode == 0
-
-    bucket_name, prefix = split_gcs_uri(uri.rstrip("/") + "/_probe")
-    prefix = prefix.rsplit("/", 1)[0].rstrip("/") + "/"
-    client = storage.Client()
-    return any(client.bucket(bucket_name).list_blobs(prefix=prefix, max_results=1))
 
 
 def resolve_source_inventory(args: argparse.Namespace) -> Path:
@@ -292,218 +234,6 @@ def resolve_batch_control(args: argparse.Namespace) -> dict[str, Any]:
         "cloud_run_task_attempt": os.environ.get("CLOUD_RUN_TASK_ATTEMPT"),
         "batch_spec_row": row,
     }
-
-
-def source_timestamp_from_name(path_or_key: str) -> pd.Timestamp:
-    match = re.search(r"_(\d{8})-(\d{6})\.grib2\.gz$", Path(path_or_key).name)
-    if not match:
-        raise ValueError(f"cannot parse MRMS timestamp from {path_or_key}")
-    return pd.to_datetime(f"{match.group(1)}{match.group(2)}", format="%Y%m%d%H%M%S", utc=True)
-
-
-def fetch_inventory_source(row: pd.Series) -> Path:
-    key = str(row["selected_source_key"])
-    uri = str(row["selected_source_uri_https"])
-    local = MRMS_CACHE / Path(key).name
-    MRMS_CACHE.mkdir(parents=True, exist_ok=True)
-    if local.exists() and local.stat().st_size > 0:
-        return local
-
-    response = requests.get(uri, timeout=180)
-    response.raise_for_status()
-    local.write_bytes(response.content)
-    return local
-
-
-def read_mrms_grib(gz_path: Path) -> xr.DataArray:
-    raw = gzip.decompress(gz_path.read_bytes())
-    with tempfile.NamedTemporaryFile(suffix=".grib2", delete=False) as tf:
-        tf.write(raw)
-        tmp = tf.name
-    try:
-        ds = xr.open_dataset(tmp, engine="cfgrib", backend_kwargs={"indexpath": ""})
-        ds.load()
-        da = ds[list(ds.data_vars)[0]].copy()
-        ds.close()
-        return da
-    finally:
-        os.unlink(tmp)
-
-
-@dataclass
-class BatchContext:
-    served: pd.DataFrame
-    served_cell_ids: set[int]
-
-
-def native_points_to_cell_id(lat: np.ndarray, lon360: np.ndarray) -> np.ndarray:
-    lat_idx = np.rint((90.0 - lat) / 0.25).astype("int64")
-    lon_idx = (np.rint(lon360 / 0.25).astype("int64") % 1440)
-    return lat_idx * 1440 + lon_idx
-
-
-def native_observed_counts_for_served_cells(mrms_da: xr.DataArray, served_mask: pd.DataFrame) -> pd.DataFrame:
-    lat_native_idx = np.rint((90.0 - mrms_da.latitude.values) / 0.25).astype("int64")
-    lon_native_idx = (np.rint(mrms_da.longitude.values / 0.25).astype("int64") % 1440)
-    lat_counts = pd.Series(lat_native_idx).value_counts().rename("n_native_rows")
-    lon_counts = pd.Series(lon_native_idx).value_counts().rename("n_native_cols")
-
-    counts = served_mask[["cell_id", "lat_idx", "lon_idx"]].copy()
-    counts["n_native_rows"] = counts["lat_idx"].map(lat_counts).fillna(0).astype("int64")
-    counts["n_native_cols"] = counts["lon_idx"].map(lon_counts).fillna(0).astype("int64")
-    counts["n_native_pixels_observed"] = counts["n_native_rows"] * counts["n_native_cols"]
-    return counts[["cell_id", "n_native_pixels_observed"]]
-
-
-def aggregate_pixels_to_cells(
-    context: BatchContext,
-    mrms_da: xr.DataArray,
-    values: np.ndarray,
-    mask: np.ndarray,
-    value_name: str,
-) -> pd.DataFrame:
-    y, x = np.where(mask)
-    if len(y) == 0:
-        return pd.DataFrame(columns=["cell_id"])
-
-    cell_ids = native_points_to_cell_id(mrms_da.latitude.values[y], mrms_da.longitude.values[x])
-    pixel_df = pd.DataFrame({"cell_id": cell_ids, value_name: values[y, x]})
-    pixel_df = pixel_df[pixel_df["cell_id"].isin(context.served_cell_ids)]
-    return pixel_df
-
-
-def build_daily_panel(context: BatchContext, row: pd.Series) -> tuple[pd.DataFrame, dict[str, Any]]:
-    date_str = str(row["date"])
-    t0 = time.perf_counter()
-    source_path = fetch_inventory_source(row)
-    da = read_mrms_grib(source_path)
-    arr = da.values.astype("float32")
-    source_timestamp = source_timestamp_from_name(source_path.name)
-
-    observed_counts = native_observed_counts_for_served_cells(da, context.served)
-    positive_pixels = aggregate_pixels_to_cells(context, da, arr, arr > 0, "mesh_mm")
-    severe_pixels = aggregate_pixels_to_cells(context, da, arr, arr >= THRESHOLD_MM, "mesh_mm")
-
-    positive_agg = (
-        positive_pixels.groupby("cell_id")["mesh_mm"]
-        .agg(n_native_pixels_positive="size", mesh_max_mm="max", mesh_mean_positive_mm="mean")
-        .reset_index()
-        if not positive_pixels.empty
-        else pd.DataFrame(columns=["cell_id", "n_native_pixels_positive", "mesh_max_mm", "mesh_mean_positive_mm"])
-    )
-
-    severe_agg = (
-        severe_pixels.groupby("cell_id")["mesh_mm"]
-        .agg(
-            n_native_pixels_severe="size",
-            mesh_mean_severe_mm="mean",
-            mesh_p50_severe_mm=lambda s: s.quantile(0.50),
-            mesh_p90_severe_mm=lambda s: s.quantile(0.90),
-            mesh_p95_severe_mm=lambda s: s.quantile(0.95),
-        )
-        .reset_index()
-        if not severe_pixels.empty
-        else pd.DataFrame(
-            columns=[
-                "cell_id",
-                "n_native_pixels_severe",
-                "mesh_mean_severe_mm",
-                "mesh_p50_severe_mm",
-                "mesh_p90_severe_mm",
-                "mesh_p95_severe_mm",
-            ]
-        )
-    )
-
-    panel = (
-        context.served.merge(observed_counts, on="cell_id", how="left")
-        .merge(positive_agg, on="cell_id", how="left")
-        .merge(severe_agg, on="cell_id", how="left")
-    )
-
-    for col in ["n_native_pixels_observed", "n_native_pixels_positive", "n_native_pixels_severe"]:
-        panel[col] = panel[col].fillna(0).astype("int64")
-
-    panel["hazard"] = "hail"
-    panel["date"] = pd.Timestamp(date_str)
-    panel["source_product"] = PRODUCT
-    panel["source_key"] = row["selected_source_key"]
-    panel["source_uri_https"] = row["selected_source_uri_https"]
-    panel["source_timestamp"] = source_timestamp
-    panel["threshold_mm"] = THRESHOLD_MM
-    panel["severe_area_km2_approx"] = panel["n_native_pixels_severe"].astype(float)
-    panel["hail_day_flag"] = panel["n_native_pixels_severe"] > 0
-
-    panel["coverage_status"] = np.select(
-        [
-            panel["n_native_pixels_observed"] == 0,
-            panel["n_native_pixels_severe"] > 0,
-            panel["n_native_pixels_positive"] > 0,
-        ],
-        ["no_native_pixel_coverage", "observed_severe_hail", "observed_sub_severe_hail"],
-        default="observed_no_hail",
-    )
-
-    panel["qa_flags"] = np.where(
-        panel["coverage_status"] == "no_native_pixel_coverage",
-        "no_native_pixel_coverage",
-        "raw_mrms_mesh;negative_values_masked;v1_m0_batch",
-    )
-
-    ordered_columns = [
-        "hazard",
-        "cell_id",
-        "date",
-        "source_product",
-        "source_key",
-        "source_uri_https",
-        "source_timestamp",
-        "threshold_mm",
-        "lat_center",
-        "lon_center",
-        "state_abbr",
-        "iso_rto",
-        "n_native_pixels_observed",
-        "n_native_pixels_positive",
-        "n_native_pixels_severe",
-        "severe_area_km2_approx",
-        "mesh_max_mm",
-        "mesh_mean_positive_mm",
-        "mesh_mean_severe_mm",
-        "mesh_p50_severe_mm",
-        "mesh_p90_severe_mm",
-        "mesh_p95_severe_mm",
-        "hail_day_flag",
-        "coverage_status",
-        "qa_flags",
-    ]
-    panel = panel[ordered_columns].sort_values("cell_id").reset_index(drop=True)
-
-    if len(panel) != len(context.served):
-        raise AssertionError(f"{date_str}: expected {len(context.served)} rows, got {len(panel)}")
-    if not panel["cell_id"].is_unique:
-        raise AssertionError(f"{date_str}: duplicate cell_id rows")
-
-    stats = {
-        "date": date_str,
-        "source_path": str(source_path),
-        "source_key": row["selected_source_key"],
-        "source_timestamp": source_timestamp.isoformat(),
-        "source_size_bytes": int(source_path.stat().st_size),
-        "read_status": "ok",
-        "native_grid_shape": f"{da.shape[0]}x{da.shape[1]}",
-        "native_positive_pixel_count": int((arr > 0).sum()),
-        "native_severe_pixel_count": int((arr >= THRESHOLD_MM).sum()),
-        "served_positive_pixel_count": int(panel["n_native_pixels_positive"].sum()),
-        "served_severe_pixel_count": int(panel["n_native_pixels_severe"].sum()),
-        "served_severe_cell_count": int((panel["coverage_status"] == "observed_severe_hail").sum()),
-        "served_sub_severe_cell_count": int((panel["coverage_status"] == "observed_sub_severe_hail").sum()),
-        "served_no_hail_cell_count": int((panel["coverage_status"] == "observed_no_hail").sum()),
-        "served_no_coverage_cell_count": int((panel["coverage_status"] == "no_native_pixel_coverage").sum()),
-        "max_mesh_mm": None if pd.isna(panel["mesh_max_mm"].max()) else float(panel["mesh_max_mm"].max()),
-        "elapsed_seconds": round(time.perf_counter() - t0, 3),
-    }
-    return panel, stats
 
 
 STATUS_COLORS = {
@@ -638,7 +368,7 @@ def main() -> int:
     for idx, (_, inv_row) in enumerate(batch_inventory.iterrows(), start=1):
         date_str = str(inv_row["date"])
         print(f"[mrms-m0] [{idx}/{len(batch_inventory)}] processing {date_str}", flush=True)
-        day_panel, stats = build_daily_panel(context, inv_row)
+        day_panel, stats = build_daily_panel(context, inv_row, MRMS_CACHE)
 
         date_partition_dir = local_run_dir / f"date={date_str}"
         date_partition_dir.mkdir(parents=True, exist_ok=True)

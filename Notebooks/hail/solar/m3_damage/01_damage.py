@@ -36,7 +36,7 @@
 # **A15** damage curve = **capex-weighted subsystem blend** (infrasure-damage-curves: PV_MODULE L=0.95 +
 # TRACKER L=0.40 × NREL capex weights → asset caps ~34%) · **A16** logistic **saturates** (no extrapolation —
 # retired) · **A17** scalar mean damage *(no conditional distribution — deferred)* · **A18** duration/BI
-# folded in · **A19** asset value = $36.78M. Full register:
+# **deferred** — physical repair cost only; downtime → revenue is a later stage · **A19** asset value = $36.78M. Full register:
 # [assumptions A15–A19](../../../../docs/plans/hail/assumptions.md#m3--severity--damage).
 
 # %%
@@ -149,8 +149,8 @@ print(f"asset value ${ASSET['asset_value_usd']/1e6:.1f}M · biggest conditional 
 #   the *spread* feeds the loss tail. Phase 5 will need a severity spread to *sample*, not just the mean — the
 #   key M3 upgrade for honest VaR/PML.
 # - **Damage-state vector** (none / slight / moderate / extensive / complete) — finer than a scalar.
-# - **Duration / business interruption** — v1 folds repair downtime into the damage ratio and leaves revenue
-#   loss aside (exactly as the methodology §12 example does); BI is a later, additive stage.
+# - **Duration / business interruption** — *deferred.* The damage ratio is physical repair cost only; the
+#   downtime it causes → revenue loss is a separate additive stage (methodology §7 + §9), not modeled in v1.
 
 # %% [markdown]
 # ## 5 · Persist the M3 artifact → `data/hail/`
@@ -191,7 +191,7 @@ m3.drop(columns="geometry").head()
 #   multiplied in.** Frequency (`pᵢ`) and severity (conditional loss) stay separate until the Monte Carlo
 #   combines them stochastically — the whole point of the rebuild.
 # - **Honest gaps:** scalar mean only (a conditional *distribution* is the tail-relevant upgrade);
-#   duration/BI folded out; the curve is literature-curated with a >75 mm extrapolation — all flagged.
+#   duration/BI deferred (physical repair cost only); the curve is literature-curated with a >75 mm extrapolation — all flagged.
 # - **Next — Phase 5 (M3→metrics):** the **compound-Poisson Monte Carlo** — per simulated year, draw the hit
 #   count, `Bernoulli(pᵢ)` per event, full conditional loss on a hit, sum → AEP / take max → OEP; read **EAL,
 #   VaR, PML, TVaR** off the annual vectors (capping per simulated year, never on a fitted curve). The final

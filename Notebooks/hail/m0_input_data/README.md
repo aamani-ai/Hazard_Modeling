@@ -13,22 +13,30 @@ For each raw data **source**, it explores what the data *is* — its coverage, b
 like, the traps — and emits a clean per-source M0 record. The deep field-by-field interpretation lives in
 the notebooks (per the [exploratory-notebook principle](../../../docs/principles/notebook_work/exploratory_data_notebooks.md)).
 
-## The two sources — two different *kinds* of data
+## Sources — different *kinds* of hail evidence
 
 | Notebook | Source | What it is | Strength | Weakness |
 |---|---|---|---|---|
 | [`01_noaa_hydronos`](01_noaa_hydronos.ipynb) | NOAA Storm Events (API) | a **list of events** — point reports ("someone saw 1.5″ hail here, then") | long record (1996→); easy | population-biased; **no footprint** |
 | [`02_mrms_aws`](02_mrms_aws.ipynb) | MRMS MESH (AWS files) | a **gridded radar field** — a hail-size number at every ~1 km pixel | complete coverage; **real footprints** | short record (~2020→); complex raw format |
+| [`03_myrorss_reanalysis_source_qualification`](03_myrorss_reanalysis_source_qualification/README.md) | MYRORSS MESH reanalysis | an older **gridded radar reanalysis** source being qualified before use | longer gridded era (1998-2011); useful for record extension/source comparison | complex sparse netCDF; not yet a final climatology; current selected-cell outputs are grid-adapter proof only |
 
-**Why two sources?** They're complementary — NOAA's length and ground reports vs MRMS's footprints and
-completeness. *Which one is primary* is decided in M1 ([DD-1](../../../docs/plans/hail/decisions.md): MRMS is
-the spine, NOAA the cross-check). `02` opens with a **from-scratch "what is this data" walkthrough** because
-gridded radar is genuinely harder to read than a tidy API table (see [learning_logs/03](../../../docs/learning_logs/03_meet_complex_raw_data_from_scratch.md)).
+**Why multiple sources?** They're complementary — NOAA's length and ground reports vs MRMS/MYRORSS gridded
+radar evidence. *Which one is primary* is decided in M1 ([DD-1](../../../docs/plans/hail/decisions.md): MRMS
+is the first spine, NOAA the cross-check). MYRORSS is being qualified as a later long-record gridded
+extension/comparison source; it should not be silently merged into the MRMS spine.
+
+`02` and `03` use a from-scratch source-understanding style because gridded radar is genuinely harder to
+read than a tidy API table (see
+[learning_logs/03](../../../docs/learning_logs/03_meet_complex_raw_data_from_scratch.md)).
 
 ## Inputs → outputs
 
-Live data (NOAA via Hydronos API, MRMS via AWS Open Data) → `data/hail/hayhurst_hail_m0_noaa_50mi.parquet`
-and `…_m0_mrms_*.parquet` (raw MRMS tiles cached under `data/hail/mrms_raw/`).
+Live data (NOAA via Hydronos API, MRMS via AWS Open Data, MYRORSS via NOAA public object storage) →
+`data/hail/hayhurst_hail_m0_noaa_50mi.parquet`, `…_m0_mrms_*.parquet`, and source-qualification artifacts.
+The current MYRORSS selected-cell artifacts intentionally write under `data/hazard_conus_grid/hail/`
+because they prove the benchmark-grid adapter, not because the source qualification is grid-only. Raw MRMS
+tiles are cached under `data/hail/mrms_raw/`.
 
 ## Key decisions & learnings
 

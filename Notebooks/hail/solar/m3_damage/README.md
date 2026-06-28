@@ -49,7 +49,7 @@ electrical, civil, SCADA) is effectively **hail-immune → 0**, so the asset DR 
 
 - **Conditional damage *distribution*** (vs the scalar mean) — the tail-relevant richness; Phase 5 needs a
   severity *spread* to sample (A22).
-- **Duration / business interruption** — v1 folds repair downtime into the damage ratio, revenue loss aside.
+- **Duration / business interruption** — deferred; the damage ratio is physical repair cost only (downtime → revenue loss is a separate additive stage, §7 + §9).
 - **Curve calibration to PV claims** + better subsystem weights / a conditional-DR distribution — the
   `infrasure-damage-curves` revamp (this blend is a sound but *temporary* asset-level v1).
 
@@ -69,7 +69,7 @@ fit) + §12 (the hail-on-solar curve).
 A15 **capex-weighted subsystem blend** (PV_MODULE `L=0.95` + TRACKER `L=0.40` × NREL capex weights →
 `Asset_DR=Σwᵢ·DRᵢ`, caps ~34%) · A16 logistic **saturates** (no extrapolation; replaces the old literature
 curve that ran to ~100%) · A17 scalar mean damage *(no conditional distribution — tail-relevant, deferred)*
-· A18 duration/BI folded into the ratio · A19 asset value = $36.78M. Full detail + status:
+· A18 duration/BI deferred (physical repair cost only) · A19 asset value = $36.78M. Full detail + status:
 [assumptions register A15–A19](../../../../docs/plans/hail/assumptions.md#m3--severity--damage).
 
 **Next → Phase 5 (loss & metrics):** the compound-Poisson Monte Carlo — `Bernoulli(pᵢ)` + full conditional

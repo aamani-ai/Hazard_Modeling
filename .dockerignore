@@ -1,0 +1,9 @@
+# Cloud Run images build from the repo root (so the Dockerfile can install the shared/ +
+# pipelines/ packages). Include only what an image needs; exclude everything else — notably the
+# gitignored cross-repo symlinks (model-gpr, hazard_analysis, Learning, damage_modeling, …), which
+# point at absolute paths outside the repo and would break the build context, plus data/, .venv/, .git/.
+*
+!shared
+!pipelines
+!scripts
+!cloudrun

@@ -87,18 +87,13 @@ jobs:
           fi
           echo "value=$RUN_ID" >> "$GITHUB_OUTPUT"
 
-      - name: Prepare image context
-        run: |
-          cp scripts/run_mrms_v1_m0_daily_evidence_batch.py \
-            cloudrun/hazard_conus_grid/mrms_m0/run_mrms_v1_m0_daily_evidence_batch.py
-
       - name: Build and push image
         run: |
           IMAGE_NAME="${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.GAR_REPO }}/${{ env.JOB_NAME }}:${{ github.sha }}"
           docker build \
             -f cloudrun/hazard_conus_grid/mrms_m0/Dockerfile \
             -t "$IMAGE_NAME" \
-            cloudrun/hazard_conus_grid/mrms_m0
+            .
           docker push "$IMAGE_NAME"
           echo "IMAGE_NAME=$IMAGE_NAME" >> "$GITHUB_ENV"
 

@@ -1,0 +1,13 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "conus-grid-driver"
+version = "0.1.0"
+description = "CONUS grid driver: canonical-asset-at-every-cell driver of the shared risk engine"
+requires-python = ">=3.12"
+dependencies = ["numpy", "pandas", "pyarrow", "risk-engine", "hail-pipeline"]
+
+[tool.setuptools.packages.find]
+where = ["src"]
