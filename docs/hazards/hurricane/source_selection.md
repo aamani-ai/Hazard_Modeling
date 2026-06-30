@@ -4,8 +4,9 @@ This page records the source-selection logic for the hurricane wind peril as sum
 branch. It is a preview on main until that branch lands.
 
 **Status:** preview from the `hurricane` branch · written 2026-06-26 · **Applies to:** hurricane wind M0/M1
-source selection for solar and wind-farm cells. Surge and rainfall are real tropical-cyclone damage agents, but
-they are owned by flood and joined back by `event_family_id`.
+source selection for solar and wind-farm cells. Surge and rainfall are real tropical-cyclone damage agents
+owned by flood. Surge is joined back to the storm via `event_family_id`; the rainfall (pluvial) link is
+deferred — it's an Atlas-14 frequency curve with no per-storm identity.
 
 ---
 
@@ -86,8 +87,8 @@ Compact carry-forward findings; full reasoning lives in
 - ASCE validates the return-period tail, but it cannot replace the storm-resolved catalog because it has no event
   identity.
 - Units and wind basis are first-order QA risks: sustained knots, mph, m/s, and 3-s gust must stay explicit.
-- Surge/rain ownership is part of source selection: flood owns inundation and hurricane wind joins by
-  `event_family_id`.
+- Surge/rain ownership is part of source selection: flood owns inundation; hurricane wind joins **surge** by
+  `event_family_id` today (coastal built), while the **rain** link is deferred.
 
 ## Access And Dependency Profile
 

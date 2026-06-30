@@ -22,8 +22,8 @@ live in per-asset pages (deferred until the branch lands).
 > **3-s peak gust** (the *same observable* as convective wind, but a **separate peril**: a continuous,
 > field-intensity wind, not a hit-or-miss footprint). The **hazard side is independently validated** (return-
 > period gusts match ASCE 7-22 within ±5.5 %); the **loss side is provisional** (the damage curve is the
-> dominant open uncertainty). **Surge and rain are not modeled here — they belong to flood**, joined back to
-> the same storm so it's counted once.
+> dominant open uncertainty). **Surge and rain are not modeled here — they belong to flood.** Surge joins
+> back to the same storm (`event_family_id`) so it's counted once; the rainfall↔storm link is deferred.
 
 ---
 
@@ -40,10 +40,11 @@ flood peril so no storm is double-counted:
 
 ```
                           ┌─ WIND  (3-s gust field) ─────────►  HURRICANE peril  (this page)
-   tropical cyclone ──────┼─ STORM SURGE ───────────────────►  FLOOD · coastal [C]  ┐ joined back to the
-   (one RAFT storm)       └─ RAINFALL ──────────────────────►  FLOOD · pluvial [F]  ┘ same storm via
-                                                                                       event_family_id
-                                                              → one storm, owned once, no double-count
+   tropical cyclone ──────┼─ STORM SURGE ───────────────────►  FLOOD · coastal [C] ──┐ joined to the same
+   (one RAFT storm)       │                                                           ┘ storm via event_family_id
+                          └─ RAINFALL ──────────────────────►  FLOOD · pluvial [F]     (storm link deferred:
+                                                                                        Atlas-14 frequency, no event id)
+                                       → surge is counted once with wind; rain is not yet storm-linked
 ```
 
 The storm taxonomy is the standard Saffir-Simpson reference (major = ≥ Cat 3, ≥ 111 mph sustained); the
@@ -92,8 +93,10 @@ catalog's genesis over-sampling never leaks into the rate. The ASCE cross-check 
   **convective-wind turbine curve** (hurricane wind on a turbine ≈ straight-line wind — same fragility,
   different source).
 - **M4 (loss):** a storm-resolved compound-Poisson Monte Carlo → EAL · VaR · PML · TVaR · OEP ($ and % of TIV).
-- **Cross-peril:** surge (flood coastal) and rain (flood pluvial) for the *same* storm join back on
-  `event_family_id`, combined per subsystem (`max(wind, surge)`), so the storm is counted once.
+- **Cross-peril:** surge (flood coastal) joins back to the *same* storm on `event_family_id`, combined per
+  subsystem (`max(wind, surge)`), so the storm is counted once. Rain (flood pluvial) is **not** storm-linked
+  yet — it's a storm-agnostic Atlas-14 frequency curve (`event_family_id` null); the rain↔storm join is
+  deferred (JD-FL-17 / JD-TC-6).
 
 ## 4. Assumptions (load-bearing; registers on the branch)
 
@@ -141,6 +144,6 @@ The work lives on the **`hurricane` branch** (`origin/hurricane` @ `b7937e6`). O
 
 - **Code:** [`Notebooks/hurricane/`](https://github.com/aamani-ai/Hazard_Modeling/tree/hurricane/Notebooks/hurricane) (M0 {RAFT · HURDAT2 · geometry} → M1 catalog + tail validation → solar / wind_farm cells).
 - **Plan-of-record:** [`docs/plans/hurricane/`](https://github.com/aamani-ai/Hazard_Modeling/tree/hurricane/docs/plans/hurricane) — decisions `JD-TC-*`, assumptions `ATC-*`, per-layer plans.
-- **Cross-peril:** the surge/rain ↔ wind join is the seam with the [flood anchor](../flood/README.md) (flood owns surge `[C]` and rain `[F]`).
+- **Cross-peril:** the surge ↔ wind join is the seam with the [flood anchor](../flood/README.md) (flood owns surge `[C]` and rain `[F]`; only surge is storm-joined today — the rain link is deferred).
 - **Sibling peril:** shares the 3-s-gust observable with [convective wind](../convective_wind/README.md) (separate peril — watch the TC↔tornado double-count flag).
 - **Index:** back to the [hazard matrix](../README.md).

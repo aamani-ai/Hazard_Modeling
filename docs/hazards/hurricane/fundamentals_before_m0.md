@@ -42,8 +42,9 @@ The event identity connects them:
 event_family_id
 ```
 
-This is the field that lets one physical storm be combined once across wind, surge, and rainfall instead of
-being counted as separate unrelated events.
+This is the field that lets one physical storm be combined once across wind and surge instead of
+being counted as separate unrelated events. (Rainfall/pluvial is **not** storm-linked yet — it's an Atlas-14
+frequency curve with no `event_family_id`; joining it too is deferred.)
 
 ---
 
@@ -154,7 +155,7 @@ sources.
 A return-period wind grid can tell us a site gust at a probability level. It does not give physical storm
 identity.
 
-Hurricane needs storm identity because surge and rainfall must join back to the same storm.
+Hurricane needs storm identity because surge must join back to the same storm (and rainfall would too, once that link is built).
 
 ```text
 return-period grid:
