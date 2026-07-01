@@ -116,11 +116,12 @@ can still return near-zero damage.
 That is the flood version of "two thresholds":
 
 ```text
-FLOOD EVENT BASIS                         DAMAGE-ONSET DEPTH
-"what M1/M4 counts"                       "where M3 starts loss"
+FLOOD EVENT BASIS                              DAMAGE-ONSET DEPTH
+"what M1/M4 counts"                            "where M3 starts loss"
 
-10/100/500-year flood depth               inverter/pad/component height
-annual maximum severity                   DR(depth <= onset) ~= 0
+10/100/500-yr flood depth (inland),            inverter/pad/component height
+  hurricane category (coastal)                 damage ratio (DR) ~= 0 well below onset,
+annual maximum severity                        rising smoothly through it (not a hard cutoff)
 ```
 
 The most important beginner mistake is mixing these up.
@@ -328,24 +329,27 @@ M4       -> combine annual losses and metrics
 ASCII pipeline:
 
 ```text
-                       FLOOD FAMILY
+                          FLOOD FAMILY
         +-------------------+-------------------+
         |                   |                   |
         v                   v                   v
    riverine M1         pluvial M1          coastal M1
    RP depth field      rainfall->ponding   surge event catalog
+                                           (stamps event_family_id)
         |                   |                   |
-        +----------+--------+---------+---------+
-                   |                  |
-                   v                  v
-              M2 coupling        hurricane join for coastal
-              depth at asset     event_family_id
-                   |
-                   v
-              M3 depth -> damage
-                   |
-                   v
-              M4 annual loss metrics
+        +-------------------+-------------------+
+                            |  (all three sub-perils)
+                            v
+                       M2 coupling — depth at asset
+                            |
+                            v
+                       M3 depth -> damage
+                            |
+                            v
+                       M4 annual loss + metrics
+                            |
+                            +-- coastal only: join hurricane wind
+                                on event_family_id  ->  max(wind, surge)
 ```
 
 Layer meanings:
