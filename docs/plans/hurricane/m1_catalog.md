@@ -22,7 +22,7 @@ event_id · event_family_id · site_id · year(synthetic) · peak_gust_3s_mph
 ```
 
 - **`event_family_id`** is stamped here ([ATC-11](assumptions.md), [JD-TC-4](decisions.md)) — **now active**:
-  flood coastal (built) consumes it so a coastal/pluvial-TC event points back to its parent storm (no double-count).
+  flood coastal (built) consumes it so a coastal event points back to its parent storm (no double-count); the pluvial-TC leg is deferred (JD-TC-6).
   It is the *one* thing expensive to retrofit.
 - **No `rainfall_mm`** — the RAFT tracks file carries no rainfall variable (confirmed at build; rainfall is the
   deferred 16 GB slice, flood's pluvial-TC — [JD-TC-6](decisions.md)).

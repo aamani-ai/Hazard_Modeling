@@ -5,7 +5,7 @@
 > RAFT storm catalog → Holland field (tail **ASCE-validated** within 5.5%; 90 kt == observed) → field-intensity
 > coupling (degenerate on solar, demonstrated) → provisional library damage curve → storm-resolved MC →
 > **EAL 2.2% / PML500 41% of TIV** (point on the provisional `tracker_stow` curve; harsher-curve sensitivity 4.1%/66%; Hayhurst 0). `event_family_id`
-> stamped for the coastal/pluvial-TC cross-link. **Hazard side independently validated; loss side curve-limited
+> stamped for the coastal cross-link (active) and reserved for the pluvial-TC cross-link (deferred). **Hazard side independently validated; loss side curve-limited
 > (provisional curve flagged for replacement + a Hazus/NRI loss benchmark).** Decisions: [`decisions.md`](decisions.md)
 > (JD-TC-1…8). The **wind-farm cell is also built** (per-turbine field-intensity at Amazon Wind Farm US East).
 > **Next:** swap the provisional damage curve + loss benchmark.

@@ -11,8 +11,8 @@ as hail, wildfire, convective wind, and flood were built. Hurricane is the peril
 coupling type — field-intensity** (a continuous hazard field sampled at the asset), which the repo has *defined*
 but never built as a primary (hail = areal hit-or-miss; wildfire/flood = site-conditioned; convective wind toured
 those two). Proving field-intensity is the **first architectural prize**. The **second** is that hurricane is the
-**prerequisite for coastal flood**: its storm catalog is what flood's coastal `[C]` sub-peril (and the
-compound TC-rain slice of pluvial `[F]`) plug into via the now-active `event_family_id` — flood coastal is built and consumes it.
+**prerequisite for coastal flood**: its storm catalog is what flood's coastal `[C]` sub-peril plugs into via
+the now-active `event_family_id` — flood coastal is built and consumes it (the compound TC-rain slice of pluvial `[F]` would plug in the same way, but is deferred).
 
 ## Why hurricane (fourth)
 
@@ -47,8 +47,8 @@ turbine reuse are built in the wind-farm cell; the surge/rain cross-link is buil
 1. **Completes the coupling taxonomy** — field-intensity is the third and last bucket. Built here (degenerate on
    solar V1, full at wind-farm — **built**), the M0→M4 interface is general across *all* coupling types.
 2. **Unlocks coastal flood (and compound flooding)** — the shared, storm-resolved **RAFT** catalog + the
-   `event_family_id` cross-link are exactly what flood's coastal `[C]` (**built**) and the TC slice of pluvial `[F]`
-   need to recognize one storm's wind + surge + rain as **one event** (no double-count) — the link is now active. See
+   `event_family_id` cross-link are exactly what flood's coastal `[C]` (**built**)
+   needs to recognize one storm's wind + surge as **one event** (no double-count) — active for coastal. The TC slice of pluvial `[F]` would extend this to wind + surge + rain, but is deferred (JD-TC-6). See
    [flood JD-FL-1/4/11](../flood/decisions.md).
 
 ## The asset (solar first; wind farm — both built) — and why order, not exclusion
