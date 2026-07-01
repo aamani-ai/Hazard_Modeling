@@ -112,12 +112,13 @@ So the definition is explicit about ownership:
 |---|---|---|
 | **Wind** | **hurricane** (primary) | **modeled** (this pipeline, M0→M4) |
 | Storm **surge** | **flood** — coastal `[C]` (SLOSH/ADCIRC) | **not modeled here**; `event_family_id` **active** (flood coastal built, consumes it) |
-| TC **rainfall** | **flood** — pluvial `[F]` (Atlas 14 + future RAFT slice) | **not modeled here**; `event_family_id` active |
+| TC **rainfall** | **flood** — pluvial `[F]` (Atlas 14 + future RAFT slice) | **not modeled here**; `event_family_id` **reserved** (deferred — pluvial not storm-linked yet) |
 
-- **`event_family_id` (stamped in M1, now active):** the field that lets a flood coastal/pluvial event (coastal built)
+- **`event_family_id` (stamped in M1, active for coastal):** the field that lets a flood coastal event
   point back to its
-  parent storm, so Total Loss treats one storm's wind+surge+rain as **one event** — the structural fix to the old
-  model's separate-and-summed `Hurricane` + `Coastal Flood` double-count.
+  parent storm, so Total Loss treats one storm's wind + surge as **one event** — the structural fix to the old
+  model's separate-and-summed `Hurricane` + `Coastal Flood` double-count. (The pluvial/rain leg would extend this
+  to wind + surge + rain, but that link is **deferred** — JD-TC-6.)
 - **Why not tag surge/rain as hurricane sub-perils:** they are the *same physics* as an existing peril (flood) →
   tagging them here means two surge models that duplicate, drift, and double-count. One owner (flood), one model,
   one storm identity shared by reference. (Contrast convective wind, which *does* own its two sub-perils because
@@ -135,8 +136,8 @@ So the definition is explicit about ownership:
   fully exercised at the **wind-farm** cell (**built**, Amazon Wind Farm US East).
 - **Catalog** = the shared, storm-resolved **RAFT** TC catalog (North Atlantic; tracks + intensity + rainfall) —
   the reusable foundation for hurricane wind, coastal surge, and the pluvial TC slice.
-- **Ownership** = **wind is hurricane's**; **surge = flood `[C]`, rain = flood `[F]`** — cross-linked via the
-  now-active `event_family_id` (flood coastal built), not re-catalogued.
+- **Ownership** = **wind is hurricane's**; **surge = flood `[C]`, rain = flood `[F]`** — surge cross-linked via the
+  now-active `event_family_id` (flood coastal built); the rain cross-link is **deferred** (JD-TC-6), not re-catalogued.
 - **Units** = knots → mph (**×1.150779**) on ingest (ATC-8; RAFT is knots, not m/s ×2.237); sustained → 3-s gust via a gust factor.
 
 ## Decisions & assumptions
