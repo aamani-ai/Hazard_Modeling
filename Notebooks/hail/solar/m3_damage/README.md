@@ -74,3 +74,24 @@ curve that ran to ~100%) · A17 scalar mean damage *(no conditional distribution
 
 **Next → Phase 5 (loss & metrics):** the compound-Poisson Monte Carlo — `Bernoulli(pᵢ)` + full conditional
 loss → annual AEP/OEP vectors → EAL / VaR / PML / TVaR. The part the old repo broke.
+
+## What Hail Solar M3 Asks
+
+```text
+M3 asks, for each M2 event row:
+  what hail size is carried by the event?
+  which solar subsystems have hail fragility?
+  what damage ratio does each vulnerable subsystem get?
+  how do capex weights combine those ratios?
+  what is the full conditional loss if the event hits?
+```
+
+It does not ask:
+
+```text
+  does the event actually hit this simulated year?
+  should p_hit be multiplied into the loss?
+  what is the annual PML?
+```
+
+Those are M4 questions. M3 emits the full loss conditional on a hit.

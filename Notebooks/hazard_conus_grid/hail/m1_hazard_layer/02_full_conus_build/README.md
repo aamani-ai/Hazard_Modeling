@@ -82,3 +82,25 @@ gcloud auth login
 
 No Cloud Run was needed for M1 because this layer streams compact reconciled parquet partitions rather than
 reading raw MRMS GRIB files.
+
+## What The Full-CONUS M1 Build Asks
+
+```text
+full-CONUS M1 asks:
+  for every served CONUS cell:
+    what accepted MRMS date denominator applies?
+    how many severe hail days occurred?
+    what annual severe-day frequency is emitted?
+    what observed MESH summaries and extreme-source flags are carried?
+    what QA/provenance metadata travel with the row?
+```
+
+It does not ask:
+
+```text
+  what canonical solar loss is reportable?
+  how should raw MESH extremes be de-biased?
+  what EVT tail should be used?
+```
+
+Those are downstream risk and accuracy-upgrade questions.

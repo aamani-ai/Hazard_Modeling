@@ -41,3 +41,24 @@ mechanism rule, the M4 known-answer check).
 (subsystem blend), **AWN-9** (IEC anchor), **AWN-25** (operational state noted), **AWN-32** (sub-peril severity
 differs), **AWN-26** (approximate now), **AWN-31** (strong wind ≈0). **Next → M4** (sample each sub-peril through its
 own curve → one annual-loss distribution).
+
+## What Convective-Wind M3 Asks
+
+```text
+M3 asks, for each gust value:
+  what damage ratio would a tornado gust create?
+  what damage ratio would a straight-line wind gust create?
+  which turbine subsystems are vulnerable in each mechanism?
+  where does each curve leave zero?
+  what cap or saturation does each curve reach?
+```
+
+It does not ask:
+
+```text
+  how often does the gust occur?
+  does the tornado path hit the farm?
+  what is the joint annual tail?
+```
+
+Those are M1, M2, and M4 questions. M3 only maps gust and sub-peril mechanism to damage ratio.

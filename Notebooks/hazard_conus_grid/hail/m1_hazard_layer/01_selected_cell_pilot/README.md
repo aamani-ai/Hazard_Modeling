@@ -78,4 +78,18 @@ This pilot uses only MRMS as the gridded evidence source. Other data sources joi
 - Full CONUS processing.
 - MYRORSS extension.
 - EVT tail fitting.
+
+## What The Selected-Cell M1 Pilot Asks
+
+```text
+selected-cell M1 asks:
+  for each locked pilot cell:
+    what complete cell-date panel exists?
+    how many severe hail days occurred?
+    what annualized lambda_cell interface value is emitted?
+    what empirical MESH size summary is carried?
+    what sparse-cell or QA flags are needed?
+```
+
+It does not ask for reportable climatology. It proves the M1 row contract before full-CONUS processing.
 - Final PML500/TVaR99 reporting.

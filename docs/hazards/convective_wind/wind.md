@@ -73,6 +73,24 @@ same calendar year**. The two cardinal rules:
   stream to its expected loss for a tail — that's the old repo's bug (DD-WN-13). Sparse tornado tail →
   **TVaR + SE are the honest reads** ([LL10](../../learning_logs/10_monte_carlo_effective_sample_size.md)).
 
+The important boundary: **M3 defines the damage function; M4 calls it for every sampled event**. M4 is not a
+new damage model. It is the annual-loss simulator that repeatedly applies the M3 curves:
+
+```text
+strong wind event:
+  gust sampled from ASCE-derived severity
+  event_loss = DR_strongwind(gust) * TIV
+
+tornado event:
+  gust sampled from EF / tornado severity
+  event_loss = swept_fraction * DR_tornado(gust) * TIV
+```
+
+Because M4 has synthetic per-event losses, it can compute both AEP and OEP even for the ASCE strong-wind branch,
+which has no raw historical event table. What that branch lacks is event identity across multiple assets, so
+portfolio correlation remains deferred. The cross-hazard version of this contract is documented in
+[`../m0_m4_event_loss_contract.md`](../m0_m4_event_loss_contract.md).
+
 ## The two deployments, side by side
 
 The hazard-layer differences (collection region, the catalog fork) are in the
@@ -130,4 +148,5 @@ BI) · a `solar/` sibling cell on the same catalog · the CONUS grid build + sca
 - **Deep-run code:** [`Notebooks/convective_wind/wind_farm/`](../../../Notebooks/convective_wind/wind_farm/README.md) (M2 fork → M3 → M4).
 - **Registers:** [`plans/convective_wind/assumptions.md`](../../plans/convective_wind/assumptions.md) · [`plans/convective_wind/decisions.md`](../../plans/convective_wind/decisions.md).
 - **Reasoning:** [`discussion/convective_wind/02_coupling_buckets_and_wind.md`](../../extra/discussion/convective_wind/02_coupling_buckets_and_wind.md) · [`04_aggregation_and_double_counting.md`](../../extra/discussion/convective_wind/04_aggregation_and_double_counting.md).
+- **Hazard modeling choices:** [`modeling_choices.md`](modeling_choices.md).
 - **Hazard layer:** [convective wind anchor](README.md).

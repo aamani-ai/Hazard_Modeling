@@ -115,7 +115,9 @@ Every hazard-level source-selection record should include:
    confidence.
 11. **Surprising findings / watchlist summary** — the few unintuitive facts or unresolved risks that should stay
     visible here; detailed watchlists belong in discussion notes.
-12. **Deep references** — links to the notebooks, discussion notes, decisions, assumptions, and branch docs that
+12. **Open questions and better ways** — the explicit stress-test section: what could make the selected source
+    wrong, what source would be better, and what evidence would justify switching.
+13. **Deep references** — links to the notebooks, discussion notes, decisions, assumptions, and branch docs that
     carry the full reasoning.
 
 The minimum useful candidate-role table is:
@@ -145,6 +147,26 @@ the full watchlist there and only carry the highest-signal items here:
 | Finding / watch item | Why it matters | What would change the decision |
 |---|---|---|
 | unintuitive source fact, unresolved risk, or promoted candidate | effect on source role, confidence, or M0/M1 object | data, QA result, access change, or model need that would change V1 treatment |
+
+Every record should also include an explicit stress-test section:
+
+```text
+## Open Questions And Better Ways
+
+Questions to resolve:
+  what could make the selected source weaker than we think?
+  what source boundaries are still uncertain?
+  where could source choice bias frequency, severity, event identity, or coupling?
+
+Better-way candidates:
+  sources, products, vendors, standards, or source-fusion paths that could replace or upgrade V1
+
+Promotion / switch evidence:
+  the specific data, validation, access, licensing, or model need that would justify changing the source role
+```
+
+This section overlaps with the caveat ledger by design, but it has a sharper purpose: it should help a reviewer
+argue against the current source choice. If the V1 choice survives that argument, the record is stronger.
 
 The high-level page should then point to the deep work instead of repeating it:
 
@@ -315,3 +337,27 @@ matches the component the model actually needs.
 - Cross-hazard prerequisite guide: [`fundamentals_before_m0.md`](fundamentals_before_m0.md).
 - Source-onboarding lesson: [`LL03`](../learning_logs/03_meet_complex_raw_data_from_scratch.md).
 - Multi-source lesson: [`LL04`](../learning_logs/04_two_datasets_one_peril_decompose.md).
+
+## What Source Selection Asks
+
+```text
+source selection asks:
+  what component of the model needs evidence?
+  what candidate sources can provide that evidence?
+  what variable, units, grain, denominator, and coverage does each source provide?
+  what bias or no-data trap comes with it?
+  what role is chosen: spine, cross-check, fallback, validation, or deferred?
+  what can this source not be used for?
+```
+
+It does not ask:
+
+```text
+  what distribution should M1 fit?
+  what coupling bucket should M2 use?
+  what damage curve should M3 apply?
+  how should M4 aggregate annual losses?
+```
+
+Those are modeling-choice questions. Keeping these files separate prevents source convenience from silently becoming a
+modeling assumption.

@@ -26,3 +26,24 @@ both assets.
 
 **Next → M4 (solar loss & metrics):** the shared compound Poisson/NegBin Monte-Carlo — sample fires/yr, draw
 per-fire conditional loss, aggregate → EAL/VaR/PML/TVaR off the sampled distribution, % of TIV.
+
+## What Wildfire Solar M3 Asks
+
+```text
+M3 asks, for each conditional intensity class:
+  what fire-line intensity in kW/m is being priced?
+  which solar BoS subsystem curves apply?
+  what damage ratio does each subsystem get?
+  how do capex weights combine into Asset_DR?
+  what full conditional loss is emitted given a fire in this class?
+```
+
+It does not ask:
+
+```text
+  how often does fire occur?
+  how many fires happen this simulated year?
+  what annual percentile is this?
+```
+
+Those are M1 and M4 questions. M3 prices severity conditional on occurrence.

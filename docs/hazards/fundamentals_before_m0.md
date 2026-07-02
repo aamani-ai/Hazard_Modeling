@@ -108,6 +108,33 @@ M3     translate coupled intensity into damage/loss
 M4     aggregate event losses into annual AEP/OEP vectors and read metrics
 ```
 
+For the detailed cross-hazard contract behind those four lines, see
+[`m0_m4_event_loss_contract.md`](m0_m4_event_loss_contract.md). The key idea is that M1 does not always have to
+be a literal historical event table. It has to provide an **event model**:
+
+```text
+event count process
+  how many events occur per year?
+
+conditional severity process
+  given an event, how severe is it?
+```
+
+Hail may satisfy that with raw radar-derived hail-day events. Strong wind may satisfy it by converting an ASCE
+`return period -> gust` profile into `N ~ Poisson(lambda)` plus a conditional gust distribution. Wildfire may
+satisfy it with FSim burn probability and a flame-length histogram. Those are different source shapes, but they
+can all be valid M1 objects if M4 can use them to generate event losses.
+
+M3 then stays conceptually separate from M4:
+
+```text
+M3 defines:      local intensity -> damage ratio / event loss
+M4 does:         sample events, call M3 for each event, aggregate annual losses
+```
+
+This is why a hazard return period is not a loss return period. A 100-year gust or 100-year flood depth is only
+an intensity statement. PML100 appears only after coupling, damage, and annual aggregation.
+
 ---
 
 ## 3. Many Paths To The Same Target

@@ -1,22 +1,26 @@
-# Flood — hazard anchor  ·  *preview from the `flood` branch*
+# Flood — hazard anchor
 
-> **Where this lives.** The flood pipeline is built on the **`flood` branch** (by another team, at
-> `origin/flood` @ `88df3af`), **under cross-review** — the same status as every hazard on main (we
-> cross-review each other's work). This page is a **high-level synthesis** of that branch so the whole picture
-> is visible from main; the code, plans, and registers land on main when review completes. Numbers below are
-> the branch's as-built results, quoted for orientation, not yet main-blessed.
+> **Current main state.** The flood notebooks now live locally under
+> [`Notebooks/flood/`](../../../Notebooks/flood/README.md), imported from `origin/flood` @ `aff8649` for
+> review. The plan/register docs now live locally under [`docs/plans/flood/`](../../plans/flood/README.md).
+> This page is the main-branch hazard anchor to read before notebook review; numbers below are notebook-backed
+> orientation figures, not yet product-blessed.
 
 **The shareable snapshot of how we model flood.** This page is *asset-free* — it covers the peril itself
 (`M0/M1`): what flood is, its three sub-perils, how each becomes a credible depth, how they combine, and
-what's solid vs. screening-grade. How flood *damages a specific asset* will live in per-asset pages (deferred
-until the branch lands).
+what's solid vs. screening-grade. Flood asset notebooks are local under
+[`Notebooks/flood/solar/`](../../../Notebooks/flood/solar/README.md) and
+[`Notebooks/flood/wind_farm/`](../../../Notebooks/flood/wind_farm/README.md); hazard-doc per-asset pages are
+still deferred.
 
 > **New to flood physics?** Start with the internal reader guide:
 > [`fundamentals_before_m0.md`](fundamentals_before_m0.md). It is not a methodology document; it is the
 > prerequisite mental model for understanding why flood forks by sub-peril, why depth/elevation matter, and
 > why M2 is site-conditioned rather than hit-or-miss.
-> For the source decision preview, read [`source_selection.md`](source_selection.md): why riverine uses BLE
+> For the source decision, read [`source_selection.md`](source_selection.md): why riverine uses BLE
 > where available, why pluvial is modeled from rainfall + terrain, and why coastal uses SLOSH envelopes.
+> For the M0-M4 modeling choices, including distribution/source choices, combine rules, M3 depth-damage, and M4
+> aggregation, read [`modeling_choices.md`](modeling_choices.md).
 
 > **One-line state:** flood is **one peril, three sub-perils** — *riverine*, *pluvial*, *coastal* — that share
 > a single damage driver (**inundation depth**) but need three different data machineries. Riverine is
@@ -93,17 +97,31 @@ recombined at M4.
 - **Coupling is site-conditioned** — flood "reaches" an asset by *depth vs. equipment elevation*, not by a
   hit-or-miss footprint. (Per-asset specifics — areal exposure for a solar polygon vs. per-node depth at each
   turbine/substation — are deferred to per-asset pages.)
-- **The combine is the subtle part** (the branch's two new learning logs):
+- **The combine is the subtle part** (flood's two new learning-log candidates):
   - **Inland (`R`+`F`):** co-sampled *comonotonic* (one shared annual severity draw — the same ground drowns
     once), reported **worse-source-wins** with an additive-capped envelope as the conservative bound.
   - **Coastal (`C`):** a compound-Poisson event stream, **cross-linked to the hurricane peril** — surge and
     hurricane wind from the *same storm* are joined on `event_family_id` and combined per subsystem
     (`max(wind, surge)`), so one storm is never double-counted across the two pipelines.
-- **Deployment:** built as a **deep per-asset run** (proven across reference sites spanning dry / riverine /
+- **Deployment:** built as a **deep per-asset run** in the imported notebooks (proven across reference sites spanning dry / riverine /
   pluvial / coastal / all-three). A **CONUS screening grid** is the same program-level future as the other
   hazards (planned, not built).
 
-## 4. Assumptions (load-bearing; registers on the branch)
+### M0-M4 modeling flow
+
+| Layer | Flood modeling object | Choice summary |
+|---|---|---|
+| **Layer 0** | Riverine + pluvial + coastal definition. | One peril with three sub-perils, all reconverging on inundation depth. |
+| **M0** | BLE/NFHL/terrain, Atlas rainfall + DEM, SLOSH/TC context. | Each sub-peril has its own evidence chain; pluvial is modeled because no free national depth product exists. |
+| **M1** | Depth-frequency or event-envelope profile. | Inland uses annual-max depth/RP curves; coastal uses event/category surge envelope. |
+| **M2** | Site-conditioned depth at asset. | Compare water depth to equipment/pad/component elevation and local terrain. |
+| **M3** | Depth -> damage ratio. | Shared depth-damage logic by asset; damage starts at component/onset height, not at flood-event threshold. |
+| **M4** | Combined annual flood loss. | Inland R+F are co-sampled; coastal can join hurricane wind by `event_family_id`; tail metrics come from the combined vector. |
+
+The detailed choice ledger is [`modeling_choices.md`](modeling_choices.md): sub-peril source/model choices,
+site-conditioned coupling, inland combine rules, coastal join rules, depth-damage assumptions, and revisit triggers.
+
+## 4. Assumptions (load-bearing; registers now local)
 
 - **Flood = riverine + pluvial + coastal** (one peril, three sub-perils); catalog **forks at M1**, re-converges at M3 (JD-FL-1, JD-FL-10).
 - **Riverine** = FEMA-BLE-preferred depth grids; lower RPs **densified** from a BLE-anchored rating (JD-FL-6, JD-FL-8).
@@ -111,7 +129,8 @@ recombined at M4.
 - **Coastal** = SLOSH per-category envelope, compound-Poisson, `event_family_id`-joined to hurricane (JD-FL-12, JD-FL-14).
 - **Inland combine** = co-sampled comonotonic, worse-source-wins (JD-FL-11).
 - **Coupling** = site-conditioned (depth vs. micro-elevation); **M1 = asset-free field, M2 = coupling** (AFL-3/4, JD-FL-19).
-- Registers (on the branch): decisions `JD-FL-*`, assumptions `AFL-*` — see [Go deeper](#7-go-deeper).
+- Registers: [`decisions.md`](../../plans/flood/decisions.md) (`JD-FL-*`) and
+  [`assumptions.md`](../../plans/flood/assumptions.md) (`AFL-*`) — see [Go deeper](#7-go-deeper).
 
 ## 5. Challenges & limitations
 
@@ -139,18 +158,40 @@ single per-storm loop that stacks river + rain + surge + wind together (JD-FL-17
 | **Pluvial** | direction (usually near-zero once terrain-grounded) | the magnitude (screening, no depth anchor) | Atlas 15, a national pluvial grid, level-pool routing |
 | **Coastal** | direction + the wind↔surge cross-link | magnitude (per-category envelope) | per-event hydrodynamics |
 
-All three sub-perils are **built end-to-end (M0→M4) for both solar and wind farms** on the branch — a real,
-externally-cross-checked result. The guiding line holds: a V1 cell runs end-to-end and is honest about its
-limits. Headline figures (and the site-by-site numbers) belong in per-asset pages, to be written when the
-branch lands on main.
+All three sub-perils are **built end-to-end (M0→M4) for both solar and wind farms** in the imported notebooks —
+a real, externally-cross-checked result. The guiding line holds: a V1 cell runs end-to-end and is honest about
+its limits. Headline figures are carried here and in [`modeling_choices.md`](modeling_choices.md); hazard-doc
+per-asset pages can be written after notebook review.
 
 ## 7. Go deeper
 
-The work lives on the **`flood` branch** (`origin/flood` @ `88df3af`). On GitHub:
+Notebook work now lives locally on main for review:
 
-- **Code:** [`Notebooks/flood/`](https://github.com/aamani-ai/Hazard_Modeling/tree/flood/Notebooks/flood) (layer0 → M0 → M1 fork {riverine · pluvial · coastal} → solar / wind_farm cells).
+- **Code:** [`Notebooks/flood/`](../../../Notebooks/flood/README.md) (layer0 → M0 → M1 fork {riverine · pluvial · coastal} → solar / wind_farm cells).
 - **Source selection:** [`source_selection.md`](source_selection.md).
-- **Plan-of-record:** [`docs/plans/flood/`](https://github.com/aamani-ai/Hazard_Modeling/tree/flood/docs/plans/flood) — decisions `JD-FL-*`, assumptions `AFL-*`, per-layer plans.
-- **Lessons:** the branch adds two learning logs — *densifying a sparse RP anchor* and *combining correlated sub-perils*.
+- **Modeling choices:** [`modeling_choices.md`](modeling_choices.md).
+- **Plan-of-record:** [`docs/plans/flood/`](../../plans/flood/README.md) — decisions `JD-FL-*`, assumptions `AFL-*`, per-layer plans.
+- **Lessons:** flood adds two learning-log candidates — *densifying a sparse RP anchor* and *combining correlated sub-perils*.
 - **Cross-peril:** the coastal surge ↔ wind join is the seam with the [hurricane anchor](../hurricane/README.md).
 - **Index:** back to the [hazard matrix](../README.md).
+
+## Quick Layer Questions
+
+```text
+M0 asks:
+  what flood zones, depth grids, DEMs, rainfall, surge products, and asset geometry exist?
+
+M1 asks:
+  what riverine/pluvial/coastal field or event catalog is emitted?
+
+M2 asks:
+  at the asset, which pixels or nodes are wet and how deep are they?
+
+M3 asks:
+  given inundation depth, what component damage ratio applies?
+
+M4 asks:
+  how do inland annual-max losses and coastal storm losses combine into annual metrics?
+```
+
+Keep the key split in mind: all flood sub-perils reconverge on inundation depth, but their frequency/input modes differ.

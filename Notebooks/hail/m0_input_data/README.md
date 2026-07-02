@@ -50,3 +50,25 @@ for real λ)* · A4 daily grain = last tile ≈ 24-h max · A5 MESH is a radar *
 detail + status + revisit-triggers: [assumptions register A1–A5](../../../docs/plans/hail/assumptions.md#m0--input-data).
 
 **Next → [M1 (catalog)](../m1_catalog/):** turn this evidence into one clean event catalog.
+
+## What Hail M0 Asks
+
+```text
+M0 asks, for each source:
+  what does the raw record represent?
+  is it a point report or a gridded radar estimate?
+  what spatial and temporal grain does it have?
+  what threshold defines severe hail?
+  what does the source miss or bias?
+  what artifact can M1 safely consume?
+```
+
+It does not ask:
+
+```text
+  which event hits the asset?
+  what is the damage curve?
+  what is the annual loss?
+```
+
+Those are M2-M4 questions. M0 is source understanding and clean evidence extraction.

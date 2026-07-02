@@ -130,3 +130,24 @@ loss. What remains is deferred accuracy + reuse work - see `docs/guides/building
 the deep-per-asset driver adopting the same plausibility QC, MESH de-biasing, frequency pooling/shrinkage,
 record extension, EVT/tail treatment, and the typed contracts. None is needed to *screen*; all are needed
 before any grid loss is *reportable*.
+
+## What The Grid Solar Risk Layer Asks
+
+```text
+grid solar M2-M4 asks:
+  can the full-cell M1 hazard layer drive the canonical solar engine?
+  what p_hit approximation is used inside a grid cell?
+  what severity policy is used: raw MESH or capped sensitivity?
+  do annual-vector and metric schemas match the deep asset engine?
+  which cells are held out by plausibility QC?
+```
+
+It does not ask:
+
+```text
+  is the raw MRMS severity field fully calibrated?
+  is the resulting loss layer reportable?
+  are MESH de-biasing and EVT tail treatment complete?
+```
+
+This layer proves scale and interface discipline; reporting quality depends on the deferred accuracy work.

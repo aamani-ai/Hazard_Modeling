@@ -28,3 +28,23 @@ The raw Hydronos response cache is written under `data/hazard_conus_grid/hail/re
 files and remains gitignored.
 
 This notebook is a QA gate, not the M1 layer. NOAA reports and NRI are not used as the per-cell grid truth.
+
+## What The Report QA Gate Asks
+
+```text
+report QA asks:
+  do independent NOAA reports support the selected-cell story?
+  does FEMA NRI give a coarse directional sanity check?
+  are candidate high/medium/low cells plausible?
+  are disagreements source-bias clues rather than automatic failures?
+```
+
+It does not ask:
+
+```text
+  should NOAA reports become the grid truth?
+  should NRI be used as a loss input?
+  should the M1 hazard layer be built here?
+```
+
+This is a QA gate before cell lock, not the hazard layer.

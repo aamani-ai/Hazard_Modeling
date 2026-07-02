@@ -108,3 +108,25 @@ Full detail + status: [assumptions register A11–A14](../../../../docs/plans/ha
 
 **Next → M3 (damage):** for the events that hit, *how much damage?* — map each event's hail size through a
 PV hail-fragility curve.
+
+## What Hail Solar M2 Asks
+
+```text
+M2 asks, for each catalog event:
+  what is the event footprint area F?
+  what is the solar asset area s?
+  what is the collection-region area A?
+  what is p_hit = (sqrt(F) + sqrt(s))^2 / A?
+  is p_hit stored as frequency information only?
+```
+
+It does not ask:
+
+```text
+  what does that hail size damage?
+  what dollar loss should be applied?
+  what is the annual tail metric?
+```
+
+Those are M3 and M4 questions. M2 only answers whether this regional event can reach this asset, and with what
+probability.

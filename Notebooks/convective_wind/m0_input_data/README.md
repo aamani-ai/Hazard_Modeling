@@ -97,3 +97,29 @@ in `02`. Full register: [`assumptions.md`](../../../docs/plans/convective_wind/a
 **Next → M1 (catalog):** fork per sub-peril — **strong wind** = profile-assembly off the ASCE surface (`01`, no
 λ-fit); **tornado** = **bias-corrected** SPC fit (`02`, λ + bounded-GPD/EF severity) — carrying the boundary
 polygon + turbine cloud (`03`) into M2 coupling. The 🔴 bias-correction (AWN-1) is M1's headline task.
+
+## What Convective-Wind M0 Asks
+
+```text
+M0 asks:
+  for strong wind:
+    what ASCE return-period gusts exist at each site?
+    how flat is the gust surface across the wind-farm footprint?
+  for tornado:
+    what SPC tracks/reports exist in the collection region?
+    what reporting bias, EF-scale issue, and unrated-event problem appears?
+  for the asset:
+    where are the turbines?
+    what farm boundary should represent the areal asset?
+    what TIV denominator will M4 use?
+```
+
+It does not ask:
+
+```text
+  what is the final bias-corrected tornado rate?
+  what damage ratio does a gust produce?
+  what is the annual loss distribution?
+```
+
+Those are M1, M3, and M4 questions.

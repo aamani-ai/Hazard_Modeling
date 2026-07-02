@@ -26,3 +26,27 @@ M1 manifest (λ) + M3 damage (per-class prob + conditional loss) + TIV →
 single-site) — **not** record-limited (λ is FSim-pre-integrated). Real but approximate; don't quote as final.
 
 **Next:** M0→M4 wildfire × solar complete → the **wind cell** + cross-peril close-out.
+
+## What Wildfire Solar M4 Asks
+
+```text
+M4 asks, over many simulated years:
+  how many fires occur at this asset this year?
+  for each fire, which conditional flame class is sampled?
+  what full conditional loss from M3 is applied?
+  what is annual aggregate loss?
+  what is largest occurrence loss?
+```
+
+Then it asks:
+
+```text
+  what is EAL?
+  what are VaR and PML points?
+  what is TVaR99?
+  does EAL match lambda * E[loss | fire]?
+  does zero-loss frequency match exp(-lambda)?
+```
+
+Wildfire reuses the hail M4 engine, but without hail's `p_hit` thinning because the FSim BP is already local to the
+asset.

@@ -53,3 +53,26 @@ per sub-peril + combined).
 
 **→ Wind × wind-farm M0→M4 is COMPLETE.** Deferred: calibrated turbine curves (`infrasure-damage-curves`), the
 **disruption/degradation track** (AWN-31), hurricane (field-intensity), portfolio correlation, financial terms.
+
+## What Convective-Wind M4 Asks
+
+```text
+M4 asks, over many simulated years:
+  how many tornado events occur?
+  how many strong-wind events occur?
+  for tornado events, what struck/swept farm loss is realized?
+  for strong-wind events, what whole-farm gust damage is realized?
+  what is the combined annual aggregate loss?
+  what is the largest occurrence loss?
+```
+
+Then it asks:
+
+```text
+  what is EAL by sub-peril and in total?
+  what is VaR/PML from the joint annual vector?
+  what is TVaR for the sparse tornado tail?
+  how wrong would per-sub-peril tail summation be?
+```
+
+EAL can be attributed additively, but tail metrics must be read from the joint simulation.

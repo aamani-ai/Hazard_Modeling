@@ -56,3 +56,24 @@ Binomial *(fit deferred)* · A9 dispersion prior (Fano φ ≈ 2) · A10 footprin
 (no smoothing). Full detail + status: [assumptions register A6–A10](../../../docs/plans/hail/assumptions.md#m1--event-catalog).
 
 **Next → [M2 (coupling)](../solar/m2_coupling/):** for each catalog event, does it hit the asset?
+
+## What Hail M1 Asks
+
+```text
+M1 asks:
+  what is one physical hail event?
+  which gridded source provides the footprint spine?
+  what event date, footprint polygon, area, centroid, and hail size are carried?
+  what NOAA reports confirm or flag the event?
+  what annual count model will M4 sample from?
+```
+
+It does not ask:
+
+```text
+  where is the solar plant inside the region?
+  does this event hit the plant?
+  how much damage does the hail size cause?
+```
+
+M1 emits the reusable regional catalog. M2 is where that catalog meets a specific asset.

@@ -29,3 +29,17 @@ M1 strong-wind manifest (`λ`, Gumbel severity, TIV) → `data/convective_wind/<
 (no spatial factor), **AWN-22** (single-site, portfolio correlation deferred), **AWN-31** (damage ≈0; disruption
 deferred). **Next → M3** (the shared anchored curve returns ≈0 here) **→ M4** (combine with tornado; aggregation in
 [discussion/convective_wind/04](../../../../../docs/extra/discussion/convective_wind/04_aggregation_and_double_counting.md)).
+
+## What Strong-Wind M2 Asks
+
+```text
+strong-wind M2 asks:
+  did M1 already produce a site-specific lambda and severity curve?
+  is the event broad enough that the whole farm is exposed?
+  can p_hit stay at 1?
+  can exposure_fraction stay at 1?
+  are portfolio correlation concerns documented for later?
+```
+
+It does not ask for a Minkowski or path-overlap calculation. That would be the wrong coupling bucket for broad
+straight-line wind.

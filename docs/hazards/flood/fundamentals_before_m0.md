@@ -158,6 +158,75 @@ different physics + different data at M1
 same damage driver at M3
 ```
 
+### Coastal Surge, Step By Step
+
+Coastal flood can feel like riverine flood because both eventually become:
+
+```text
+water depth above ground -> depth-damage curve -> loss
+```
+
+But the source physics are different. Coastal surge is ocean water temporarily pushed onto land by a coastal
+storm, usually a tropical cyclone.
+
+```text
+normal condition:
+
+land / asset
+___________
+           \________________
+                            ~~~~~ normal sea level
+
+during storm:
+
+land / asset
+___________
+           \________________
+                 ~~~~~~~~~~~~~~~~~ storm water level
+```
+
+The storm water level is built from several pieces:
+
+```text
+normal sea level
+  + astronomical tide
+  + storm surge from wind stress and low pressure
+  + local wave setup / runup where represented
+  = storm water level near the coast
+```
+
+Once that storm water level is above local ground, inundation depth is again just subtraction:
+
+```text
+storm water level
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+ground
+______/''''''\______/''\_________
+
+depth at each point = storm water level - local ground elevation
+```
+
+This is why the M3 flood damage curve can stay source-agnostic: once water reaches the inverter, turbine base,
+or substation, the damage mechanism is inundation. The reason coastal remains a separate sub-peril is M1/M4:
+the event is a storm with identity, not just an inland annual return-period state.
+
+```text
+coastal M1:
+  storm / category / event_family_id -> surge field
+
+coastal M2:
+  sample that surge field at the solar footprint or wind nodes
+
+coastal M4:
+  join surge to hurricane wind by event_family_id
+  combine shared component damage once
+```
+
+That storm identity is the key difference from riverine. A riverine 100-year depth can be modeled as an
+annual-max inland state. A coastal surge event may be the same physical tropical cyclone that also creates
+hurricane wind loss, so it needs `event_family_id` to avoid counting one storm twice.
+
 ---
 
 ## 4. Why Flood Is Not A Hail-Style Hit Probability Problem
@@ -395,8 +464,64 @@ solar site                         wind farm
 areal inundation                   per-node inundation
 ```
 
-This is why the same flood hazard can be material for a low solar pad but minor for turbines on raised pads,
-while a valley-bottom collector substation can dominate wind-farm flood loss.
+This is why the same flood hazard can be material for a low solar pad but minor for turbines on raised pads.
+A valley-bottom collector substation can dominate dependency or disruption exposure, but it should enter physical
+wind-farm loss only when ownership and TIV inclusion are confirmed.
+
+Wind adds one extra geometry step before M2 can be trusted: identify the farm's own collector substation.
+USWTDB gives turbine points, not collector-substation coordinates, so the notebook builds a turbine-cloud hull and
+uses that as a containment guard against grabbing a neighbor's substation.
+
+```text
+USWTDB turbine cloud
+
+        T
+   T         T
+
+      T
+
+ T                 T
+
+        T
+```
+
+The proxy footprint is a buffered convex hull: a rubber band around the outer turbine points, plus a small buffer.
+
+```text
+        T
+      /   \
+   T /     \ T
+    /       \
+   |    T    |
+   |         |
+ T |    S?   | T
+    \       /
+     \  T  /
+      \___/
+
+S? = candidate collector substation from OSM / HIFLD
+```
+
+This is a positive part of the V1 wind-flood exposure method: it refuses the weak shortcut "nearest substation to
+centroid." The production rule prefers an OSM `substation=generation` inside this hull; allows a generation substation
+just outside if it is very close to this farm's turbines; then falls back to in-hull OSM/HIFLD; then centroid only if no
+mapped substation exists. That exact guard caught the Green River / Big Sky neighbor bug.
+
+The caveat is equally important:
+
+```text
+convex hull = footprint proxy, not official lease boundary
+
+good for:
+  containment guard
+  rejecting obvious neighboring substations
+  dependency and disruption screening
+
+not good for:
+  averaging flood depth over the whole wind farm
+  proving ownership without OSM/interconnection evidence
+  automatically assigning physical damage to the wind farm TIV
+```
 
 ---
 

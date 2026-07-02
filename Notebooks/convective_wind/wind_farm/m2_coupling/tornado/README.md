@@ -34,3 +34,17 @@ M1 manifest (`λ_coll`, EF mix, severity) + M0/02 SPC parquet (per-EF path L,w) 
 (per-turbine vs areal), **AWN-16** (sparse → TVaR), swept-fraction V1 treatment. **Next → M3** (the anchored
 turbine curve supplies `DR(gust)`) **→ M4** (combine with strong wind; aggregation rules in
 [discussion/convective_wind/04](../../../../../docs/extra/discussion/convective_wind/04_aggregation_and_double_counting.md)).
+
+## What Tornado M2 Asks
+
+```text
+tornado M2 asks:
+  what regional tornado rate came from M1?
+  how large is the wind-farm footprint?
+  what path length and width correspond to each EF class?
+  what is p_hit for each EF class?
+  how does the EF mix change after conditioning on a strike?
+  what swept fraction of the farm is damaged on a strike?
+```
+
+It does not ask what the EF gust does to a turbine. That is the M3 curve.

@@ -25,3 +25,15 @@ data/hazard_conus_grid/hail/selected_pilot_cells_v2026_06_16.json
 
 This lock is only for the selected-cell M1 pilot. It does not create the hail M1 hazard layer and it does
 not authorize full-CONUS fanout.
+
+## What The Pilot-Cell Lock Asks
+
+```text
+pilot-cell lock asks:
+  which candidate cells are accepted for the small M1 pilot?
+  what role does each selected cell play?
+  do all selected cells join to the benchmark grid?
+  are the selected cells saved in one manifest that M1 can consume?
+```
+
+It does not ask whether the full-CONUS grid is ready. It only freezes the tiny pilot input list.

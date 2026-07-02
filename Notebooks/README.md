@@ -22,7 +22,12 @@ Notebooks/
   convective_wind/      ← peril: two sub-perils (tornado + strong/straight-line wind); shared catalog
     layer0/  m0_input_data/  m1_catalog/
     wind_farm/          ← asset cell: M2 (fork → tornado · strong_wind) · M3 (one turbine, two curves) · M4 (combined)   ✅ built
-  # offshore wind / hurricane / flood …   ← same shape, later
+  hurricane/            ← peril: TC wind field; shared event catalog with event_family_id
+    m0_input_data/  m1_catalog/
+    solar/  wind_farm/  ← field-intensity cells, imported for review                       ✅ built
+  flood/                ← peril: riverine + pluvial + coastal; shared depth/event profiles
+    layer0/  m0_input_data/  m1_catalog/
+    solar/  wind_farm/  ← site-conditioned cells, imported for review                      ✅ built
 ```
 
 ## The matrix — what's built, what's next
@@ -37,14 +42,14 @@ interface, but the **coupling physics changes per (peril × asset)**.
 | **Hail** | **areal hit-or-miss ✅ built** | per-turbine hit-or-miss — **next** | — | areal (point) |
 | **Tornado** *(convective wind)* | areal hit-or-miss | **areal hit-or-miss, path-aware ✅ built** | — | — |
 | **Straight-line wind** *(convective wind)* | site-conditioned | **site-conditioned ✅ built** | site-conditioned | site-conditioned |
-| Hurricane wind | field-intensity | field-intensity | field-intensity | field-intensity |
+| Hurricane wind | **field-intensity ✅ built** | **field-intensity ✅ built** | field-intensity | field-intensity |
 | **Wildfire (flame)** | **site-conditioned ✅ built** | site-conditioned | — | site-conditioned |
-| Flood | site-conditioned | site-conditioned | (surge) | site-conditioned |
+| Flood | **site-conditioned ✅ built** | **site-conditioned ✅ built** | (surge) | site-conditioned |
 | Winter (snow / ice) | field-intensity | field-intensity | — | field-intensity |
 
 > **Convective wind = one peril, two sub-perils** (tornado [T] + strong/straight-line wind [W]) — built as
 > `convective_wind/wind_farm/` (M2 folder-forks per sub-peril; M3/M4 shared). **Hurricane** is a *separate* peril
-> (field-intensity), deferred — it shares only the 3-s-gust damage curve, not the catalog.
+> (field-intensity) — it shares only the 3-s-gust damage curve, not the catalog.
 
 ✅ = built end-to-end. Everything else is roadmap. **The three coupling types** (the M2 physics):
 **areal hit-or-miss** (finite footprint covers the asset or misses — Minkowski `(√F+√s)²/A`) ·
@@ -61,6 +66,8 @@ with full provenance (external citations + research-repo links) in [`docs/refere
 - **[`convective_wind/`](convective_wind/README.md)** — the convective-wind peril (two sub-perils + the shared catalog).
 - **[`convective_wind/wind_farm/`](convective_wind/wind_farm/README.md)** — convective wind × wind farm: **two
   sub-perils** (tornado + strong wind) on one shared catalog, M2 folder-forked, M3 one turbine / two curves, M4 combined.
+- **[`hurricane/`](hurricane/README.md)** — hurricane wind, field-intensity coupling, solar + wind-farm cells.
+- **[`flood/`](flood/README.md)** — flood, three sub-perils, solar + wind-farm cells.
 
 ## Why solar and a wind farm differ (now built)
 
@@ -71,6 +78,37 @@ turbines* (we have the turbine lat/longs) scattered across a large lease — so 
 wind loads sample a **continuous field at each turbine**. Same M0→M4 interface, genuinely different M2
 coupling. (A21's *"wind-farm open question"* is now **resolved in [`convective_wind/wind_farm/`](convective_wind/wind_farm/README.md)**:
 tornado intersects the farm footprint **path-aware** + swept-fraction; strong wind reads the **site RP gust**.)
+
+## M0-M4: What The Notebook Layers Ask
+
+```text
+M0 asks:
+  what raw source evidence exists?
+  what does the source variable mean?
+  what units, grain, coverage, and bias traps matter?
+
+M1 asks:
+  what asset-independent hazard object is emitted?
+  is it an event catalog, return-period curve, pre-integrated profile, or hybrid?
+  what frequency and severity information goes forward?
+
+M2 asks:
+  how does the hazard reach this asset?
+  is coupling areal hit/miss, site-conditioned, field-intensity, or per-node?
+  what p_hit, exposure fraction, or local intensity is emitted?
+
+M3 asks:
+  if the hazard reaches the asset, how much damage does it cause?
+  what component curves and capex weights create the asset damage ratio?
+  what full conditional loss goes forward?
+
+M4 asks:
+  over many simulated years, what losses are realized?
+  what are AEP and OEP?
+  what are EAL, PML/VaR, and TVaR?
+```
+
+If a README feels confusing, it should be rewritten until it can answer those questions in a few lines.
 
 ## Environment
 

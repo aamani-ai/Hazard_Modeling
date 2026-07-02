@@ -80,6 +80,45 @@ Compact carry-forward findings; full reasoning lives in
 - SPC is necessary for tornado paths, but raw counts still need detection/rating-era QA.
 - TC-spawned tornado overlap remains an aggregation watch item when hurricane is combined with convective wind.
 
+## Open Questions And Better Ways
+
+Questions to resolve:
+
+```text
+ASCE profile limits:
+  Is the ASCE non-hurricane surface adequate for every inland strong-wind use case, or do some sites need
+  measured-gust / mesonet / station validation before product use?
+
+tornado source bias:
+  How much residual detection bias and EF rural-low bias remains after the stable-window and EF2+ checks?
+
+sub-peril overlap:
+  Are ASCE non-tornadic winds, SPC tornadoes, and future hurricane/TC-spawned tornadoes cleanly separable in
+  combined-event accounting?
+
+portfolio identity:
+  ASCE gives local return-period profiles, not derecho/outbreak event identity. What source or dependence
+  model is needed before portfolio aggregation?
+```
+
+Better-way candidates:
+
+```text
+strong wind:
+  homogenized measured-gust / radar-derived convective-wind catalog, if available, to add event identity and
+  validate ASCE local profiles
+
+tornado:
+  homogenized tornado climatology or reconstructed tornado wind-field/path datasets that reduce EF rural bias
+
+combined wind:
+  event-family model for derechos, outbreaks, and TC-spawned tornadoes
+
+source switch evidence:
+  a public, auditable event catalog that preserves frequency, local gust severity, footprint/path geometry,
+  and event identity better than the current ASCE + SPC split
+```
+
 ## Access And Dependency Profile
 
 | Source | Access path | Auth/license | Format / size | Operational dependency |
@@ -136,6 +175,24 @@ derived strong-wind profile
 M1
   profile-assembly into lambda + continuous gust severity
 ```
+
+That M1 profile-assembly is still an **event model**, even though it is not a raw event catalog. The conversion
+is:
+
+```text
+ASCE hazard object:
+  return period -> 3-s gust at this site
+
+M1 event-model object:
+  N_events_per_year ~ Poisson(lambda)
+  gust | event      ~ conditional severity distribution above 58 mph
+```
+
+This is the same contract described in the cross-hazard
+[`M0-M4 event/loss contract`](../m0_m4_event_loss_contract.md). It is enough for single-site AEP/OEP because
+M4 can generate synthetic per-event losses from `lambda`, gust severity, and the M3 damage curve. It is **not**
+enough for portfolio event identity: ASCE does not tell us which named storm, derecho, or outbreak hit multiple
+assets at the same time. That portfolio correlation work is deferred.
 
 The tornado path is an event-extraction path:
 

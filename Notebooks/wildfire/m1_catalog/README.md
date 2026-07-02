@@ -32,3 +32,25 @@ M0 parquets + cached FSim rasters → `data/wildfire/<asset>_wildfire_m1_catalog
 
 **Next → M2 (solar coupling):** the site-conditioned step (susceptibility, oozing/surrounding-fuel) emitting
 the `(p_hit, conditional intensity)` pair.
+
+## What Wildfire M1 Asks
+
+```text
+M1 asks, for each asset:
+  what burn probability BP applies over the footprint?
+  how should BP convert to annual frequency lambda?
+  what flame-length probability histogram applies given a fire?
+  what kW/m intensity should represent each flame class?
+  what manifest keys should M2 and M4 consume?
+```
+
+It does not ask:
+
+```text
+  what independent event perimeters should be built?
+  what regional collection rate should be thinned to the asset?
+  what does the damage curve do?
+```
+
+FSim already pre-integrates the simulated seasons into BP and FLP. M1 assembles that profile; it does not reconstruct
+the full simulated fire catalog.

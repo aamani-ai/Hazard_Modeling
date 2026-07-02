@@ -11,6 +11,8 @@ reliable vs. not. How wind *damages a specific asset* lives in the per-asset pag
 > layer-0 definition, 3-s gust, tornado-vs-strong-wind split, and the two different M2 coupling paths.
 > For the source decision itself, read [`source_selection.md`](source_selection.md): why strong wind uses ASCE
 > return-period gusts while tornado uses SPC/NOAA path/report evidence.
+> For the M0-M4 modeling choices, distributions, coupling fork, damage curves, and joint M4 sampling, read
+> [`modeling_choices.md`](modeling_choices.md).
 
 > **One-line state:** convective wind is **one peril, two sub-perils** — *tornado* (rare, violent, narrow) and
 > *strong / straight-line wind* (common, broad, mild) — sharing one observable (the **3-s peak gust**) but
@@ -119,6 +121,45 @@ physics*):
 | **Severity** | Gumbel / light-exponential (ξ≈0), capped at `L` | bounded **GPD** (ξ<0), truncated at the EF5 ceiling `L = 113 m/s` |
 | **Dispersion** | `fano = 1` structural (ASCE pre-integrated it) | **fit** from SPC (NegBin if over-dispersed — outbreak clustering is real) |
 
+### M0-M4 modeling flow
+
+| Layer | Convective-wind modeling object | Choice summary |
+|---|---|---|
+| **Layer 0** | Authored hazard definition. | Convective wind = tornado + strong/straight-line wind; hurricane is separate. |
+| **M0** | ASCE return-period gust profile and SPC/NOAA path/report record. | Strong wind uses a pre-integrated profile; tornado uses a biased event/path record. Wind-farm geometry is asset input for M2, not hazard M0. |
+| **M1** | Two event models under one peril. | Strong wind becomes Poisson + Gumbel severity from ASCE; tornado becomes regional rate + EF/severity/path distributions from SPC. |
+| **M2** | Coupling fork. | Strong wind is site-conditioned with `p_hit=1`; tornado is path-aware hit/miss with swept fraction. |
+| **M3** | One turbine, two damage curves. | Strong wind has IEC-survival onset and aero reach; tornado has lower onset, steeper curve, all-subsystem reach. |
+| **M4** | One joint annual loss distribution. | Co-sample both sub-perils; EAL can be attributed, but tail metrics come from the joint annual vector. |
+
+The detailed choice ledger is [`modeling_choices.md`](modeling_choices.md): ASCE profile-to-event-model choices,
+SPC bias choices, M2 fork rationale, two-curve M3 rationale, and joint-tail aggregation rules.
+
+This is the concrete convective-wind example of the cross-hazard
+[`M0-M4 event/loss contract`](../m0_m4_event_loss_contract.md). For strong wind, M1 does **not** build a
+historical event table. It converts the ASCE local return-level profile:
+
+```text
+return period -> 3-s gust
+```
+
+into the standard event-model contract:
+
+```text
+N_events_per_year ~ Poisson(lambda)
+gust | event       ~ conditional severity distribution above the severe-wind threshold
+```
+
+That conversion is necessary because M4 needs per-event losses in simulated years, not only a table of
+return-period gusts. It is also why **hazard return period is not loss return period**: the 100-year ASCE gust
+is only a hazard intensity; PML100 is read later from annual losses after M2 coupling and M3 damage.
+
+For the built Traverse example, the ASCE profile becomes approximately `lambda = 0.9035/yr`, `sigma = 3.581`,
+`xi = 0`, with `fano = 1`. M2 does not thin it (`p_hit = 1`) because the profile is already local to the site.
+M4 then samples strong-wind events, applies the M3 turbine curve to each sampled gust, and aggregates annual
+losses. Without a raw strong-wind event catalog, single-site AEP/OEP are still available from those synthetic
+event losses; portfolio correlation and named-event identity remain deferred.
+
 The two **deployments** differ only at the hazard-layer edges (the deep run uses a fixed ~150-km tornado
 collection region — whose *size* cancels in `λ_collection · p_hit`, [LL06](../../learning_logs/06_collection_region_size_cancels.md) —
 and reads the site's ASCE gust; the grid would read canonical cells). The **CONUS grid is planned, not yet
@@ -182,7 +223,32 @@ tornado record.
 
 - **Reasoning:** [`discussion/convective_wind/`](../../extra/discussion/convective_wind/README.md) (`01` sub-peril taxonomy · `02` coupling buckets · `03` thresholds · `04` aggregation & double-counting).
 - **Source selection:** [`source_selection.md`](source_selection.md).
+- **Modeling choices:** [`modeling_choices.md`](modeling_choices.md).
 - **Decisions / plan-of-record:** [`plans/convective_wind/`](../../plans/convective_wind/README.md) (DD-WN-* + the authored [hazard definition](../../plans/convective_wind/00_hazard_definition.md)).
 - **Code:** [`Notebooks/convective_wind/`](../../../Notebooks/convective_wind/README.md) (layer0 → M0 → M1 → the wind-farm cell).
 - **Lessons:** [LL06 collection-size cancels](../../learning_logs/06_collection_region_size_cancels.md) · [LL09 pre-integrated vs. extracted](../../learning_logs/09_pre_integrated_vs_extracted_catalog.md) · [LL12 EVT for a new peril](../../learning_logs/12_evt_for_a_new_peril.md).
 - **Per-asset:** [convective wind × onshore wind](wind.md).
+
+## Quick Layer Questions
+
+```text
+layer-0 asks:
+  what is the 3-second gust event definition and what is damage onset?
+
+M0 asks:
+  what ASCE strong-wind surface, SPC tornado record, and wind-farm geometry exist?
+
+M1 asks:
+  what lambda and gust severity does each sub-peril carry?
+
+M2 asks:
+  does the farm couple through tornado path hit/miss or broad strong-wind exposure?
+
+M3 asks:
+  what turbine damage curve applies for tornado vs straight-line wind at the same gust?
+
+M4 asks:
+  what is the joint annual loss distribution from both sub-peril streams?
+```
+
+Keep the key split in mind: one magnitude axis, two coupling modes, two damage curves, one final annual distribution.

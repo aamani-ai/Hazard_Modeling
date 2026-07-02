@@ -51,3 +51,30 @@ Notebooks/hail/m0_input_data/03_myrorss_reanalysis_source_qualification/
 Those notebooks normalize MYRORSS into the same daily cell evidence contract before any grid M1 layer uses
 it. Grid-specific selected-cell outputs remain under `data/hazard_conus_grid/hail/` because they prove the
 benchmark-cell adapter.
+
+## What This Notebook Tree Asks
+
+```text
+grid foundation asks:
+  what benchmark cell contract does every hazard use?
+  what cells are served in the CONUS hazard product?
+  what cell_id / geometry / mask is authoritative?
+
+hazard M0 grid adapters ask:
+  how does a native source pixel or report map to a benchmark cell?
+  what daily cell evidence is written?
+  what no-data / no-hail / severe-hail states are explicit?
+
+hazard M1 grid layers ask:
+  for each cell, what frequency and severity summary is carried?
+  what QA flags prevent false precision?
+  what artifacts are product inputs vs provenance?
+
+asset risk layers ask:
+  can a canonical asset consume the grid hazard layer?
+  do M2-M4 metrics use the same stochastic discipline as deep assets?
+  which outputs are smoke tests, screening layers, or reportable layers?
+```
+
+This tree is about scalable contracts. It should not silently inherit single-site assumptions from the deep Hayhurst
+notebooks.

@@ -287,3 +287,26 @@ Minimum expected daily evidence fields:
 - `mesh_p50_mm`, `mesh_p90_mm`, `mesh_p95_mm`, where meaningful;
 - `hail_day_flag`;
 - QA flags.
+
+## What MRMS Grid M0 Asks
+
+```text
+MRMS grid M0 asks:
+  for each accepted date:
+    which MRMS files exist?
+    which benchmark cells are covered?
+    how many native pixels map to each cell?
+    did the cell have severe MESH >= 25.4 mm?
+    what max and summary MESH values are carried?
+    what no-data or source-quality flags are needed?
+```
+
+It does not ask:
+
+```text
+  what is the final cell climatology?
+  what solar loss does the cell imply?
+  what should the deep-tail severity distribution be?
+```
+
+Those are M1 and downstream risk-layer questions.

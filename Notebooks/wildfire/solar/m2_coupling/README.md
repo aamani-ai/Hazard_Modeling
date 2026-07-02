@@ -24,3 +24,24 @@ M1 catalog + manifest (+ M0 WRC oozing flag) → `data/wildfire/<asset>_wildfire
 both assets.
 
 **Next → M3 (solar damage):** map the coupled kW/m intensity → BoS-weighted damage ratio.
+
+## What Wildfire Solar M2 Asks
+
+```text
+M2 asks:
+  is there any remaining spatial hit/miss calculation?
+  what exposure fraction should be carried?
+  does the asset footprint suppress or mask local fuel intensity?
+  should surrounding-fuel "oozing" be applied or only flagged?
+  what lambda + conditional intensity handoff goes forward?
+```
+
+It does not ask:
+
+```text
+  what is the burn probability source value?
+  what damage ratio applies at 2,000 kW/m?
+  what is PML100?
+```
+
+Those belong to M1, M3, and M4. Wildfire M2 is thin because the hazard is already site-conditioned.

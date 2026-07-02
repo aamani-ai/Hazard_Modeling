@@ -52,3 +52,26 @@ diverge at different layers:
 A sibling `solar/` asset cell under `convective_wind/` · calibrated turbine curves (`infrasure-damage-curves`) ·
 the disruption/degradation track (AWN-31) · per-turbine vs whole-farm exposure grain refinements · portfolio
 correlation across farms (AWN-22). Plan-of-record: [`docs/plans/convective_wind/`](../../../docs/plans/convective_wind/README.md).
+
+## What The Convective-Wind Wind-Farm Cell Asks
+
+```text
+wind-farm M2 asks:
+  for tornado:
+    what is the farm strike probability?
+    what swept fraction is damaged on a strike?
+  for strong wind:
+    is exposure effectively whole-farm with p_hit = 1?
+
+wind-farm M3 asks:
+  for one turbine:
+    what damage curve applies if the gust is tornado-driven?
+    what damage curve applies if the gust is straight-line wind?
+    are both curves anchored near zero at event threshold?
+
+wind-farm M4 asks:
+  across simulated years:
+    what losses come from tornado events?
+    what losses come from strong-wind events?
+    what is the combined annual distribution?
+```

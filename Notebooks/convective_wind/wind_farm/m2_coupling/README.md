@@ -21,3 +21,23 @@ Plan: [`docs/plans/convective_wind/m2_coupling.md`](../../../../docs/plans/conve
 
 **Outputs:** `data/convective_wind/<asset>_wind_m2_{tornado,strongwind}_coupling.parquet` + manifests (per fork).
 **Next → M3** (the shared anchored turbine curve consumes both forks' severity).
+
+## What Convective-Wind M2 Asks
+
+```text
+M2 asks:
+  which coupling bucket applies to this sub-peril?
+
+tornado branch asks:
+  what is p_hit for a path striking the farm footprint?
+  how does path length and width change strike probability?
+  what swept fraction is damaged if a strike occurs?
+  how does lambda_collection thin to lambda_asset?
+
+strong-wind branch asks:
+  is p_hit effectively 1?
+  is exposure_fraction effectively 1?
+  should lambda_asset equal the M1 site lambda?
+```
+
+It does not ask what a gust costs. M3 handles turbine fragility.

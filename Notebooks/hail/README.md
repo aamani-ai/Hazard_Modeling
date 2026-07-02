@@ -118,3 +118,50 @@ Widen the MRMS record → a more credible λ (NOAA-calibrated extension, **DD-3 
 on the headline numbers); calibrate the damage curve to PV claims; add financial terms + an EVT-GPD
 tail. The `deferred` rows in the [assumptions register](../../docs/plans/hail/assumptions.md) are the
 backlog that turns this skeleton into a production model.
+
+## M0-M4: What Each Layer Asks
+
+```text
+M0 asks:
+  what hail evidence exists near the asset?
+  is the source a point report, gridded radar field, or reanalysis?
+  what does one raw record mean?
+  what bias or coverage trap comes with the source?
+
+M1 asks:
+  what is one physical hail event?
+  which source is the event spine?
+  what footprint polygon and hail size does each event carry?
+  what annual count model should generate future regional events?
+
+M2 asks:
+  for each event footprint:
+    how big is the swath?
+    how big is the asset?
+    what is the probability the swath overlaps the asset?
+    is that probability kept in frequency, not multiplied into loss?
+
+M3 asks:
+  if the event hits:
+    what hail size reaches the asset?
+    what solar components are vulnerable?
+    what capex-weighted damage ratio applies?
+    what is the full conditional loss?
+
+M4 asks:
+  over many simulated years:
+    how many regional hail events occur?
+    for each event, does the weighted hit coin land?
+    if hit, what full conditional loss is applied?
+    what annual AEP/OEP loss vectors and risk metrics result?
+```
+
+The core hail discipline is:
+
+```text
+p_hit belongs to frequency.
+conditional_loss belongs to severity.
+M4 combines them stochastically.
+
+Do not use p_hit * loss as the simulated event loss.
+```

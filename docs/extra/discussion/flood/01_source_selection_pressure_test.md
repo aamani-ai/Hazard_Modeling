@@ -41,7 +41,8 @@ Do not confuse surge envelopes with per-storm hydrodynamic simulations.
 |---|---|---|---|
 | **FEMA BLE depth grids** | Hydraulic depth grids / water-surface evidence, commonly 1% and 0.2% annual-chance anchors. | **Pass for riverine where available.** Close to the actual depth input damage curves need. | Preferred riverine source. |
 | **NFHL / SFHA + 3DEP** | Floodplain extent plus ground elevation. | Passes fallback/screening test only. Extent is not depth; DEM can support bathtub approximation. | Riverine fallback where BLE absent. |
-| **USGS gauges / ratings / regression** | Stage/discharge evidence and lower-RP support. | Support source. Good for densifying/checking, not a full national depth field alone. | Densification and validation support. |
+| **FEMA NRI flooding hazards** | County/tract annualized risk/loss index for riverine/coastal flooding. | Fails M1 physical-source test because hazard, exposure, vulnerability, and loss are already mixed. | External benchmark / pattern check only. |
+| **USGS gauges / StreamStats / Bulletin 17C** | Stage/discharge evidence, regional flow-frequency estimates, and national frequency-analysis method. | Support/method source. Good for densifying/checking, not a full national depth grid alone. | Densification and validation support. |
 | **NOAA Atlas 14** | Precipitation-frequency depths by duration/return period. | Passes rainfall-frequency test, fails depth test by itself. | Selected pluvial rainfall input. |
 | **NOAA Atlas 15** | Future precipitation-frequency product with seamless national / non-stationary framing. | Strong future replacement candidate, but not the current branch input. | Watch item / future pluvial rainfall input. |
 | **DEM / lidar / 3DEP** | Ground elevation and ponding geometry. | Required site-condition input, not a frequency source. | Required pluvial/flood coupling support. |
@@ -53,7 +54,7 @@ Do not confuse surge envelopes with per-storm hydrodynamic simulations.
 | **RAFT / HURDAT2** | Tropical-cyclone storm identity and observed/synthetic event context. | Support source for event-family linkage and frequency context, not flood depth by itself. | Coastal/hurricane join support. |
 | **FEMA FFRD** | Emerging public graduated floodplain / probabilistic framework, potentially ~5- to ~2000-year. | Potential future public spine, but pilot/emerging status blocks V1 national use. | Highest-priority public replacement candidate. |
 | **First Street / Fathom** | Mature commercial depth-by-return-period products across riverine/pluvial/coastal. | Could be stronger than public V1 for underwriting if license/provenance are acceptable. | Commercial benchmark / possible swap-in. |
-| **HEC-RAS / HEC-HMS** | Free hydrologic/hydraulic modeling engines. | Method engine, not a data source by itself. Requires terrain, flow/rainfall, boundary conditions, calibration. | Local hydraulic-model route where source data and budget allow. |
+| **USACE HEC-RAS / HEC-HMS** | Free hydrologic/hydraulic modeling engines. | Method engine, not a data source by itself. Requires terrain, flow/rainfall, boundary conditions, calibration. | Local hydraulic-model route where source data and budget allow. |
 
 ## Reference-Doc Option Audit
 
@@ -61,10 +62,33 @@ This section exists because the Drive reference lists more candidates than the b
 carry. The pressure test should not be biased toward current notebooks; each option is tested against the M1 object
 we actually need.
 
+### Completeness Map
+
+Every structured flood option in `Hazard_Data_Reference.docx` is accounted for here:
+
+| Reference option | Current treatment | Why |
+|---|---|---|
+| FEMA NFHL | Fallback/screening source. | Gives extent/zones and sometimes BFE, not full probabilistic depth. |
+| FEMA NRI flooding hazards | External benchmark only. | Already mixes hazard, exposure, vulnerability, and loss. |
+| NOAA Coastal Flood Exposure Mapper / SLR Viewer | Coastal scenario/screening support. | Scenario layer, not event-based M1 surge catalog. |
+| NOAA Atlas 14 | Current pluvial rainfall-frequency input. | Gives rainfall frequency, then depth must be modeled. |
+| NOAA Atlas 15 | Future Atlas 14 replacement candidate. | Better non-stationary/future framing, but not the current branch input. |
+| USGS streamgages / peak-flow / StreamStats | Riverine densification and validation support. | Flow/stage evidence, not a depth grid by itself. |
+| USGS Bulletin 17C | Riverine method standard. | Explains flood-frequency estimation; not an asset depth product. |
+| NOAA CO-OPS tide gauges / Extreme Water Levels | Coastal validation/frequency support. | Point water levels, not site-wide surge depth grids. |
+| USGS FIM + high-water marks | Validation/local upgrade source. | Strong where available, not nationally complete. |
+| NOAA National Water Center FIM / NWPS | Priority fallback-upgrade candidate. | Free operational inundation layer, but forecast/HAND-oriented and not a clean RP-depth spine. |
+| FEMA FFRD | Highest-priority future public replacement candidate. | Potentially close to the desired probabilistic depth-frequency object, but rollout is not national/production-grade. |
+| First Street Flood Model | Commercial benchmark / possible swap-in. | Mature depth-by-RP product, but license/provenance/auditability must clear. |
+| Fathom US Flood Map | Commercial benchmark / possible swap-in. | Similar vendor/provenance gate; compare against BLE/events before use. |
+| USACE HEC-RAS / HEC-HMS | Local modeling engine. | Can build depth grids if inputs/calibration exist; not a ready national source. |
+| NOAA SLOSH / surge methodology | Current coastal envelope source family. | Practical public surge product, but envelope-grade. |
+
 ### Options That Do Not Change V1 Today
 
 | Reference option | Why it does not replace the current spine today | How it should be used |
 |---|---|---|
+| **FEMA NRI flooding hazards** | Useful for external risk pattern checks, but it already combines hazard, exposure, vulnerability, and loss. | Benchmark only; never a physical M1 depth/frequency source. |
 | **USGS FIM + high-water marks** | Excellent evidence, but selected reaches/events only; not national enough for a V1 spine. | Validation/calibration where available; local upgrade over bathtub fallback. |
 | **NOAA National Water Center FIM / NWPS** | Closest new free national inundation layer, but forecast/HAND-oriented and not a clean RP-depth catalog. | Priority candidate to pressure-test as fallback validation, especially where BLE is absent. |
 | **NOAA CO-OPS Extreme Water Levels** | Point coastal water-level frequency, not site-wide surge/inundation grids. | Coastal validation and non-TC/coastal-water-level context. |
@@ -163,6 +187,7 @@ keeps `event_family_id` so the same tropical cyclone's wind and surge can be joi
 | BLE coverage is incomplete. | Some assets lack a hydraulic depth grid. | Dispatch by site: BLE where available, fallback otherwise; carry source-quality flag. | Broader BLE/FFRD coverage or local HEC-RAS/commercial depth grid. |
 | BLE may only anchor selected RPs. | EAL is sensitive to frequent/lower-RP depths. | Densify with gauge/regression/rating logic; label EAL softer than anchored PML. | More complete depth-frequency surface. |
 | NFHL/SFHA is extent, not depth. | Zone membership alone cannot drive a depth-damage curve. | Use as screening/fallback context only. | Replace with depth grids. |
+| FEMA NRI is already a risk/loss product. | It can validate broad reasonableness but cannot supply clean M1 frequency/depth. | Use only as external benchmark. | Need a loss-side benchmark, not hazard spine. |
 | Atlas 14 is rainfall, not inundation. | Rainfall has to become runoff and ponding before it can damage equipment. | Transform through runoff/terrain; label pluvial screening-grade. | Atlas 15 plus public national pluvial depth product. |
 | NWC FIM / USGS FIM are useful but incomplete for V1. | They can improve validation/fallback logic but are not yet clean national probabilistic depth-frequency spines. | Track as validation/local-upgrade sources. | Coverage and RP-depth framing become sufficient for M1. |
 | Site conditions dominate flood coupling. | Ground elevation, pads, walls, drainage, culverts, levees, and equipment height can change loss more than the regional hazard. | Treat flood as site-conditioned: water level/depth vs asset critical elevation. | Owner survey, equipment elevation, drainage and flood-protection data. |
@@ -228,6 +253,7 @@ It should not duplicate the full flood branch notebooks or future plan/register 
 Local / branch:
 
 - Flood source page: [`../../../hazards/flood/source_selection.md`](../../../hazards/flood/source_selection.md).
+- Drive source universe: [`Hazard_Data_Reference.docx`](../../../google_drive_docs/Hazard_Data_Reference.docx).
 - Flood branch notebooks: <https://github.com/aamani-ai/Hazard_Modeling/tree/flood/Notebooks/flood>
 - Flood layer-0 branch notebook: <https://github.com/aamani-ai/Hazard_Modeling/blob/flood/Notebooks/flood/layer0/01_hazard_definition.py>
 - Flood branch plans: <https://github.com/aamani-ai/Hazard_Modeling/tree/flood/docs/plans/flood>

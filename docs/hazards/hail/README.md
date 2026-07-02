@@ -10,10 +10,13 @@ pages ([hail × solar](solar.md)).
 > hail-day footprints, MRMS-vs-NOAA roles, and areal hit-or-miss coupling.
 > For the source decision itself, read [`source_selection.md`](source_selection.md): why MRMS is the V1
 > spine, why NOAA reports are validation/calibration only, and why MYRORSS is deferred.
+> For the M0-M4 modeling choices, distributions, coupling, damage, and M4 sampling, read
+> [`modeling_choices.md`](modeling_choices.md).
 
 > **One-line state:** the hail catalog and frequency are built both ways (a deep per-asset run and a
-> full-CONUS grid). Frequency is trustworthy; **raw radar severity has known outliers that are not yet
-> resolved** — that's the open V1 quality-assessment item.
+> full-CONUS grid). Frequency is trustworthy; raw radar severity has known outliers and now has an applied
+> plausibility-QC rule, while loss metrics remain provisional where they depend on the legacy damage curve or
+> sparse-cell grid assumptions.
 
 ---
 
@@ -87,6 +90,19 @@ Where the two **hazard layers** differ (asset-free), and why:
 | **Frequency model** | Negative Binomial (over-dispersion φ≈3.37 detected) | Poisson (V1 default) | The 50-mi region has enough annual counts to *detect* clustering → NegBin. A single cell over ~5.65 yr can't support per-cell dispersion without fitting noise → Poisson is the stable screening default; dispersion is kept as a diagnostic. Future grid upgrade = *pooled/regional* dispersion, not naive per-cell NegBin. |
 | **Footprint** | reconstructed footprint polygon per event | severe-pixel area within the cell (proxy) | The grid trades polygon fidelity for scale; labeled as a cell-clipped proxy. |
 
+### M0-M4 modeling flow
+
+| Layer | Hail modeling object | Choice summary |
+|---|---|---|
+| **M0** | Daily MRMS MESH fields plus NOAA/SPC report cross-checks. | Treat MESH as gridded radar evidence, not a ready event table. |
+| **M1** | Hail-day frequency and severity. | Deep run uses a 50-mi event catalog with NegBin frequency; grid uses exact-cell Poisson rates. Plausibility QC caps/flags impossible MESH severity while leaving frequency untouched. |
+| **M2** | Areal hit-or-miss coupling. | Solar uses the finite-area Minkowski hit probability, not a point factor. |
+| **M3** | Hail size -> solar damage ratio. | Current curve is capex-weighted, scalar mean, legacy; curated curve swap is deferred. |
+| **M4** | Compound annual loss distribution. | Draw counts, hit/miss, and full conditional losses; read EAL/PML/VaR/TVaR from annual vectors. |
+
+The detailed choice ledger is [`modeling_choices.md`](modeling_choices.md): distribution choices, QC choices,
+coupling rationale, damage assumptions, and M4 sampling doctrine.
+
 The coupling (`M2`) and damage (`M3`) — the *asset* side — are on the per-asset pages, e.g. [hail × solar](solar.md).
 
 ## 4. Assumptions (load-bearing; full registers linked)
@@ -130,7 +146,7 @@ the cost of going local. Remedy on the roadmap: sparse-cell pooling / spatial sh
 | | Reportable now | Provisional / screening | Deferred (V1.5 / V2) |
 |---|---|---|---|
 | **Deep per-asset** | EAL, ~PML₁₀₀ (distribution *body*) | the deep tail (bootstrap-truncated) | EVT severity tail, damage-curve calibration, financial terms |
-| **CONUS grid** | per-cell **frequency** screening | severity & all loss metrics (raw-MESH tail unresolved) | the severity QA decision (§5a), sparse-cell pooling, record extension |
+| **CONUS grid** | per-cell **frequency** screening; plausibility-QC severity summaries | all loss metrics remain provisional screening because the curve/grid assumptions are not product-calibrated | sparse-cell pooling, record extension, MESH de-biasing / EVT tail |
 
 The guiding line: **a V1 cell is a vertical slice that runs end-to-end and is honest about its limits — not a
 calibrated product.** (Principle `good_enough_for_v1`, being formalized.)
@@ -139,6 +155,28 @@ calibrated product.** (Principle `good_enough_for_v1`, being formalized.)
 
 - **Reasoning:** [`discussion/conus_grid/`](../../extra/discussion/conus_grid/README.md) (+ `hail/`).
 - **Source selection:** [`source_selection.md`](source_selection.md).
+- **Modeling choices:** [`modeling_choices.md`](modeling_choices.md).
 - **Decisions / plan-of-record:** [`plans/hail/`](../../plans/hail/) (deep run) · [`plans/hazard_conus_grid/hail/`](../../plans/hazard_conus_grid/hail/) (grid).
 - **Code:** [`Notebooks/hail/`](../../../Notebooks/hail/README.md) (deep) · [`Notebooks/hazard_conus_grid/hail/`](../../../Notebooks/hazard_conus_grid/hail/README.md) (grid).
 - **Per-asset:** [hail × solar](solar.md).
+
+## Quick Layer Questions
+
+```text
+M0 asks:
+  what hail evidence exists: reports, MRMS, MYRORSS?
+
+M1 asks:
+  what is one hail-day event and what footprint/size does it carry?
+
+M2 asks:
+  what is the event's probability of overlapping the solar asset?
+
+M3 asks:
+  if it overlaps, what hail-size damage ratio applies?
+
+M4 asks:
+  in simulated years, which event hit coins land and what full losses result?
+```
+
+Keep the key split in mind: `p_hit` is frequency, conditional loss is severity, and M4 combines them stochastically.

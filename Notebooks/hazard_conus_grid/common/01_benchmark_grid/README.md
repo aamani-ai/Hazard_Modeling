@@ -49,3 +49,16 @@ data/hazard_conus_grid/common/benchmark_grid/served_conus_cell_ids_v2026_06.csv
 
 The contributor-spec path `gs://infrasure-benchmark/grid/era5_us_grid_v2026.1.parquet` returned `404` during
 validation. Use the `sources/grid/` path above.
+
+## What The Benchmark Grid Contract Asks
+
+```text
+benchmark grid asks:
+  what is the authoritative cell_id universe?
+  are cell_id values unique and stable?
+  what CRS and geometry convention applies?
+  which cells are in the served CONUS mask?
+  what grid artifact path should every hazard adapter use?
+```
+
+It does not ask any hazard question yet. It only fixes the spatial contract that later hazard layers must obey.

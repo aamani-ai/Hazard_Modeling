@@ -52,3 +52,25 @@ Public WRC / FSim rasters → `data/wildfire/hayhurst_wildfire_m0_wrc.parquet`,
 Full register: [`assumptions.md`](../../../docs/plans/wildfire/assumptions.md).
 
 **Next → M1 (catalog):** turn this reconciled evidence into one clean per-asset hazard catalog + frequency.
+
+## What Wildfire M0 Asks
+
+```text
+M0 asks, for each candidate raster source:
+  what product is this?
+  what does each pixel value mean?
+  is the source burn probability, intensity, or a conditional intensity histogram?
+  what spatial resolution and vintage does it have?
+  what value conversion is required before modeling?
+  what source should be primary, and what should be only a cross-check?
+```
+
+It does not ask:
+
+```text
+  how many fires happen in a simulated year?
+  what solar damage ratio applies?
+  what is the annual loss distribution?
+```
+
+Those are M1-M4 questions. M0 is source interpretation and raster evidence extraction.

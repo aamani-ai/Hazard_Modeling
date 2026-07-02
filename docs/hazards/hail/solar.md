@@ -127,4 +127,5 @@ financial terms (deductibles / limits / BI) · grid severity-QA decision + full-
 - **Deep-run code:** [`Notebooks/hail/solar/`](../../../Notebooks/hail/solar/README.md) (M2 → M3 → M4).
 - **Grid code:** [`Notebooks/hazard_conus_grid/hail/solar/`](../../../Notebooks/hazard_conus_grid/hail/solar/m2_m4_risk_metrics/README.md).
 - **Registers:** [`plans/hail/assumptions.md`](../../plans/hail/assumptions.md) · [`plans/hazard_conus_grid/assumptions.md`](../../plans/hazard_conus_grid/assumptions.md).
+- **Hazard modeling choices:** [`modeling_choices.md`](modeling_choices.md).
 - **Hazard layer:** [hail anchor](README.md).

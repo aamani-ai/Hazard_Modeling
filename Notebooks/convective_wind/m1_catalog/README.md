@@ -54,3 +54,29 @@ curve not EAL), **AWN-16** (tornado sparse → TVaR+SE at M4), **AWN-19** (stati
 
 **Next → M2 (coupling):** thin tornado λ_collection → λ_asset via the **path-aware Minkowski** (the §3b path stats
 × the M0/03 polygon + turbine cloud); confirm strong wind's **p_hit ≈ 1** (site-conditioned, no thinning).
+
+## What Convective-Wind M1 Asks
+
+```text
+M1 asks, for strong wind:
+  what does the ASCE return-period curve imply above the event threshold?
+  what lambda should represent severe strong-wind events?
+  what Gumbel/exponential severity model matches the RP curve?
+  what fano/dispersion assumption is carried?
+
+M1 asks, for tornado:
+  what bias-corrected SPC event rate is defensible?
+  what EF/gust severity distribution should be used?
+  what bounded tail respects the EF5 physical ceiling?
+  what outbreak clustering or fano factor should M4 sample?
+```
+
+It does not ask:
+
+```text
+  does a tornado path strike the specific wind-farm footprint?
+  what fraction of turbines are swept?
+  how much damage does a gust cause?
+```
+
+Those are M2 and M3 questions.

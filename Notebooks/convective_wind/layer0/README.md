@@ -46,3 +46,24 @@ curve). Assumptions **AWN-5/6/7/8/9/10** (observable, thresholds, EF bins, L, IE
 [`assumptions.md`](../../../docs/plans/convective_wind/assumptions.md).
 
 **Next → [M0](../m0_input_data/README.md):** meet the real evidence against this definition (ASCE surface ✅ built).
+
+## What This Layer Asks
+
+```text
+layer-0 asks:
+  what is the universal wind magnitude metric?
+  what threshold counts an event?
+  what threshold starts turbine damage?
+  what physical upper bound should gust severity respect?
+  which sub-perils belong inside convective wind?
+  which similar-looking perils, like hurricane, stay separate?
+```
+
+For this peril, the short answer is:
+
+```text
+observable = 3-second peak gust
+event threshold = NWS severe / EF0-type wind
+damage onset = IEC survival neighborhood
+sub-perils = tornado and strong/straight-line wind
+```

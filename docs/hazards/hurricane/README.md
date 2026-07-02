@@ -1,22 +1,29 @@
-# Hurricane — hazard anchor  ·  *preview from the `hurricane` branch*
+# Hurricane — hazard anchor
 
-> **Where this lives.** The hurricane pipeline is built on the **`hurricane` branch** (by another team, at
-> `origin/hurricane` @ `b7937e6`), **under cross-review** — the same status as every hazard on main (we
-> cross-review each other's work). This page is a **high-level synthesis** of that branch so the whole picture
-> is visible from main; the code, plans, and registers land on main when review completes. Numbers below are
-> the branch's as-built results, quoted for orientation, not yet main-blessed.
+> **Current main state.** The hurricane notebooks now live locally under
+> [`Notebooks/hurricane/`](../../../Notebooks/hurricane/README.md), imported for review from the branch snapshot
+> carried by `origin/flood` @ `aff8649` after the hurricane/flood cross-link updates. The hurricane
+> plan/register docs now live locally under [`docs/plans/hurricane/`](../../plans/hurricane/README.md). This
+> page is the main-branch hazard anchor to read before notebook review; numbers below are notebook-backed
+> orientation figures, not yet product-blessed.
 
 **The shareable snapshot of how we model hurricane.** This page is *asset-free* — it covers the peril itself
 (`M0/M1`): what a hurricane is in this model, how we turn synthetic storm tracks into a credible wind field,
-how the two deployments differ, and what's reliable vs. not. How hurricane *damages a specific asset* will
-live in per-asset pages (deferred until the branch lands).
+how the two deployments differ, and what's reliable vs. not. Hurricane asset notebooks are local under
+[`Notebooks/hurricane/solar/`](../../../Notebooks/hurricane/solar/README.md) and
+[`Notebooks/hurricane/wind_farm/`](../../../Notebooks/hurricane/wind_farm/README.md); hazard-doc per-asset
+pages are still deferred.
 
 > **New to hurricane physics/data?** Start with
 > [`fundamentals_before_m0.md`](fundamentals_before_m0.md): the prerequisite mental model for wind-only
 > hurricane scope, RAFT-vs-HURDAT2 roles, Holland field synthesis, and the flood cross-link.
 
-> **For the source decision preview, read [`source_selection.md`](source_selection.md):** why RAFT supplies
+> **For the source decision, read [`source_selection.md`](source_selection.md):** why RAFT supplies
 > severity/physics, HURDAT2 anchors frequency, ASCE validates the tail, and surge/rain are routed to flood.
+>
+> **For the M0-M4 modeling choices, read [`modeling_choices.md`](modeling_choices.md):** how RAFT severity, HURDAT2 frequency,
+> Holland wind fields, M2 field-intensity coupling, M3 damage curves, and M4 storm-resolved loss metrics fit
+> together.
 
 > **One-line state:** hurricane is the **wind peril of tropical cyclones** — the intensity variable is the
 > **3-s peak gust** (the *same observable* as convective wind, but a **separate peril**: a continuous,
@@ -75,7 +82,7 @@ catalog's genesis over-sampling never leaks into the rate. The ASCE cross-check 
       ▼                                                          ▼
   real asset, true location                         canonical asset, every cell
   Holland wind field along each track               exact 0.25° cell
-  ▶ DEEP PER-ASSET RUN   (built ✅, on branch)        ▶ CONUS SCREENING GRID  (planned)
+  ▶ DEEP PER-ASSET RUN   (built ✅, imported notebooks) ▶ CONUS SCREENING GRID  (planned)
     (one trustworthy number)                          (a comparable map)
 
   └────────── M0 / M1 identical & asset-free ──────────┘   asset enters only at M2 ▶
@@ -98,7 +105,21 @@ catalog's genesis over-sampling never leaks into the rate. The ASCE cross-check 
   yet — it's a storm-agnostic Atlas-14 frequency curve (`event_family_id` null); the rain↔storm join is
   deferred (JD-FL-17 / JD-TC-6).
 
-## 4. Assumptions (load-bearing; registers on the branch)
+### M0-M4 modeling flow
+
+| Layer | Hurricane modeling object | Choice summary |
+|---|---|---|
+| **Layer 0** | Wind-only tropical-cyclone scope. | Hurricane owns wind; surge/rain route to flood. |
+| **M0** | RAFT synthetic tracks and HURDAT2 observed record. | RAFT supplies severity/physics; HURDAT2 supplies observed frequency. Site geometry is asset input for M2, not hazard M0. |
+| **M1** | Storm event field model. | Holland wind fields from RAFT tracks; close-passage lambda from HURDAT2; ASCE validates the tail. |
+| **M2** | Field-intensity coupling. | Solar samples one effective gust; wind farms sample per turbine/node across the field. |
+| **M3** | 3-s gust -> asset damage ratio. | Loss-side curves are provisional and dominate uncertainty. |
+| **M4** | Storm-resolved annual loss distribution. | Draw storms, sample fields, apply M3, preserve `event_family_id` for flood surge joins. |
+
+The detailed choice ledger is [`modeling_choices.md`](modeling_choices.md): RAFT-vs-HURDAT2 split, Holland field
+choices, field-intensity coupling, M3 caveats, M4 storm sampling, and cross-peril event identity.
+
+## 4. Assumptions (load-bearing; registers now local)
 
 - **Magnitude = 3-s peak gust** at 33 ft, Exposure C (shared observable with convective wind) (ATC-4).
 - **Severity from RAFT, frequency from HURDAT2** close-passage rate (≥64 kt within 100 km ÷ 173 yr) (ATC-9).
@@ -106,7 +127,8 @@ catalog's genesis over-sampling never leaks into the rate. The ASCE cross-check 
 - **Coupling = field-intensity** — degenerate on solar (`exposed_fraction = 1.0`), per-node on wind (ATC-12/13).
 - **Damage curve provisional** — `infrasure-damage-curves` HURRICANE × solar; wind-immune subsystems cap the asset DR (ATC-14).
 - **`event_family_id`** is the cross-peril identity that keeps surge/rain from double-counting (ATC-11).
-- Registers (on the branch): decisions `JD-TC-*`, assumptions `ATC-*` — see [Go deeper](#7-go-deeper).
+- Registers: [`decisions.md`](../../plans/hurricane/decisions.md) (`JD-TC-*`) and
+  [`assumptions.md`](../../plans/hurricane/assumptions.md) (`ATC-*`) — see [Go deeper](#7-go-deeper).
 
 ## 5. Challenges & limitations
 
@@ -132,18 +154,40 @@ The honest split to carry around: **hazard side validated, loss side provisional
 | **Hazard layer** | the wind field + frequency — **independently validated** (ASCE ±5.5 %, HURDAT2 climatology); RP gusts to ~700–1,000 yr | deeper tail (extrapolation) | a larger RAFT subset for deep return periods |
 | **Loss layer** | direction + the field-intensity coupling (degenerate solar, per-node wind) | the **loss magnitude** (curve-limited M3) | curve replacement + Hazus/NRI benchmark, field asymmetry, pluvial-TC rain, CONUS grid |
 
-Both **solar and wind farm are built end-to-end (M0→M4)** on the branch; the wind-farm cell is the genuine
-per-point field-intensity proof and supplies the wind leg of flood's coastal compound. The guiding line holds:
-a V1 cell runs end-to-end and is honest about its limits — here, the hazard is validated and the loss awaits a
-calibrated curve. Headline figures and the per-site numbers belong in per-asset pages, to be written when the
-branch lands on main.
+Both **solar and wind farm are built end-to-end (M0→M4)** in the imported notebooks; the wind-farm cell is the
+genuine per-point field-intensity proof and supplies the wind leg of flood's coastal compound. The guiding line
+holds: a V1 cell runs end-to-end and is honest about its limits — here, the hazard is validated and the loss
+awaits a calibrated curve. Headline figures are carried here and in [`modeling_choices.md`](modeling_choices.md);
+hazard-doc per-asset pages can be written after notebook review.
 
 ## 7. Go deeper
 
-The work lives on the **`hurricane` branch** (`origin/hurricane` @ `b7937e6`). On GitHub:
+Notebook work now lives locally on main for review:
 
-- **Code:** [`Notebooks/hurricane/`](https://github.com/aamani-ai/Hazard_Modeling/tree/hurricane/Notebooks/hurricane) (M0 {RAFT · HURDAT2 · geometry} → M1 catalog + tail validation → solar / wind_farm cells).
-- **Plan-of-record:** [`docs/plans/hurricane/`](https://github.com/aamani-ai/Hazard_Modeling/tree/hurricane/docs/plans/hurricane) — decisions `JD-TC-*`, assumptions `ATC-*`, per-layer plans.
+- **Code:** [`Notebooks/hurricane/`](../../../Notebooks/hurricane/README.md) (M0 {RAFT · HURDAT2 · geometry} → M1 catalog + tail validation → solar / wind_farm cells).
+- **Modeling choices:** [`modeling_choices.md`](modeling_choices.md).
+- **Plan-of-record:** [`docs/plans/hurricane/`](../../plans/hurricane/README.md) — decisions `JD-TC-*`, assumptions `ATC-*`, per-layer plans.
 - **Cross-peril:** the surge ↔ wind join is the seam with the [flood anchor](../flood/README.md) (flood owns surge `[C]` and rain `[F]`; only surge is storm-joined today — the rain link is deferred).
 - **Sibling peril:** shares the 3-s-gust observable with [convective wind](../convective_wind/README.md) (separate peril — watch the TC↔tornado double-count flag).
 - **Index:** back to the [hazard matrix](../README.md).
+
+## Quick Layer Questions
+
+```text
+M0 asks:
+  what RAFT tracks, HURDAT2 rate anchors, and site geometry exist?
+
+M1 asks:
+  what storm-resolved 3-second gust does the Holland field produce, and what event_family_id identifies it?
+
+M2 asks:
+  is field-intensity degenerate on the asset or does it need per-node sampling?
+
+M3 asks:
+  what solar or turbine wind damage curve maps gust to conditional loss?
+
+M4 asks:
+  in simulated years, what storm wind losses produce AEP/OEP metrics?
+```
+
+Keep the key split in mind: hurricane owns wind; flood owns surge/rain, joined later by `event_family_id`.

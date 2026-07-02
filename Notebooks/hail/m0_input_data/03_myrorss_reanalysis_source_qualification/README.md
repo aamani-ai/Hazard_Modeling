@@ -239,3 +239,24 @@ Result:
 Next: document the source-promotion gate before running more batches through
 `scripts/run_myrorss_selected_cell_batches.py`. After additional approved batches, rerun this reconciliation
 notebook before using widened MYRORSS evidence in any M1 comparison.
+
+## What This Source-Qualification Folder Asks
+
+```text
+MYRORSS qualification asks:
+  can this older gridded reanalysis be read repeatably?
+  can it map cleanly onto the benchmark CONUS grid?
+  can selected cells be scanned by chronological day without report guidance?
+  are missing/empty/read-failure states explicit?
+  do reconciled batches have complete date coverage and unique cell-date rows?
+```
+
+It does not ask yet:
+
+```text
+  should MYRORSS replace MRMS as the hail event spine?
+  what is the final long-record hail climatology?
+  how does this change M4 loss metrics?
+```
+
+Those require a source-promotion decision after the quality gates pass.

@@ -153,3 +153,32 @@ Plan: [phase-5-loss-metrics](../../../../docs/plans/hail/done/phase-5-loss-metri
 
 **Production path from here:** NOAA-calibrated `λ` extension · calibrate the damage curve to PV claims · add
 financial terms (deductibles/limits/BI) + an EVT-GPD tail.
+
+## What Hail Solar M4 Asks
+
+```text
+M4 asks, over many simulated years:
+  how many regional hail events occur this year?
+  which historical/template events are sampled?
+  for each sampled event, does the Bernoulli(p_hit) coin hit the plant?
+  if it hits, what full conditional loss from M3 is added?
+  what is the annual aggregate loss?
+  what is the largest occurrence loss?
+```
+
+Then it asks the metric questions:
+
+```text
+  what is mean annual loss?
+  what is VaR95 / VaR99 / VaR99.6?
+  what is PML100 / PML250?
+  what is TVaR99?
+  how different are AEP and OEP?
+```
+
+The key check is simple:
+
+```text
+average loss should match lambda * mean(p_hit * conditional_loss),
+but each simulated hit uses the full conditional loss.
+```

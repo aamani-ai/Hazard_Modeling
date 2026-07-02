@@ -122,4 +122,5 @@ EVT severity tail · vintage-currency adjustment · smoke-soiling & PSPS channel
 - **Deep-run code:** [`Notebooks/wildfire/solar/`](../../../Notebooks/wildfire/solar/m2_coupling/README.md) (M2 → M3 → M4).
 - **Registers:** [`plans/wildfire/assumptions.md`](../../plans/wildfire/assumptions.md) · [`plans/wildfire/decisions.md`](../../plans/wildfire/decisions.md).
 - **Reasoning:** [`discussion/wildfire/03_m2_site_conditioned_coupling.md`](../../extra/discussion/wildfire/03_m2_site_conditioned_coupling.md).
+- **Hazard modeling choices:** [`modeling_choices.md`](modeling_choices.md).
 - **Hazard layer:** [wildfire anchor](README.md).

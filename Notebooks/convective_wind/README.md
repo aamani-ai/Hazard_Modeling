@@ -106,3 +106,54 @@ AWN-26) · the **strong-wind disruption/degradation track** (curtailment + fatig
 the separate **hurricane** peril (watch the TC-tornado double-count flag, AWN-30) · **portfolio correlation** across
 farms (AWN-22). The `deferred` rows in the [assumptions register](../../docs/plans/convective_wind/assumptions.md)
 are the backlog. Method provenance: [`docs/references/`](../../docs/references/README.md).
+
+## M0-M4: What Each Layer Asks
+
+```text
+layer-0 asks:
+  what is the wind observable?
+  what counts as a meteorological event?
+  where does turbine damage begin?
+  why are tornado and strong wind separate sub-perils?
+
+M0 asks:
+  what ASCE return-period gust surface exists at the sites?
+  what SPC tornado/wind reports exist around the sites?
+  what turbine cloud, farm boundary, and TIV geometry will M2 need?
+  what source bias or reporting trap must M1 handle?
+
+M1 asks:
+  for strong wind:
+    what lambda and gust severity come from the ASCE return-period curve?
+  for tornado:
+    what bias-corrected SPC rate and bounded severity distribution apply?
+  what typed sub-peril contracts go to M2/M4?
+
+M2 asks:
+  for tornado:
+    what is the farm strike probability and swept fraction?
+  for strong wind:
+    is the whole farm exposed with p_hit near 1?
+
+M3 asks:
+  at a given 3-second gust:
+    what turbine damage ratio applies for tornado?
+    what turbine damage ratio applies for strong wind?
+    does DR stay near zero at the severe-wind event threshold?
+
+M4 asks:
+  over many simulated years:
+    how many events occur in each sub-peril stream?
+    what realized loss does each event create?
+    what is the joint annual AEP/OEP distribution?
+    what are EAL, PML, VaR, and TVaR off the joint vector?
+```
+
+The core convective-wind discipline is:
+
+```text
+same magnitude axis: 3-second gust
+different coupling: tornado path vs broad strong-wind field
+different damage curve: tornado is more damaging at the same gust
+one final annual loss distribution
+```

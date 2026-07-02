@@ -236,3 +236,36 @@ trust vs. not.
   (deductibles / limits / BI — methodology §9).
 
 See the [assumptions register](../../../docs/plans/hail/assumptions.md) `deferred` rows.
+
+## What The Hail Solar Cell Asks
+
+```text
+solar M2 asks:
+  for each hail footprint:
+    what is the footprint area?
+    what is the solar plant area?
+    what is the hit probability after the Minkowski asset-size correction?
+    is the hit probability kept out of severity?
+
+solar M3 asks:
+  if the event hits:
+    what hail size reaches the plant?
+    what PV module and tracker damage ratios apply?
+    what capex-weighted asset damage ratio results?
+    what full conditional loss is emitted?
+
+solar M4 asks:
+  across simulated years:
+    how many regional hail events occur?
+    which events hit the plant?
+    what full losses are added on hits?
+    what AEP and OEP metrics result?
+```
+
+The asset-cell rule is:
+
+```text
+M2 decides hit probability.
+M3 decides full loss if hit.
+M4 flips the hit coin.
+```

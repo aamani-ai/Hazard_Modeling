@@ -1,18 +1,19 @@
-# Hurricane Source Selection — Branch Preview
+# Hurricane Source Selection
 
-This page records the source-selection logic for the hurricane wind peril as summarized from the `hurricane`
-branch. It is a preview on main until that branch lands.
+This page records the source-selection logic for the hurricane wind peril. The notebooks and plan/register docs
+are now imported to main for review.
 
-**Status:** preview from the `hurricane` branch · written 2026-06-26 · **Applies to:** hurricane wind M0/M1
-source selection for solar and wind-farm cells. Surge and rainfall are real tropical-cyclone damage agents
-owned by flood. Surge is joined back to the storm via `event_family_id`; the rainfall (pluvial) link is
-deferred — it's an Atlas-14 frequency curve with no per-storm identity.
+**Status:** notebooks imported to main for review from the branch snapshot carried by `origin/flood` @ `aff8649`
+· written 2026-06-26 · **Applies to:** hurricane wind M0/M1 source selection for solar and wind-farm cells.
+Surge and rainfall are real tropical-cyclone damage agents owned by flood. Surge is joined back to the storm
+via `event_family_id`; the rainfall (pluvial) link is deferred — it is an Atlas-14 frequency curve with no
+per-storm identity.
 
 ---
 
 ## Decision In One Screen
 
-Hurricane V1/branch-preview uses different sources for severity, frequency, and validation:
+Hurricane V1 uses different sources for severity, frequency, and validation:
 
 ```text
 RAFT synthetic TC catalog
@@ -53,7 +54,7 @@ needed to join hurricane wind with flood surge/rain later.
 
 ## Pressure-Test Status And Caveats
 
-**Pressure-test status:** branch-preview. The deeper reasoning lives in
+**Pressure-test status:** imported-notebook review. The deeper reasoning lives in
 [`discussion/hurricane/01_source_selection_pressure_test.md`](../../extra/discussion/hurricane/01_source_selection_pressure_test.md);
 this page carries the compressed decision record.
 
@@ -89,6 +90,48 @@ Compact carry-forward findings; full reasoning lives in
 - Units and wind basis are first-order QA risks: sustained knots, mph, m/s, and 3-s gust must stay explicit.
 - Surge/rain ownership is part of source selection: flood owns inundation; hurricane wind joins **surge** by
   `event_family_id` today (coastal built), while the **rain** link is deferred.
+
+## Open Questions And Better Ways
+
+Questions to resolve:
+
+```text
+RAFT sample / tail:
+  Is the accepted RAFT subset deep enough for 500- to 1000-year site metrics, or do we need a larger accepted
+  catalog or explicit tail extrapolation?
+
+frequency anchor:
+  Is HURDAT2 close-passage lambda stable enough at sparse sites, and how should uncertainty be represented?
+
+wind-field model:
+  Does symmetric Holland with current gust conversion remain acceptable after site review, or should
+  forward-motion asymmetry, terrain/exposure, and storm-size uncertainty enter M1/M2?
+
+ASCE validation:
+  ASCE validates return-period gusts but has no event identity. Could an ASCE-driven screening mode coexist
+  with the storm-resolved RAFT/HURDAT2 engine?
+
+compound event ownership:
+  Surge joins flood by event_family_id, but rainfall/pluvial and TC-spawned tornado joins remain unresolved.
+```
+
+Better-way candidates:
+
+```text
+hazard:
+  larger RAFT subset, another public event-resolved stochastic TC catalog, or a RAFT/HURDAT2 Bayesian
+  calibration layer
+
+validation:
+  ASCE plus observed historical replay plus independent RP-grid benchmarks
+
+wind field:
+  asymmetric Holland / parametric alternatives with exposure/terrain treatment
+
+source switch evidence:
+  a storm-resolved source that preserves event identity, validates against ASCE/HURDAT2, and provides better
+  physical frequency/severity without synthetic-rate leakage
+```
 
 ## Access And Dependency Profile
 
@@ -226,7 +269,7 @@ Mistake 3:
 - Hurricane fundamentals: [`fundamentals_before_m0.md`](fundamentals_before_m0.md).
 - Source pressure-test discussion:
   [`01_source_selection_pressure_test.md`](../../extra/discussion/hurricane/01_source_selection_pressure_test.md).
-- Hurricane branch code: [`Notebooks/hurricane/`](https://github.com/aamani-ai/Hazard_Modeling/tree/hurricane/Notebooks/hurricane).
-- Hurricane branch plans: [`docs/plans/hurricane/`](https://github.com/aamani-ai/Hazard_Modeling/tree/hurricane/docs/plans/hurricane).
+- Local notebooks: [`Notebooks/hurricane/`](../../../Notebooks/hurricane/README.md).
+- Local plans: [`docs/plans/hurricane/`](../../plans/hurricane/README.md).
 - Flood source selection: [`../flood/source_selection.md`](../flood/source_selection.md).
 - Convective-wind source selection: [`../convective_wind/source_selection.md`](../convective_wind/source_selection.md).

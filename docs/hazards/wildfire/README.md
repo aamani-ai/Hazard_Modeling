@@ -10,6 +10,8 @@ fire *damages a specific asset* lives in the per-asset pages ([wildfire × solar
 > conditional severity, site-conditioned coupling, and the oozing issue.
 > For the source decision itself, read [`source_selection.md`](source_selection.md): why native FSim is the V1
 > spine, why WRC is a cross-check, and which sources are deferred.
+> For the M0-M4 modeling choices, distributions, coupling, damage, and M4 sampling, read
+> [`modeling_choices.md`](modeling_choices.md).
 
 > **One-line state:** wildfire is the **"ingest a finished hazard product"** peril — we read frequency and
 > severity straight off the USFS **FSim** simulation rather than building them from a raw record. The catalog
@@ -105,6 +107,19 @@ is pre-integrated (the source of so much hail-grid tension simply isn't here):
 | **Frequency model** | **Poisson**, `λ = −ln(1−BP)` per asset | **Poisson**, same `λ = −ln(1−BP)` per cell | **Same both ways** — FSim already integrated the season-to-season dispersion into BP, so there's no per-cell over-dispersion to fit (`fano = 1` structurally). Contrast hail, where NegBin-vs-Poisson is a live deployment choice. |
 | **Severity** | the FIL1–6 histogram at the footprint | the FIL1–6 histogram in the cell | Identical machinery; the grid just reads a coarser, canonical unit. |
 
+### M0-M4 modeling flow
+
+| Layer | Wildfire modeling object | Choice summary |
+|---|---|---|
+| **M0** | FSim burn probability and FIL1-6 flame-length rasters; WRC as cross-check. | Treat FSim as a finished hazard product, not a raw event record. |
+| **M1** | Annual burn probability / lambda plus conditional flame-length severity histogram. | `lambda = -ln(1 - BP)`; `fano = 1` structural; severity remains conditional on burning. |
+| **M2** | Site-conditioned coupling. | Read the hazard profile at/around the asset; guard against developed-pixel oozing by using surrounding fuel when needed. |
+| **M3** | Flame length / fire-line intensity -> solar damage ratio. | Current curve is approximate and curve-limited; this is the dominant uncertainty. |
+| **M4** | Annual fire loss distribution. | Draw fire occurrence, flame class, full conditional loss, then read EAL/PML/VaR/TVaR from annual vectors. |
+
+The detailed choice ledger is [`modeling_choices.md`](modeling_choices.md): FSim frequency/severity choices,
+site-conditioned coupling, oozing treatment, damage-curve assumptions, and M4 sampling doctrine.
+
 Because the hazard is a finished field, the two deployments are **far closer** than hail's — the engine is
 literally the same Poisson-on-FSim read at a different spatial unit. The CONUS grid for wildfire is **planned,
 not yet built** (the grid driver is finishing hail × solar first), but the methodology is the one above.
@@ -160,7 +175,29 @@ where fire is genuinely absent and material where it's real — the proof-of-flo
 
 - **Reasoning:** [`discussion/wildfire/`](../../extra/discussion/wildfire/README.md) (`01` scope · `02` data dictionary · `03` coupling).
 - **Source selection:** [`source_selection.md`](source_selection.md).
+- **Modeling choices:** [`modeling_choices.md`](modeling_choices.md).
 - **Decisions / plan-of-record:** [`plans/wildfire/`](../../plans/wildfire/README.md) (DD-W3…DD-W8 + per-layer plans).
 - **Code:** [`Notebooks/wildfire/`](../../../Notebooks/wildfire/m0_input_data/README.md) (M0 → M1 → the solar cell).
 - **Lessons:** [LL07 one simulation, two products](../../learning_logs/07_one_simulation_two_products.md) · [LL08 oozing](../../learning_logs/08_oozing_developed_pixels.md) · [LL09 pre-integrated vs. extracted](../../learning_logs/09_pre_integrated_vs_extracted_catalog.md).
 - **Per-asset:** [wildfire × solar](solar.md).
+
+## Quick Layer Questions
+
+```text
+M0 asks:
+  what FSim/WRC raster evidence exists and what do the pixels mean?
+
+M1 asks:
+  what site burn probability and conditional flame-intensity distribution apply?
+
+M2 asks:
+  is any remaining coupling needed, or did FSim already condition the hazard to the site?
+
+M3 asks:
+  at a given kW/m intensity, what solar BoS damage ratio applies?
+
+M4 asks:
+  in simulated years, how many fires occur and what conditional losses are sampled?
+```
+
+Keep the key split in mind: wildfire is pre-integrated upstream; the weak link is mostly M3 damage, not event extraction.

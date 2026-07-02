@@ -267,3 +267,24 @@ date/cell coverage for `1998-05-01` to `1998-06-11`.
 
 Next step: run the full intended MRMS source inventory and freeze the accepted-date denominator for full-grid
 V1. Keep MYRORSS as common source qualification until promotion gates are answered.
+
+## What The Hail Grid Folder Asks
+
+```text
+hail grid asks:
+  how does MRMS daily MESH become cell-day evidence?
+  which selected cells prove the interface before full-CONUS fanout?
+  what MRMS-only V1 layer can screen risk now?
+  what QA flags mark frequency spikes or raw-MESH severity problems?
+  what later stages are needed before reportable loss?
+```
+
+It does not ask:
+
+```text
+  how should Hayhurst-only assumptions be copied to every cell?
+  how should MYRORSS be silently mixed into V1?
+  how should deep-tail PML be trusted before tail treatment exists?
+```
+
+The V1 grid is a screening layer first; source extension and tail modeling are later accuracy stages.

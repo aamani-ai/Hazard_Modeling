@@ -377,6 +377,45 @@ Mistake 3:
   -> wrong, because NRI is already a risk/loss index, not a physical M1 hazard field.
 ```
 
+## Open Questions And Better Ways
+
+Questions to resolve:
+
+```text
+MESH truth:
+  How much MESH de-biasing is required before severity and loss metrics can move from provisional to
+  reportable? Frequency is stronger than raw size.
+
+record extension:
+  Can MYRORSS be merged with MRMS without introducing a source-era seam, and can it preserve the denominator
+  discipline needed for exact-cell rates?
+
+tail evidence:
+  Can Das & Allen / other gridded tail products be accessed at a usable grain, or do we need our own bounded
+  EVT tail from MRMS after de-biasing?
+
+validation:
+  NOAA/SPC reports are biased, but they are still the main external check. What calibration method is strong
+  enough without letting report bias define the grid?
+```
+
+Better-way candidates:
+
+```text
+best public upgrade:
+  MRMS + qualified MYRORSS overlap / homogeneity bridge
+
+severity upgrade:
+  Murillo & Homeyer-style MESH de-biasing plus bounded EVT tail
+
+validation upgrade:
+  independent hail climatology / claims pattern / report-calibrated sanity checks
+
+source switch evidence:
+  a public gridded hail product with occurrence denominator, footprint/severe-area evidence, and conditional
+  size distribution over a longer homogeneous record
+```
+
 ## Revisit Triggers
 
 Promote or revise the source strategy when:

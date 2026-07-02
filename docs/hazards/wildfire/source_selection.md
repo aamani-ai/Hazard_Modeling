@@ -76,6 +76,44 @@ discussion notes and M0 notebooks; this page carries the compressed decision.
 | Wildfire source choice pushes more uncertainty into M2 site conditioning. | Fuel breaks, defensible space, developed pixels, and boundaries can dominate whether flame reaches value. | Owner/site-condition data or a validated site-conditioned coupling layer. |
 | Fuel/vintage currency can become the main source risk. | Burn scars, fuel treatment, and development can stale a good historical hazard product. | Updated FSim/WRC vintage or explicit burn-scar/fuel-currency correction. |
 
+## Open Questions And Better Ways
+
+Questions to resolve:
+
+```text
+source vintage:
+  Is FSim current enough at each asset after recent burn scars, fuel treatments, regrowth, or new development?
+
+severity grain:
+  Is preserving FLP1-6 more important than WRC's finer 30 m texture for every use case, or do some assets need
+  a hybrid source strategy?
+
+event identity:
+  BP/FLP is enough for single-site annual loss, but what source can support portfolio fire-season correlation
+  or named-fire validation?
+
+site conditioning:
+  How much of the source uncertainty is really an M2 issue around fuel ring, defensible space, and developed
+  pixels?
+```
+
+Better-way candidates:
+
+```text
+best public upgrade:
+  newer FSim / WRC vintages with full conditional severity, if available
+
+source-fusion upgrade:
+  native FSim for severity distribution plus WRC / local fuel layers for M2 texture and oozing diagnostics
+
+event upgrade:
+  event-level FSim scenarios or another stochastic wildfire catalog preserving season/event identity
+
+source switch evidence:
+  a public or licensed product that provides BP, conditional severity, current fuels, and auditable source
+  provenance without mixing in vulnerability/loss
+```
+
 ## Access And Dependency Profile
 
 | Source | Access path | Auth/license | Format / size | Operational dependency |

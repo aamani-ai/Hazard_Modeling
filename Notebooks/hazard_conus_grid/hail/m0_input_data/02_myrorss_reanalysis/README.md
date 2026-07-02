@@ -18,3 +18,14 @@ data/hazard_conus_grid/hail/
 That is intentional: the notebooks qualify the gridded radar source once, and the selected-cell output is
 the current grid adapter proof. Do not add new MYRORSS source-understanding notebooks here; add them under
 the common hail M0 folder and document the adapter role in the grid plan.
+
+## What This Redirect Asks
+
+```text
+this folder asks:
+  is this work grid-specific or common hail source qualification?
+  where should new MYRORSS notebooks live?
+  why do selected-cell artifacts still write under the grid data path?
+```
+
+The answer is: source understanding lives in common hail M0; grid artifacts remain here only as adapter proofs.
